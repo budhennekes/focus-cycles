@@ -1,0 +1,10 @@
+{
+  "name": "Focus Cycles",
+  "short_name": "Focus Cycles",
+  "description": "Built on Sebastian Marshall's Work Cycles framework. Plan, focus, review, debrief.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#1d4ed8"
+}

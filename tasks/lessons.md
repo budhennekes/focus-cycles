@@ -1,0 +1,2 @@
+- Piping build output (`npm run package | tail -1`) masks failures: the pipe exits 0 even when packaging dies, so a stale dist gets installed. Always verify the installed bundle content (grep a fresh marker string in app.asar) before declaring shipped.
+- node_modules corrupted by the interrupted overnight session (bad semver + http2-wrapper). Fix: rm -rf node_modules package-lock.json && npm install.
