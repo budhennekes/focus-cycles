@@ -1,29 +1,53 @@
 # Focus Cycles
 
-A fast, minimalist Mac focus timer built on [Sebastian Marshall](https://sebastianmarshall.com)'s **Work Cycles** method from Ultraworking: set an intention before every work cycle, review after, and let the patterns compound. The ethos: eliminate the meta-work, amplify the real work.
+**The timer was never the hard part.**
+
+Every focus app can count down from 30 minutes. What they don't fix: sitting down without a plan, drifting to Slack mid-cycle, and ending the day unsure what you actually finished. Focus Cycles is a Mac timer built around the fix, a method called **Work Cycles** that puts 30 seconds of intention in front of every block of deep work.
+
+**[Download for Mac](../../releases/latest)** · free, open source, everything stays on your machine
 
 ![Focus Cycles](docs/screenshot.png)
 
-## Download
+## The method, in one minute
 
-Grab the latest `.zip` from [Releases](../../releases), unzip, and drag **Focus Cycles.app** to Applications.
+Work Cycles was created by [Sebastian Marshall](https://sebastianmarshall.com) and the team at [Ultraworking](https://www.ultraworking.com), who tested it across thousands of work sessions. The insight: the quality of a focus block is mostly decided before it starts. So instead of just timing your work, the method wraps every cycle in three tiny checkpoints.
 
-macOS will warn that the app is from an unidentified developer (it isn't code-signed). Two ways past that, one time only:
+1. **Plan** (30 seconds). What am I trying to accomplish this cycle? How will I get started? What might pull me off course?
+2. **Focus** (30 minutes, adjustable). One target. The timer holds you to it, and your target stays on screen under the countdown.
+3. **Review** (30 seconds). Did I hit the target? What distracted me? What should the next cycle do differently?
 
-- Right-click the app, choose **Open**, then **Open** again, or
-- Run `xattr -dr com.apple.quarantine "/Applications/Focus Cycles.app"` in Terminal.
+Longer sessions add a **prep** before the first cycle and a **debrief** at the end, so lessons from today's work survive until tomorrow. The ethos, straight from Ultraworking: eliminate the meta-work, amplify the real work.
 
-Apple Silicon (M1 or newer) only.
+In a hurry? A 1-cycle sprint asks exactly one question and starts the clock. And every prompt is skippable, always.
 
-## What it does
+## Why your answers are worth writing down
 
-- **Work Cycles flow.** Pick 1 to 12 cycles. A one-cycle sprint asks a single question and starts the timer. Longer sessions run the full protocol: prep, then plan / focus / review for each cycle, then a debrief. Every prompt is skippable.
-- **History that means something.** Local dashboard with focus time, streak, 7-day chart, target hit rate, and every plan, review, and debrief you wrote. Export to CSV anytime.
-- **Crash-proof.** Quit or crash mid-session and it resumes exactly where you left off, timer included.
-- **Focus sounds.** Lofi (Lofi Girl's 1 A.M Study Session, looped), Synthwave radio, or locally generated Rain that works offline. One key toggles it all off.
-- **The rest.** Rotating landscape backgrounds (drop your own in `backgrounds/`), local weather, light and dark themes, gentle chimes, desktop notifications.
+Most timers throw your session away at midnight. Focus Cycles keeps every plan, review, and debrief in a local dashboard, so patterns you'd never notice start surfacing:
 
-Everything stays on your Mac. No accounts, no server, no analytics.
+- how much focused time you actually log per day, versus what it felt like
+- your target hit rate, the percentage of cycles that finished what they planned
+- which distractions keep reappearing in your reviews
+- your streak, and your best focus window of the day
+
+It's the difference between "I was busy" and knowing. Export everything to CSV whenever you want.
+
+## Built for people who hate friction
+
+- **Fast.** One HTML file inside a thin Mac wrapper. Opens instantly, idles quietly, animations pause when the window loses focus.
+- **Crash-proof.** Quit, crash, or reboot mid-cycle and the app resumes at the exact second you left, prompts included.
+- **Keyboard-first.** Space to start, S to skip, M for music, numbers to set cycle count. Press `?` inside the app for the full map.
+- **Focus sounds, zero setup.** Lofi (Lofi Girl's 1 A.M Study Session on loop), Synthwave radio, or locally generated rain that works with no internet. One key kills the sound.
+- **Yours.** No account, no server, no analytics. Your history lives in the app on your Mac and nowhere else.
+
+Plus the pleasant stuff: rotating landscape backgrounds (drop your own in `backgrounds/`), local weather, light and dark themes, a gentle chime when a cycle ends.
+
+## Get started in two minutes
+
+1. Download the latest `.zip` from [Releases](../../releases/latest), unzip, drag **Focus Cycles.app** into Applications.
+2. First open: right-click the app and choose **Open**, then **Open** again. macOS asks once because the app isn't code-signed. (Terminal alternative: `xattr -dr com.apple.quarantine "/Applications/Focus Cycles.app"`)
+3. Pick a cycle count, answer the prompt, press **Start focusing**.
+
+Requires Apple Silicon (M1 or newer).
 
 ## Keyboard shortcuts
 
@@ -39,6 +63,23 @@ Everything stays on your Mac. No accounts, no server, no analytics.
 | `Esc` | Go back, cancel |
 | `?` | Show all shortcuts |
 
+## Questions you might have
+
+**Do I have to answer all the prompts?**
+No. Every field is skippable, and "Skip all prompts for this session" turns the app into a plain timer. The prompts are where the value hides, though. Try answering just the first one for a week.
+
+**Where does my data live?**
+In the app's local storage on your Mac. Nothing is transmitted anywhere. The History screen has a one-click CSV export for backups.
+
+**Why does macOS warn me on first open?**
+The app isn't code-signed with an Apple Developer certificate. The source is public in this repo, and the right-click Open dance is a one-time thing.
+
+**What if the music streams break?**
+Lofi uses a permanent YouTube upload, not a live stream, so it should stay put. Synthwave is a live radio that YouTube rotates every year or two; swapping the ID in `index.html` takes 30 seconds. Rain is generated on your Mac and can't break.
+
+**Why Electron for a single-page app?**
+It was the fastest path from working prototype to a real Mac app. The entire UI is [index.html](index.html), so if you'd rather run it as a browser tab or Safari web app, you can.
+
 ## Build from source
 
 ```bash
@@ -49,12 +90,10 @@ npm start          # run in development
 npm run package    # build the .app into dist/
 ```
 
-The whole app is one HTML file ([index.html](index.html)) plus a small Electron wrapper ([main.js](main.js)).
-
 ## Credits
 
-- The Work Cycles method was created by **Sebastian Marshall** and the team at [Ultraworking](https://www.ultraworking.com).
-- Lofi and synthwave audio streams from [Lofi Girl](https://www.youtube.com/@LofiGirl), played through YouTube's embedded player.
+- The **Work Cycles** method was created by **Sebastian Marshall** and the team at [Ultraworking](https://www.ultraworking.com). This app is an independent tribute to it.
+- Lofi and synthwave audio from [Lofi Girl](https://www.youtube.com/@LofiGirl), played through YouTube's embedded player.
 - Weather by [Open-Meteo](https://open-meteo.com). Built-in backgrounds from [Unsplash](https://unsplash.com).
 
 ## License
