@@ -1,8 +1,8 @@
 # Focus Cycles
 
-**The timer was never the hard part.**
+**Setting a timer is the easy part. Or so I thought.**
 
-Every focus app can count down from 30 minutes. What they don't fix: sitting down without a plan, drifting to Slack mid-cycle, and ending the day unsure what you actually finished. Focus Cycles is a Mac timer built around the fix, a method called **Work Cycles** that puts 30 seconds of intention in front of every block of deep work.
+Every focus app can count down from 30 minutes. None of them fix what actually kills a work block: sitting down without a plan, drifting to Slack mid-cycle, ending the day unsure what you finished. Focus Cycles is a Mac timer built around the fix, a method called **Work Cycles** that puts 30 seconds of intention in front of every block of deep work.
 
 **[Download for Mac](../../releases/latest)** · free, open source, everything stays on your machine
 
@@ -13,6 +13,8 @@ Every focus app can count down from 30 minutes. What they don't fix: sitting dow
 For years, the Work Cycles tool from Ultraworking was the closest thing I had to a productivity cheat code. Open it, answer a few honest questions, work like it mattered, review, repeat. My output on cycle days embarrassed my output on every other day.
 
 Then Ultraworking wound down, the tool went with it, and I felt the difference within a week. The method still worked. I just didn't have software that ran it anymore.
+
+And honestly, the software was only half the magic. The other half was the room: live sessions where high performers showed up and did cycles together, and the quiet pressure of working alongside people who take their output seriously made everyone sharper. Rebuilding that is a problem for another day. The software half I could fix now.
 
 So I built my own. Same bones as the original, with my own tweaks: a one-question sprint mode for busy days, a local history dashboard that turns your reviews into patterns over time, focus sounds, and a Mac app that opens fast and stays out of the way. It's free and open source because the method deserves to keep living. Built with love, in the most literal sense: I made this to get my own best working days back.
 
