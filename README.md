@@ -8,6 +8,14 @@ Every focus app can count down from 30 minutes. What they don't fix: sitting dow
 
 ![Focus Cycles](docs/screenshot.png)
 
+## Why this exists
+
+For years, the Work Cycles tool from Ultraworking was the closest thing I had to a productivity cheat code. Open it, answer a few honest questions, work like it mattered, review, repeat. My output on cycle days embarrassed my output on every other day.
+
+Then Ultraworking wound down, the tool went with it, and I felt the difference within a week. The method still worked. I just didn't have software that ran it anymore.
+
+So I built my own. Same bones as the original, with my own tweaks: a one-question sprint mode for busy days, a local history dashboard that turns your reviews into patterns over time, focus sounds, and a Mac app that opens fast and stays out of the way. It's free and open source because the method deserves to keep living. Built with love, in the most literal sense: I made this to get my own best working days back.
+
 ## The method, in one minute
 
 Work Cycles was created by [Sebastian Marshall](https://sebastianmarshall.com) and the team at [Ultraworking](https://www.ultraworking.com), who tested it across thousands of work sessions. The insight: the quality of a focus block is mostly decided before it starts. So instead of just timing your work, the method wraps every cycle in three tiny checkpoints.
@@ -92,7 +100,7 @@ npm run package    # build the .app into dist/
 
 ## Credits
 
-- The **Work Cycles** method was created by **Sebastian Marshall** and the team at [Ultraworking](https://www.ultraworking.com). This app is an independent tribute to it.
+- The **Work Cycles** method was created by **Sebastian Marshall** and the team at [Ultraworking](https://www.ultraworking.com). This app is an independent tribute, built to keep the method alive after the original tool went offline. All credit for the thinking belongs to them.
 - Lofi and synthwave audio from [Lofi Girl](https://www.youtube.com/@LofiGirl), played through YouTube's embedded player.
 - Weather by [Open-Meteo](https://open-meteo.com). Built-in backgrounds from [Unsplash](https://unsplash.com).
 
