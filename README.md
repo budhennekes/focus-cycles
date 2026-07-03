@@ -20,7 +20,7 @@ So I built my own. Same bones as the original, with my own tweaks: a one-questio
 
 ## The method, in one minute
 
-Work Cycles was created by [Sebastian Marshall](https://sebastianmarshall.com) and the team at [Ultraworking](https://www.ultraworking.com), who tested it across thousands of work sessions. The insight: the quality of a focus block is mostly decided before it starts. So instead of just timing your work, the method wraps every cycle in three tiny checkpoints.
+Work Cycles was created by Sebastian Marshall and the team at Ultraworking, who tested it across thousands of work sessions. The insight: the quality of a focus block is mostly decided before it starts. So instead of just timing your work, the method wraps every cycle in three tiny checkpoints.
 
 1. **Plan** (30 seconds). What am I trying to accomplish this cycle? How will I get started? What might pull me off course?
 2. **Focus** (30 minutes, adjustable). One target. The timer holds you to it, and your target stays on screen under the countdown.
@@ -102,7 +102,7 @@ npm run package    # build the .app into dist/
 
 ## Credits
 
-- The **Work Cycles** method was created by **Sebastian Marshall** and the team at [Ultraworking](https://www.ultraworking.com). This app is an independent tribute, built to keep the method alive after the original tool went offline. All credit for the thinking belongs to them.
+- The **Work Cycles** method was created by **Sebastian Marshall** and the team at Ultraworking. This app is an independent tribute, built to keep the method alive after the original tool went offline. All credit for the thinking belongs to them.
 - Lofi and synthwave audio from [Lofi Girl](https://www.youtube.com/@LofiGirl), played through YouTube's embedded player.
 - Weather by [Open-Meteo](https://open-meteo.com). Built-in backgrounds from [Unsplash](https://unsplash.com).
 
