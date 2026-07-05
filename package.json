@@ -8,6 +8,7 @@
   "private": true,
   "scripts": {
     "start": "electron .",
+    "prepackage": "node -e \"require('debug');require('semver');require('@electron/packager/package.json')\" 2>/dev/null || npm ci",
     "package": "electron-packager . 'Focus Cycles' --platform=darwin --arch=arm64 --overwrite --out=dist --icon=build/icon.icns --app-bundle-id=com.bud.focuscycles --app-version=1.0.0 --ignore='^/dist$' --ignore='^/build$' --ignore='^/dist\\.previous-' --ignore='^/tasks$' --ignore='^/scripts$' --ignore='^/\\.overnight-npm-temp-backup' --ignore='^/\\.claude' --ignore='^/node_modules\\.dataless-broken-' --ignore='^/\\.gitignore$' --ignore='\\.md$' --ignore='^/node_modules/\\.electron-' ",
     "smoke": "node scripts/smoke-check.js",
     "test": "npm run smoke",
