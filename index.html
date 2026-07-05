@@ -477,6 +477,54 @@
   .projection { text-align: center; font-size: 13px; color: var(--text-dim); margin-top: 14px; }
 
   .credit-wrap { display: flex; justify-content: center; margin-top: 22px; }
+  .credit-wrap.hidden { display: none; }
+  .credit-dismiss {
+    position: absolute;
+    top: 3px;
+    right: 7px;
+    color: var(--text-faint);
+    font-size: 15px;
+    line-height: 1;
+    padding: 2px 4px;
+  }
+  .credit-dismiss:hover { color: var(--text-dim); }
+  .credit { padding-right: 26px; }
+
+  /* Day timeline — when cycles happened, 6am to midnight */
+  .timeline-hours {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--text-faint);
+    padding-left: 44px;
+    margin-bottom: 6px;
+  }
+  .timeline-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .timeline-row:last-child { margin-bottom: 0; }
+  .timeline-day {
+    width: 36px;
+    font-size: 10px;
+    color: var(--text-faint);
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .timeline-row.today .timeline-day { color: var(--text-dim); font-weight: 600; }
+  .timeline-track {
+    position: relative;
+    flex: 1;
+    height: 14px;
+    background: var(--panel-input);
+    border-radius: 7px;
+  }
+  .timeline-block {
+    position: absolute;
+    top: 2px;
+    bottom: 2px;
+    border-radius: 5px;
+    background: var(--grad-primary);
+    min-width: 3px;
+  }
+  .timeline-block.incomplete { opacity: 0.35; }
   .credit {
     color: var(--text-dim);
     font-size: 11.5px;
@@ -1162,8 +1210,9 @@
       <div class="projection" id="projection"></div>
     </div>
 
-    <div class="credit-wrap">
+    <div class="credit-wrap" id="creditWrap">
       <p class="credit">
+        <button class="credit-dismiss" id="creditDismiss" title="Dismiss" aria-label="Dismiss">×</button>
         Built on the <strong>Work Cycles</strong> framework created by
         <strong>Sebastian Marshall</strong> and his team at <strong>Ultraworking</strong>.
         The ethos: eliminate the meta-work, amplify the real work.
@@ -1209,6 +1258,12 @@
       <div class="panel-card">
         <div class="panel-title">Last 7 days · focus minutes</div>
         <div class="bars" id="bars"></div>
+      </div>
+
+      <div class="panel-card" id="dayTimelinePanel" style="display: none;">
+        <div class="panel-title">Last 7 days · when you focused</div>
+        <div class="timeline-hours" id="timelineHours"></div>
+        <div id="dayTimeline"></div>
       </div>
 
       <div class="panel-card" id="targetPanel" style="display: none;">
@@ -2338,11 +2393,14 @@ function renderHistory() {
     days.push({ date: d, mins });
   }
   const max = Math.max(60, ...days.map(d => d.mins));
+  // Pixel heights: percentage heights never resolve inside the auto-height
+  // flex column, so bars rendered as slivers regardless of minutes.
   document.getElementById('bars').innerHTML = days.map(d => {
-    const h = d.mins ? Math.max(4, (d.mins / max) * 100) : 0;
-    return `<div class="bar-col"><div class="bar ${d.mins === 0 ? 'empty' : ''}" style="height: ${h}%" title="${d.mins} min"></div><div class="bar-label">${d.date.toLocaleDateString([], { weekday: 'short' })}</div></div>`;
+    const h = d.mins ? Math.max(6, Math.round((d.mins / max) * 72)) : 2;
+    return `<div class="bar-col"><div class="bar ${d.mins === 0 ? 'empty' : ''}" style="height: ${h}px" title="${d.mins} min"></div><div class="bar-label">${d.date.toLocaleDateString([], { weekday: 'short' })}</div></div>`;
   }).join('');
 
+  renderDayTimeline();
   renderTargetPanel(completed);
   renderEnergyPanel(completed);
   renderWisdomPanel();
@@ -2379,6 +2437,45 @@ function renderEnergyPanel(completed) {
     lab.textContent = i === 0 || i === recent.length - 1 ? new Date(x.cycle.startedAt).toLocaleDateString([], { month: 'short', day: 'numeric' }) : '';
     labels.appendChild(lab);
   });
+}
+
+/* Day timeline: each focus cycle drawn at its actual time of day, 6am to
+   midnight, last 7 days. Answers "when do I focus?" with no calendar anything. */
+function renderDayTimeline() {
+  const panel = document.getElementById('dayTimelinePanel');
+  const START_H = 6, SPAN_H = 18; // 6:00 → 24:00
+  const allFocus = [];
+  state.sessions.forEach(s => s.cycles.forEach(c => {
+    if (c.startedAt) allFocus.push(c);
+  }));
+  if (!allFocus.length) { panel.style.display = 'none'; return; }
+
+  const rows = [];
+  let anyBlock = false;
+  for (let i = 6; i >= 0; i--) {
+    const day = new Date(); day.setHours(0, 0, 0, 0); day.setDate(day.getDate() - i);
+    const dayStart = day.getTime();
+    const dayEnd = dayStart + 86_400_000;
+    const blocks = allFocus
+      .filter(c => c.startedAt >= dayStart && c.startedAt < dayEnd)
+      .map(c => {
+        const startH = (c.startedAt - dayStart) / 3_600_000;
+        const durH = Math.max(((c.endedAt || c.startedAt + 60_000) - c.startedAt) / 3_600_000, 0.02);
+        const left = Math.max(0, Math.min(100, ((startH - START_H) / SPAN_H) * 100));
+        const width = Math.max(0.5, Math.min(100 - left, (durH / SPAN_H) * 100));
+        const when = new Date(c.startedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        const label = (c.plan && c.plan.accomplish) ? `${when} · ${c.plan.accomplish}` : when;
+        return `<div class="timeline-block ${c.completed ? '' : 'incomplete'}" style="left:${left}%;width:${width}%" title="${escapeAttr(label)}"></div>`;
+      });
+    if (blocks.length) anyBlock = true;
+    const isToday = i === 0;
+    const dayLabel = isToday ? 'Today' : day.toLocaleDateString([], { weekday: 'short' });
+    rows.push(`<div class="timeline-row ${isToday ? 'today' : ''}"><div class="timeline-day">${dayLabel}</div><div class="timeline-track">${blocks.join('')}</div></div>`);
+  }
+  if (!anyBlock) { panel.style.display = 'none'; return; }
+  panel.style.display = '';
+  document.getElementById('timelineHours').innerHTML = '<span>6am</span><span>12pm</span><span>6pm</span><span>12am</span>';
+  document.getElementById('dayTimeline').innerHTML = rows.join('');
 }
 
 function renderTargetPanel(completed) {
@@ -2872,6 +2969,16 @@ document.getElementById('firstRunDismiss').addEventListener('click', () => {
   document.getElementById('firstRunBanner').classList.add('hidden');
 });
 
+/* Credit pill — dismissible, stays dismissed. The tribute lives on in the repo. */
+const CREDIT_KEY = 'focus_credit_dismissed_v1';
+function maybeHideCredit() {
+  try { if (localStorage.getItem(CREDIT_KEY)) document.getElementById('creditWrap').classList.add('hidden'); } catch (e) {}
+}
+document.getElementById('creditDismiss').addEventListener('click', () => {
+  try { localStorage.setItem(CREDIT_KEY, '1'); } catch (e) {}
+  document.getElementById('creditWrap').classList.add('hidden');
+});
+
 /* ============================================================
    TODAY'S INTENT
 ============================================================ */
@@ -3020,6 +3127,7 @@ function init() {
   renderWeatherSlot();
   renderIntent();
   maybeShowFirstRun();
+  maybeHideCredit();
   // Music never autoplays across launches (browsers block it and surprise
   // audio is bad UX) — it's a per-sitting choice, so reset to off.
   state.settings.musicMode = 'off';
