@@ -1,0 +1,29 @@
+# Changelog
+
+All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://keepachangelog.com); versions follow [semver](https://semver.org).
+
+## [Unreleased]
+
+### Added
+- **Your own background photos.** Background menu → "Add your photos…" imports images straight into the app. Photos are downscaled to 2560px and stored locally in the app (IndexedDB), so originals never leave your Mac and a full set stays light. Up to 20 photos; "Use built-in set" switches back anytime.
+- **Day timeline.** History now shows the last 7 days with each focus cycle drawn at the time it actually happened, 6am to midnight. Hover a block for the time and target.
+- Credit pill on the setup screen is dismissible and stays dismissed.
+
+### Fixed
+- The 7-day focus minutes chart rendered near-empty bars regardless of data (CSS percentage-height bug). Bars now scale correctly.
+- Build tooling self-heals when iCloud sync corrupts `node_modules` (prepackage check runs `npm ci` automatically if key packages are broken).
+
+## [1.0.1] — 2026-07-04
+
+### Fixed
+- macOS "Focus Cycles.app is damaged and can't be opened" on download. The packager was invalidating the app's code signature; releases are now ad-hoc signed (`npm run release-zip`). Install still needs a one-time Gatekeeper bypass since the app isn't notarized.
+
+## [1.0.0] — 2026-07-02
+
+### Added
+- First public release.
+- Full Work Cycles flow: prep, plan, focus, review, debrief. One-cycle sprint mode. Every prompt skippable.
+- Local history dashboard: focus time, streak, 7-day chart, target hit rate, expandable session detail, CSV export.
+- Crash-proof resume: sessions restore to the exact second, prompts included, within 6 hours.
+- Focus sounds: Lofi and Synthwave (YouTube streams), locally generated Rain for offline.
+- Today's intent pin, rotating landscape backgrounds, local weather, light and dark themes, keyboard shortcuts with a `?` overlay.

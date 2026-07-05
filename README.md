@@ -49,7 +49,9 @@ It's the difference between "I was busy" and knowing. Export everything to CSV w
 - **Focus sounds, zero setup.** Lofi (Lofi Girl's 1 A.M Study Session on loop), Synthwave radio, or locally generated rain that works with no internet. One key kills the sound.
 - **Yours.** No account, no server, no analytics. Your history lives in the app on your Mac and nowhere else.
 
-Plus the pleasant stuff: rotating landscape backgrounds (drop your own in `backgrounds/`), local weather, light and dark themes, a gentle chime when a cycle ends.
+Plus the pleasant stuff: rotating landscape backgrounds, local weather, light and dark themes, a gentle chime when a cycle ends.
+
+**Use your own photos.** Background menu → "Add your photos…" and pick up to 20 images. The app handles the best practices for you: photos are downscaled to 2560px on the long edge and re-encoded (a few hundred KB each), which fixes rotation, keeps memory low, and still looks sharp on a Retina display. Landscape orientation works best since the image fills the window. Everything is stored inside the app on your Mac; your originals are never moved or uploaded. "Use built-in set" switches back anytime.
 
 ## Get started in two minutes
 

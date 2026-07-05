@@ -1349,10 +1349,18 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
     <span>History</span>
   </button>
-  <button class="icon-btn" id="bgBtn" title="New background (B)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-    <span>Background</span>
-  </button>
+  <div class="music-wrap">
+    <div id="bgMenu" class="music-menu hidden" role="menu" aria-label="Background">
+      <button data-bg="next" role="menuitem">Next background</button>
+      <button data-bg="add" role="menuitem">Add your photos…</button>
+      <button data-bg="builtin" role="menuitem" id="bgBuiltinBtn" style="display: none;">Use built-in set</button>
+    </div>
+    <button class="icon-btn" id="bgBtn" title="Background · B for next">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      <span>Background</span>
+    </button>
+  </div>
+  <input type="file" id="bgFileInput" accept="image/*" multiple style="display: none;">
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1501,13 +1509,107 @@ async function discoverLocalBackgrounds() {
   return Object.values(found);
 }
 
-async function initBackgrounds() {
-  const local = await discoverLocalBackgrounds();
-  if (local.length > 0) {
-    BACKGROUNDS = local;
-  } else {
-    BACKGROUNDS = UNSPLASH_FALLBACKS;
+/* ---- Custom photos: stored in IndexedDB as blobs. localStorage caps out
+   around 5MB, which is one photo; IndexedDB comfortably holds a full set. ---- */
+const BG_DB = 'focus-cycles-bgs';
+const BG_MAX_PHOTOS = 20;
+const BG_MAX_DIMENSION = 2560; // plenty for a Retina display, kind to memory
+const BG_JPEG_QUALITY = 0.82;
+
+function bgDbOpen() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(BG_DB, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore('photos', { keyPath: 'id' });
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function bgDbAll() {
+  return bgDbOpen().then(db => new Promise((resolve, reject) => {
+    const req = db.transaction('photos').objectStore('photos').getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error);
+  })).catch(() => []);
+}
+
+function bgDbPut(record) {
+  return bgDbOpen().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction('photos', 'readwrite');
+    tx.objectStore('photos').put(record);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  }));
+}
+
+function bgDbDelete(id) {
+  return bgDbOpen().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction('photos', 'readwrite');
+    tx.objectStore('photos').delete(id);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  }));
+}
+
+/* Normalize on import: downscale to 2560px max and re-encode as JPEG.
+   Enforces sensible resolution automatically, fixes EXIF rotation, and
+   keeps each photo in the few-hundred-KB range instead of 10MB originals. */
+async function normalizePhoto(file) {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, BG_MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
+  const w = Math.round(bitmap.width * scale);
+  const h = Math.round(bitmap.height * scale);
+  const canvas = document.createElement('canvas');
+  canvas.width = w; canvas.height = h;
+  canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
+  bitmap.close();
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(b => b ? resolve(b) : reject(new Error('encode failed')), 'image/jpeg', BG_JPEG_QUALITY);
+  });
+}
+
+async function importPhotos(files) {
+  const images = Array.from(files).filter(f => f.type.startsWith('image/'));
+  if (!images.length) { showToast('No images selected.'); return; }
+  showToast(`Adding ${images.length} photo${images.length === 1 ? '' : 's'}...`);
+  let added = 0;
+  for (const file of images) {
+    try {
+      const blob = await normalizePhoto(file);
+      await bgDbPut({ id: Date.now() + '_' + Math.random().toString(36).slice(2, 8), blob, added: Date.now() });
+      added += 1;
+    } catch (e) { /* skip unreadable file, keep going */ }
   }
+  // Keep the most recent BG_MAX_PHOTOS
+  const all = (await bgDbAll()).sort((a, b) => b.added - a.added);
+  for (const old of all.slice(BG_MAX_PHOTOS)) await bgDbDelete(old.id);
+
+  if (!added) { showToast('Could not read those files.'); return; }
+  await initBackgrounds();
+  setBackground(0);
+  showToast(`${added} photo${added === 1 ? '' : 's'} added. Using your set.`);
+}
+
+async function clearCustomPhotos() {
+  const all = await bgDbAll();
+  for (const p of all) await bgDbDelete(p.id);
+  await initBackgrounds();
+  setBackground(0);
+  showToast('Back to the built-in backgrounds.');
+}
+
+async function initBackgrounds() {
+  // Priority: your uploaded photos, then a local ghibli-XX file pack,
+  // then the built-in Unsplash set.
+  const custom = await bgDbAll();
+  if (custom.length > 0) {
+    custom.sort((a, b) => a.added - b.added);
+    BACKGROUNDS = custom.map(p => URL.createObjectURL(p.blob));
+  } else {
+    const local = await discoverLocalBackgrounds();
+    BACKGROUNDS = local.length > 0 ? local : UNSPLASH_FALLBACKS;
+  }
+  document.getElementById('bgBuiltinBtn').style.display = custom.length ? '' : 'none';
   activeBgIndex = Math.min(state.settings.bgIndex || 0, BACKGROUNDS.length - 1);
   setBackground(activeBgIndex);
 }
@@ -2714,7 +2816,32 @@ document.getElementById('historyBtn').addEventListener('click', () => {
   renderHistory();
   showScreen('historyScreen');
 });
-document.getElementById('bgBtn').addEventListener('click', nextBackground);
+/* Background menu — next, add your own photos, back to built-ins */
+const bgMenu = document.getElementById('bgMenu');
+function toggleBgMenu(force) {
+  const show = force !== undefined ? force : bgMenu.classList.contains('hidden');
+  bgMenu.classList.toggle('hidden', !show);
+}
+document.getElementById('bgBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  toggleMusicMenu(false);
+  toggleBgMenu();
+});
+bgMenu.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const btn = e.target.closest('[data-bg]');
+  if (!btn) return;
+  toggleBgMenu(false);
+  if (btn.dataset.bg === 'next') nextBackground();
+  else if (btn.dataset.bg === 'add') document.getElementById('bgFileInput').click();
+  else if (btn.dataset.bg === 'builtin') clearCustomPhotos();
+});
+document.getElementById('bgFileInput').addEventListener('change', (e) => {
+  importPhotos(e.target.files);
+  e.target.value = ''; // allow re-selecting the same files later
+});
+document.addEventListener('click', () => toggleBgMenu(false));
+
 document.getElementById('themeBtn').addEventListener('click', toggleTheme);
 
 /* Shortcuts overlay — any key or click dismisses */
@@ -3186,8 +3313,9 @@ function init() {
     else if (e.key === 'h' || e.key === 'H') { document.getElementById('historyBtn').click(); }
     else if (e.key === 't' || e.key === 'T') { toggleTheme(); }
     else if (e.key === 'Escape') {
-      if (!musicMenu.classList.contains('hidden')) {
+      if (!musicMenu.classList.contains('hidden') || !bgMenu.classList.contains('hidden')) {
         toggleMusicMenu(false);
+        toggleBgMenu(false);
       } else if (!document.getElementById('historyScreen').classList.contains('hidden')) {
         document.getElementById('closeHistoryBtn').click();
       } else if (!document.getElementById('promptScreen').classList.contains('hidden')) {
