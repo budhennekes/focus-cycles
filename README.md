@@ -54,7 +54,10 @@ Plus the pleasant stuff: rotating landscape backgrounds (drop your own in `backg
 ## Get started in two minutes
 
 1. Download the latest `.zip` from [Releases](../../releases/latest), unzip, drag **Focus Cycles.app** into Applications.
-2. First open: right-click the app and choose **Open**, then **Open** again. macOS asks once because the app isn't code-signed. (Terminal alternative: `xattr -dr com.apple.quarantine "/Applications/Focus Cycles.app"`)
+2. First open, one time only, because the app isn't notarized with Apple:
+   - macOS 14 and earlier: right-click the app, choose **Open**, then **Open** again.
+   - macOS 15 (Sequoia) and later: open it once, let macOS block it, then go to **System Settings → Privacy & Security** and click **Open Anyway**.
+   - Terminal alternative that always works: `xattr -dr com.apple.quarantine "/Applications/Focus Cycles.app"`
 3. Pick a cycle count, answer the prompt, press **Start focusing**.
 
 Requires Apple Silicon (M1 or newer).
@@ -82,7 +85,7 @@ No. Every field is skippable, and "Skip all prompts for this session" turns the 
 In the app's local storage on your Mac. Nothing is transmitted anywhere. The History screen has a one-click CSV export for backups.
 
 **Why does macOS warn me on first open?**
-The app isn't code-signed with an Apple Developer certificate. The source is public in this repo, and the right-click Open dance is a one-time thing.
+The app isn't notarized with an Apple Developer certificate. The source is public in this repo, and the bypass in step 2 above is a one-time thing. If you ever see "app is damaged," that was a v1.0.0 bug, fixed in v1.0.1: re-download the latest release.
 
 **What if the music streams break?**
 Lofi uses a permanent YouTube upload, not a live stream, so it should stay put. Synthwave is a live radio that YouTube rotates every year or two; swapping the ID in `index.html` takes 30 seconds. Rain is generated on your Mac and can't break.
