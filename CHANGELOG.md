@@ -4,12 +4,18 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [1.0.2] — 2026-07-06
+
 ### Added
 - **Menu-bar countdown.** While a session runs, the time left shows in the macOS menu bar at the top of the screen (with a ⏸ when paused and ☕ on breaks), so you can see it from any app. It clears when the session ends.
 - **Mini bar mode.** Shrink the window to a strip and the running timer collapses to one readable row you can park in a screen corner while you work. In the mini bar the controls become clean symbols (pause/play, skip, stop). Drag it by the bar itself. The window can now shrink much smaller than before.
 - **Your own background photos.** Background menu → "Add your photos…" imports images straight into the app. Photos are downscaled to 2560px and stored locally in the app (IndexedDB), so originals never leave your Mac and a full set stays light. Up to 20 photos; "Use built-in set" switches back anytime.
 - **Day timeline.** History now shows the last 7 days with each focus cycle drawn at the time it actually happened, 6am to midnight. Hover a block for the time and target.
-- Credit pill on the setup screen is dismissible and stays dismissed.
+
+### Changed
+- Credit pill on the setup screen is now dismissible and stays dismissed.
 
 ### Fixed
 - The 7-day focus minutes chart rendered near-empty bars regardless of data (CSS percentage-height bug). Bars now scale correctly.
@@ -29,3 +35,8 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 - Crash-proof resume: sessions restore to the exact second, prompts included, within 6 hours.
 - Focus sounds: Lofi and Synthwave (YouTube streams), locally generated Rain for offline.
 - Today's intent pin, rotating landscape backgrounds, local weather, light and dark themes, keyboard shortcuts with a `?` overlay.
+
+[Unreleased]: https://github.com/budhennekes/focus-cycles/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/budhennekes/focus-cycles/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/budhennekes/focus-cycles/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/budhennekes/focus-cycles/releases/tag/v1.0.0
