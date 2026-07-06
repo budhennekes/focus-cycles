@@ -5,7 +5,8 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 ## [Unreleased]
 
 ### Added
-- **Mini bar mode.** Shrink the window to a strip and the running timer collapses to one readable row (phase, time, cycle, controls) you can park in a screen corner while you work. Drag it by the bar itself. The window can now shrink much smaller than before.
+- **Menu-bar countdown.** While a session runs, the time left shows in the macOS menu bar at the top of the screen (with a ⏸ when paused and ☕ on breaks), so you can see it from any app. It clears when the session ends.
+- **Mini bar mode.** Shrink the window to a strip and the running timer collapses to one readable row you can park in a screen corner while you work. In the mini bar the controls become clean symbols (pause/play, skip, stop). Drag it by the bar itself. The window can now shrink much smaller than before.
 - **Your own background photos.** Background menu → "Add your photos…" imports images straight into the app. Photos are downscaled to 2560px and stored locally in the app (IndexedDB), so originals never leave your Mac and a full set stays light. Up to 20 photos; "Use built-in set" switches back anytime.
 - **Day timeline.** History now shows the last 7 days with each focus cycle drawn at the time it actually happened, 6am to midnight. Hover a block for the time and target.
 - Credit pill on the setup screen is dismissible and stays dismissed.

@@ -653,6 +653,9 @@
     isolation: isolate;
   }
   .btn-ghost:hover { background: var(--btn-hover); transform: translateY(-1px); }
+  /* Timer control icons: hidden in full mode (text labels show), shown in mini bar */
+  .timer-btn { display: inline-flex; align-items: center; justify-content: center; }
+  .btn-icon { display: none; width: 16px; height: 16px; }
 
   /* Prompt screens */
   .prompt-wrap {
@@ -1106,7 +1109,13 @@
     #activeScreen .cycle-target,
     #activeScreen .cycle-dots { display: none; }
     #activeScreen .active-controls { margin-left: auto; gap: 5px; flex-shrink: 0; }
-    #activeScreen .active-controls .btn-ghost { padding: 7px 11px; font-size: 12px; }
+    /* Symbol-only controls in the mini bar */
+    #activeScreen .timer-btn { padding: 8px; }
+    #activeScreen .timer-btn .btn-label { display: none; }
+    #activeScreen .timer-btn .btn-icon { display: block; }
+    #activeScreen #pauseBtn .icon-play { display: none; }
+    #activeScreen #pauseBtn.is-paused .icon-pause { display: none; }
+    #activeScreen #pauseBtn.is-paused .icon-play { display: block; }
 
     /* Setup, prompts, and history can't live in a strip — hide the active one
        and show a nudge to grow the window instead of a broken layout. */
@@ -1289,9 +1298,19 @@
       <div class="cycle-target" id="cycleTarget"></div>
       <div class="cycle-dots" id="cycleDots"></div>
       <div class="active-controls">
-        <button class="btn-ghost" id="pauseBtn">Pause</button>
-        <button class="btn-ghost" id="skipBtn">Skip</button>
-        <button class="btn-ghost" id="stopBtn">Stop</button>
+        <button class="btn-ghost timer-btn" id="pauseBtn" aria-label="Pause">
+          <span class="btn-label">Pause</span>
+          <svg class="btn-icon icon-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+          <svg class="btn-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="btn-ghost timer-btn" id="skipBtn" aria-label="Skip">
+          <span class="btn-label">Skip</span>
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5v14l9-7zM16 5h3v14h-3z"/></svg>
+        </button>
+        <button class="btn-ghost timer-btn" id="stopBtn" aria-label="Stop">
+          <span class="btn-label">Stop</span>
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+        </button>
       </div>
     </div>
   </section>
@@ -2277,8 +2296,9 @@ function startRunner() {
 function stopRunner() {
   if (runner) clearInterval(runner);
   runner = null;
-  // No countdown on screen means no countdown in the window title
+  // No countdown running means no countdown in the window title or menu bar
   document.title = 'Focus Cycles';
+  setMenuBar('');
 }
 /*
   timerState = {
@@ -2301,7 +2321,7 @@ function startCycleTimer(cycleIdx) {
     pausedAccumMs: 0, pauseStartedAt: null
   };
   currentFlow = 'active';
-  document.getElementById('pauseBtn').textContent = 'Pause';
+  setPauseUI(false);
   renderActive();
   startRunner();
   showScreen('activeScreen');
@@ -2319,7 +2339,7 @@ function startBreakTimer(cycleIdx) {
     pausedAccumMs: 0, pauseStartedAt: null
   };
   currentFlow = 'active';
-  document.getElementById('pauseBtn').textContent = 'Pause';
+  setPauseUI(false);
   renderActive();
   startRunner();
   showScreen('activeScreen');
@@ -2334,6 +2354,21 @@ function tick() {
   saveActive(); // throttled
 }
 
+// Swap the pause button between Pause and Resume, in both label and icon.
+function setPauseUI(paused) {
+  const btn = document.getElementById('pauseBtn');
+  btn.classList.toggle('is-paused', paused);
+  btn.querySelector('.btn-label').textContent = paused ? 'Resume' : 'Pause';
+  btn.setAttribute('aria-label', paused ? 'Resume' : 'Pause');
+}
+
+// Show the countdown in the macOS menu bar (Electron only). Empty string clears it.
+function setMenuBar(text) {
+  if (window.focusBridge && window.focusBridge.setMenuBarTitle) {
+    window.focusBridge.setMenuBarTitle(text || '');
+  }
+}
+
 let lastTimerRender = '';
 function updateTimerDisplay(ms) {
   const total = Math.max(0, Math.ceil(ms / 1000));
@@ -2341,12 +2376,15 @@ function updateTimerDisplay(ms) {
   const s = total % 60;
   const txt = `${m}:${s.toString().padStart(2, '0')}`;
   // The 250ms tick fires 4x per displayed second; skip identical writes so the
-  // DOM and window title only update when the visible value actually changes.
-  const key = txt + '|' + timerState.phase;
+  // DOM, window title, and menu bar only update when the visible value changes.
+  const key = txt + '|' + timerState.phase + '|' + (timerState.paused ? 'p' : 'r');
   if (key === lastTimerRender) return;
   lastTimerRender = key;
   document.getElementById('timerDisplay').textContent = txt;
-  document.title = `${txt} · ${timerState.phase === 'focus' ? 'Focus' : 'Break'}`;
+  const phaseWord = timerState.phase === 'focus' ? 'Focus' : 'Break';
+  document.title = `${txt} · ${phaseWord}`;
+  const glyph = timerState.paused ? '⏸ ' : (timerState.phase === 'break' ? '☕ ' : '');
+  setMenuBar(glyph + txt);
 }
 
 function renderActive() {
@@ -2428,15 +2466,18 @@ document.getElementById('pauseBtn').addEventListener('click', () => {
     timerState.endsAt = Date.now() + Math.max(0, timerState.pausedRemainingMs || 0);
     endPauseSegment();
     timerState.pausedRemainingMs = null;
-    document.getElementById('pauseBtn').textContent = 'Pause';
+    setPauseUI(false);
     display.classList.remove('paused');
   } else {
     timerState.pausedRemainingMs = Math.max(0, timerState.endsAt - Date.now());
     timerState.paused = true;
     timerState.pauseStartedAt = Date.now();
-    document.getElementById('pauseBtn').textContent = 'Resume';
+    setPauseUI(true);
     display.classList.add('paused');
   }
+  // Reflect the pause/resume glyph in the menu bar immediately
+  lastTimerRender = '';
+  updateTimerDisplay(timerState.paused ? (timerState.pausedRemainingMs || 0) : (timerState.endsAt - Date.now()));
   saveActive(true);
 });
 document.getElementById('skipBtn').addEventListener('click', () => {
@@ -3277,7 +3318,7 @@ function tryResume() {
   if (timerState.paused) {
     timerState.endsAt = Date.now() + (timerState.pausedRemainingMs || 0);
     timerState.pauseStartedAt = Date.now();
-    document.getElementById('pauseBtn').textContent = 'Resume';
+    setPauseUI(true);
     document.getElementById('timerDisplay').classList.add('paused');
     showScreen('activeScreen');
     renderActive();
@@ -3296,7 +3337,7 @@ function tryResume() {
   }
 
   // Timer still running — resume it
-  document.getElementById('pauseBtn').textContent = 'Pause';
+  setPauseUI(false);
   showScreen('activeScreen');
   renderActive();
   startRunner();

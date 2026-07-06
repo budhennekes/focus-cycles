@@ -1,7 +1,25 @@
-const { app, BrowserWindow, Menu, shell, session } = require('electron');
+const { app, BrowserWindow, Menu, Tray, nativeImage, ipcMain, shell, session } = require('electron');
 const path = require('path');
 
 app.setName('Focus Cycles');
+
+// Menu-bar countdown. The tray appears only while a session is running (the
+// renderer sends the time each visible second, and an empty string to clear).
+let tray = null;
+function setMenuBarTitle(text) {
+  if (text) {
+    if (!tray) {
+      tray = new Tray(nativeImage.createEmpty());
+      tray.setToolTip('Focus Cycles');
+      tray.on('click', () => { if (mainWin) { mainWin.show(); mainWin.focus(); } });
+    }
+    tray.setTitle(' ' + text);
+  } else if (tray) {
+    tray.destroy();
+    tray = null;
+  }
+}
+ipcMain.on('menubar-title', (_e, text) => setMenuBarTitle(text));
 
 const isSafeExternalUrl = (url) => {
   try {
@@ -55,6 +73,7 @@ function createWindow() {
     backgroundColor: '#0a0a0a',
     show: false,
     webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
