@@ -1072,6 +1072,61 @@
     .icon-btn span { display: none; }
   }
 
+  /* Mini bar — shrink the window to a strip and the running timer collapses
+     to one readable row you can park in a corner. Kicks in on short windows. */
+  .mini-hint { display: none; }
+  @media (max-height: 240px) {
+    .top-bar, .bottom-bar, .drag-region { display: none; }
+    main { padding: 6px 10px; justify-content: center; }
+    .screen { max-width: 100%; margin: auto 0; }
+
+    #activeScreen .active-screen {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      max-width: 100%;
+      padding: 9px 8px 9px 14px;
+      border-radius: 14px;
+      text-align: left;
+      -webkit-app-region: drag;   /* grab the bar anywhere to move the window */
+    }
+    #activeScreen .phase-tag {
+      margin: 0; flex-shrink: 0;
+      padding: 4px 9px; font-size: 9px; letter-spacing: 0.8px;
+    }
+    #activeScreen .timer-display {
+      font-size: 32px; letter-spacing: -1px; line-height: 1;
+      margin: 0; flex-shrink: 0;
+      animation: none; text-shadow: none;
+    }
+    #activeScreen .cycle-indicator {
+      margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 12px; min-width: 0;
+    }
+    #activeScreen .cycle-target,
+    #activeScreen .cycle-dots { display: none; }
+    #activeScreen .active-controls { margin-left: auto; gap: 5px; flex-shrink: 0; }
+    #activeScreen .active-controls .btn-ghost { padding: 7px 11px; font-size: 12px; }
+
+    /* Setup, prompts, and history can't live in a strip — hide the active one
+       and show a nudge to grow the window instead of a broken layout. */
+    body[data-screen="setupScreen"] #setupScreen,
+    body[data-screen="promptScreen"] #promptScreen,
+    body[data-screen="historyScreen"] #historyScreen { display: none; }
+    body:not([data-screen="activeScreen"]) .mini-hint {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--panel-solid);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 12px;
+      color: var(--text-dim);
+      -webkit-app-region: drag;
+    }
+  }
+
   /* Toast */
   .toast {
     position: fixed; bottom: 80px; left: 50%;
@@ -1302,7 +1357,8 @@
     </div>
   </section>
 
-  <!-- Help / FAQ -->
+  <!-- Shown only in mini-bar mode when no session is running -->
+  <div class="mini-hint">Grow the window to start a session</div>
 
 </main>
 
@@ -2804,6 +2860,7 @@ function showScreen(id) {
     if (s === id) { el.classList.remove('hidden'); void el.offsetWidth; el.classList.add('fade-in'); }
     else el.classList.add('hidden');
   });
+  document.body.dataset.screen = id; // lets mini-bar mode know what's on screen
 }
 
 function currentVisibleScreen() {
@@ -3248,6 +3305,7 @@ function tryResume() {
 }
 function init() {
   applyTheme();
+  document.body.dataset.screen = 'setupScreen'; // default for mini-bar mode
   hydrateSetupFromState();
   setRandomQuote();
   updateProjections();

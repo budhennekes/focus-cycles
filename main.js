@@ -48,8 +48,8 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1100,
     height: 820,
-    minWidth: 640,
-    minHeight: 520,
+    minWidth: 360,
+    minHeight: 96,
     titleBarStyle: 'hiddenInset',
     trafficLightPosition: { x: 16, y: 16 },
     backgroundColor: '#0a0a0a',
