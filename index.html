@@ -1092,7 +1092,13 @@
       border-radius: 14px;
       text-align: left;
       -webkit-app-region: drag;   /* grab the bar anywhere to move the window */
+      /* Without this, grabbing the time text starts a text-selection instead
+         of dragging the window. */
+      -webkit-user-select: none;
+      user-select: none;
+      cursor: grab;
     }
+    #activeScreen .active-screen:active { cursor: grabbing; }
     #activeScreen .phase-tag {
       margin: 0; flex-shrink: 0;
       padding: 4px 9px; font-size: 9px; letter-spacing: 0.8px;
@@ -2521,6 +2527,16 @@ function setCompactWindow(on) {
 document.getElementById('miniBtn').addEventListener('click', () => setCompactWindow(!isMiniActive()));
 // Clicking the "grow the window" hint expands back out too
 document.querySelector('.mini-hint').addEventListener('click', () => setCompactWindow(false));
+
+// Hover-to-solidify: the mini bar is gently translucent, full opacity on hover.
+// Only meaningful in compact mode; a no-op in a plain browser.
+(function () {
+  const bar = document.querySelector('#activeScreen .active-screen');
+  if (!bar) return;
+  const setOpacity = (v) => { if (window.focusBridge && window.focusBridge.setBarOpacity) window.focusBridge.setBarOpacity(v); };
+  bar.addEventListener('mouseenter', () => { if (isMiniActive()) setOpacity(1); });
+  bar.addEventListener('mouseleave', () => { if (isMiniActive()) setOpacity(0.9); });
+})();
 
 /* ============================================================
    END SESSION

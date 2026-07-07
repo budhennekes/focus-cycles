@@ -4,4 +4,5 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('focusBridge', {
   setMenuBarTitle: (text) => ipcRenderer.send('menubar-title', typeof text === 'string' ? text : ''),
   setCompact: (on) => ipcRenderer.send('set-compact', !!on),
+  setBarOpacity: (v) => ipcRenderer.send('bar-opacity', v),
 });

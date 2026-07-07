@@ -19,13 +19,26 @@ function setCompact(on) {
     const x = Math.min(Math.max(b.x, area.x), area.x + area.width - w);
     const y = Math.min(Math.max(b.y, area.y), area.y + area.height - h);
     mainWin.setBounds({ x, y, width: w, height: h }, true);
+    mainWin.setMovable(true);
+    // Float above normal windows, and stay visible across spaces and over
+    // fullscreen apps — the standard for a floating mini widget.
     mainWin.setAlwaysOnTop(true, 'floating');
+    mainWin.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+    mainWin.setOpacity(0.9); // gently translucent; solid on hover (see renderer)
   } else {
     mainWin.setAlwaysOnTop(false);
+    mainWin.setVisibleOnAllWorkspaces(false);
+    mainWin.setOpacity(1);
     if (savedBounds) { mainWin.setBounds(savedBounds, true); savedBounds = null; }
   }
 }
 ipcMain.on('set-compact', (_e, on) => setCompact(!!on));
+
+// Hover-to-solidify: the mini bar sits slightly translucent so it stays out of
+// the way, and goes fully opaque while the pointer is over it.
+ipcMain.on('bar-opacity', (_e, v) => {
+  if (mainWin && isCompact()) mainWin.setOpacity(Math.max(0.5, Math.min(1, Number(v) || 1)));
+});
 
 // Menu-bar countdown. The tray appears only while a session is running (the
 // renderer sends the time each visible second, and an empty string to clear).
