@@ -3,16 +3,22 @@ const path = require('path');
 
 app.setName('Focus Cycles');
 
-// Compact "mini bar" — snap the window to a small always-on-top strip parked
-// in the top-right corner, and restore it to where it was.
+// Compact "mini bar" — shrink the window in place to a small always-on-top
+// strip (so it clearly reads as the same window getting smaller), and restore.
 let savedBounds = null;
+function isCompact() { return savedBounds !== null; }
 function setCompact(on) {
   if (!mainWin) return;
   if (on) {
-    if (!savedBounds) savedBounds = mainWin.getBounds();
-    const area = screen.getDisplayNearestPoint(mainWin.getBounds()).workArea;
+    if (savedBounds) return; // already compact
+    savedBounds = mainWin.getBounds();
+    const b = savedBounds;
     const w = 460, h = 128;
-    mainWin.setBounds({ x: area.x + area.width - w - 20, y: area.y + 20, width: w, height: h }, true);
+    // Anchor the bar near the window's current top edge so it shrinks in place
+    const area = screen.getDisplayNearestPoint(b).workArea;
+    const x = Math.min(Math.max(b.x, area.x), area.x + area.width - w);
+    const y = Math.min(Math.max(b.y, area.y), area.y + area.height - h);
+    mainWin.setBounds({ x, y, width: w, height: h }, true);
     mainWin.setAlwaysOnTop(true, 'floating');
   } else {
     mainWin.setAlwaysOnTop(false);
@@ -23,8 +29,12 @@ ipcMain.on('set-compact', (_e, on) => setCompact(!!on));
 
 // Menu-bar countdown. The tray appears only while a session is running (the
 // renderer sends the time each visible second, and an empty string to clear).
+// The non-empty title also tells us a timer is active, which drives the
+// "minimize turns into the mini bar" behavior below.
 let tray = null;
+let sessionRunning = false;
 function setMenuBarTitle(text) {
+  sessionRunning = !!text;
   if (text) {
     if (!tray) {
       tray = new Tray(nativeImage.createEmpty());
@@ -102,6 +112,18 @@ function createWindow() {
 
   mainWin = win;
   win.on('closed', () => { if (mainWin === win) mainWin = null; });
+
+  // Make the yellow minimize button (and Cmd+M) do what people expect here:
+  // during a session it turns the window into the mini bar instead of hiding
+  // it in the Dock. The 'minimize' event isn't cancelable, so we bounce it
+  // back out and shrink instead. With no active session it minimizes normally.
+  win.on('minimize', () => {
+    if (sessionRunning && !isCompact()) {
+      win.restore();
+      setCompact(true);
+    }
+  });
+
   win.loadFile(path.join(__dirname, 'index.html'));
   win.once('ready-to-show', () => win.show());
 

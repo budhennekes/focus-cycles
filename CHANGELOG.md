@@ -5,7 +5,7 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 ## [Unreleased]
 
 ### Added
-- **Mini button.** During a session, a Mini button snaps the window to a small always-on-top bar parked in the top-right corner, so the timer floats over whatever you're working in. Click it again (or the bar) to expand. Ends a session and it pops back to full size on its own.
+- **Mini bar.** During a session, the window can shrink to a small always-on-top strip that floats over whatever you're working in. Two ways in: the **yellow minimize button** (or Cmd+M) now turns the window into the bar instead of hiding it in the Dock, and there's a **Mini button** in the timer controls. It shrinks in place so it clearly reads as the same window. Click the expand arrows (or the Mini button) to restore, and a session ending pops it back to full size on its own.
 - A little whimsy. Finishing a session sends up a soft burst of sparks and a warm, varied sign-off line instead of the same message every time, with special notes for your first session and streak milestones (3, 7, 14, 30, 50, 100 days). The sprint prompt now rotates through friendlier examples. All of it honors reduced-motion.
 
 ## [1.0.2] — 2026-07-06
