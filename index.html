@@ -2018,7 +2018,7 @@ function showSprintStart() {
     <div class="phase-tag focus" style="display: block; text-align: center; margin: 0 auto 14px; width: fit-content;">BEFORE YOU START</div>
     <h2 class="prompt-title">What are you trying to accomplish?</h2>
     <p class="prompt-sub">One sentence. Make it concrete.</p>
-    ${fieldTextarea('sprint_goal', '', 'e.g. Draft the hero section for the landing page', '', 2)}
+    ${fieldTextarea('sprint_goal', '', 'e.g. ' + sprintExample(), '', 2)}
     <div class="prompt-actions">
       <button class="btn-ghost" id="sprintSkipBtn">Skip</button>
       <button class="btn-primary" id="sprintStartBtn">Start the sprint</button>
@@ -2524,7 +2524,10 @@ function endSession(completed) {
   updateProjections();
   renderIntent();
   showScreen('setupScreen');
-  if (completed) showToast('Session complete. Nice work.');
+  if (completed) {
+    showToast(completionMessage());
+    setTimeout(celebrate, 140); // let the setup screen settle in first
+  }
 }
 
 /* Cancel from any prompt screen — saves whatever's already completed, abandons rest */
@@ -3175,6 +3178,113 @@ function showToast(msg) {
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ============================================================
+   WHIMSY — small delights at the moments that earn them
+============================================================ */
+
+// Warm, characterful lines for finishing a session. Picked at random unless a
+// milestone takes precedence.
+const COMPLETION_LINES = [
+  "That's real work, banked.",
+  "Deep work, done. Go stretch.",
+  "You showed up. That's the whole trick.",
+  "Nicely done. The hard part is behind you.",
+  "Future you says thanks.",
+  "A good dent in it. Rest earned.",
+  "Focus held all the way through.",
+  "That's how the good days are built.",
+  "Momentum, earned the honest way.",
+  "Cycles closed. Mind a little clearer."
+];
+
+// Rotating, slightly characterful examples for the sprint prompt.
+const SPRINT_EXAMPLES = [
+  'Draft the hero section for the landing page',
+  'Outline the deck, no polishing yet',
+  'Reply to the three emails I keep avoiding',
+  'Write the first ugly draft, all the way through',
+  'Untangle that one function that scares me',
+  'Sketch the plan I keep saying I will make',
+  'Read the doc and take real notes',
+  'Ship the thing that is 90 percent done'
+];
+function sprintExample() {
+  return SPRINT_EXAMPLES[Math.floor(Math.random() * SPRINT_EXAMPLES.length)];
+}
+
+function completionMessage() {
+  const completedSessions = state.sessions.filter(s => s.cycles.some(c => c.completed));
+  if (completedSessions.length === 1) return 'Your very first session, logged. This is how it compounds.';
+  const streak = computeStreak(allCompletedCycles());
+  const milestones = {
+    3: 'Three days running. A habit is taking shape.',
+    7: 'A full week of showing up. Rare air.',
+    14: 'Two weeks straight. This is who you are now.',
+    30: 'Thirty days. A different worker than you were.',
+    50: 'Fifty days. Quietly remarkable.',
+    100: 'One hundred days. Genuinely legendary.'
+  };
+  if (milestones[streak]) return milestones[streak];
+  return COMPLETION_LINES[Math.floor(Math.random() * COMPLETION_LINES.length)];
+}
+
+// A soft upward drift of sparks — embers, not a confetti cannon. One-shot
+// canvas that cleans itself up. Honors reduced-motion by simply not firing.
+function celebrate() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:200';
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = innerWidth * dpr;
+  canvas.height = innerHeight * dpr;
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const colors = ['#60a5fa', '#3b82f6', '#fbbf77', '#ffffff', '#93c5fd'];
+  const cx = innerWidth / 2, cy = innerHeight * 0.42;
+  const N = 46;
+  const parts = Array.from({ length: N }, () => {
+    const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.7; // fan upward
+    const speed = 2 + Math.random() * 5;
+    return {
+      x: cx + (Math.random() - 0.5) * 40,
+      y: cy + (Math.random() - 0.5) * 20,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      r: 2 + Math.random() * 3,
+      color: colors[(Math.random() * colors.length) | 0],
+      life: 1
+    };
+  });
+
+  let raf;
+  const start = performance.now();
+  function frame(now) {
+    const t = now - start;
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    let alive = false;
+    for (const p of parts) {
+      p.vy += 0.07;          // gentle gravity
+      p.vx *= 0.99;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life = Math.max(0, 1 - t / 1500);
+      if (p.life > 0) {
+        alive = true;
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    if (alive) { raf = requestAnimationFrame(frame); }
+    else { cancelAnimationFrame(raf); canvas.remove(); }
+  }
+  raf = requestAnimationFrame(frame);
 }
 
 /* ============================================================

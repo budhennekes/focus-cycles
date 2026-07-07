@@ -42,7 +42,10 @@ for (const marker of [
   'function setMusicMode',
   'id="musicMenu"',
   "musicMode = 'off'",
-  'Pre-paint theme resolution'
+  'Pre-paint theme resolution',
+  'function celebrate()',
+  'function completionMessage()',
+  'function sprintExample()'
 ]) {
   if (!html.includes(marker)) throw new Error(`Expected hardening/history marker missing: ${marker}`);
 }
