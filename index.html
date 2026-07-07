@@ -1132,8 +1132,10 @@
       padding: 10px 16px;
       font-size: 12px;
       color: var(--text-dim);
-      -webkit-app-region: drag;
+      cursor: pointer;
+      -webkit-app-region: no-drag;
     }
+    body:not([data-screen="activeScreen"]) .mini-hint:hover { color: var(--text); }
   }
 
   /* Toast */
@@ -1311,6 +1313,10 @@
           <span class="btn-label">Stop</span>
           <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
         </button>
+        <button class="btn-ghost timer-btn" id="miniBtn" aria-label="Mini bar" title="Shrink to a mini bar">
+          <span class="btn-label">Mini</span>
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        </button>
       </div>
     </div>
   </section>
@@ -1377,7 +1383,7 @@
   </section>
 
   <!-- Shown only in mini-bar mode when no session is running -->
-  <div class="mini-hint">Grow the window to start a session</div>
+  <div class="mini-hint" title="Click to expand">Click to expand the window</div>
 
 </main>
 
@@ -2505,6 +2511,17 @@ document.getElementById('stopBtn').addEventListener('click', () => {
 
 startBtn.addEventListener('click', startFlow);
 
+/* Mini bar — snap the window to a small always-on-top strip and back.
+   The CSS mini layout is height-driven, so this works together with any
+   manual resize. Falls back to a no-op in a plain browser (no bridge). */
+function isMiniActive() { return matchMedia('(max-height: 240px)').matches; }
+function setCompactWindow(on) {
+  if (window.focusBridge && window.focusBridge.setCompact) window.focusBridge.setCompact(on);
+}
+document.getElementById('miniBtn').addEventListener('click', () => setCompactWindow(!isMiniActive()));
+// Clicking the "grow the window" hint expands back out too
+document.querySelector('.mini-hint').addEventListener('click', () => setCompactWindow(false));
+
 /* ============================================================
    END SESSION
 ============================================================ */
@@ -2519,6 +2536,7 @@ function endSession(completed) {
   timerState = null;
   currentFlow = null;
   clearActive();
+  setCompactWindow(false); // never leave the user stranded in the tiny bar
   document.title = 'Focus Cycles';
   setRandomQuote();
   updateProjections();

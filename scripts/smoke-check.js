@@ -45,7 +45,10 @@ for (const marker of [
   'Pre-paint theme resolution',
   'function celebrate()',
   'function completionMessage()',
-  'function sprintExample()'
+  'function sprintExample()',
+  'id="miniBtn"',
+  'function setCompactWindow(on)',
+  'function isMiniActive()'
 ]) {
   if (!html.includes(marker)) throw new Error(`Expected hardening/history marker missing: ${marker}`);
 }

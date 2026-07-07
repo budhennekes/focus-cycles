@@ -1,7 +1,25 @@
-const { app, BrowserWindow, Menu, Tray, nativeImage, ipcMain, shell, session } = require('electron');
+const { app, BrowserWindow, Menu, Tray, nativeImage, ipcMain, screen, shell, session } = require('electron');
 const path = require('path');
 
 app.setName('Focus Cycles');
+
+// Compact "mini bar" — snap the window to a small always-on-top strip parked
+// in the top-right corner, and restore it to where it was.
+let savedBounds = null;
+function setCompact(on) {
+  if (!mainWin) return;
+  if (on) {
+    if (!savedBounds) savedBounds = mainWin.getBounds();
+    const area = screen.getDisplayNearestPoint(mainWin.getBounds()).workArea;
+    const w = 460, h = 128;
+    mainWin.setBounds({ x: area.x + area.width - w - 20, y: area.y + 20, width: w, height: h }, true);
+    mainWin.setAlwaysOnTop(true, 'floating');
+  } else {
+    mainWin.setAlwaysOnTop(false);
+    if (savedBounds) { mainWin.setBounds(savedBounds, true); savedBounds = null; }
+  }
+}
+ipcMain.on('set-compact', (_e, on) => setCompact(!!on));
 
 // Menu-bar countdown. The tray appears only while a session is running (the
 // renderer sends the time each visible second, and an empty string to clear).
