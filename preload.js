@@ -5,4 +5,7 @@ contextBridge.exposeInMainWorld('focusBridge', {
   setMenuBarTitle: (text) => ipcRenderer.send('menubar-title', typeof text === 'string' ? text : ''),
   setCompact: (on) => ipcRenderer.send('set-compact', !!on),
   setBarOpacity: (v) => ipcRenderer.send('bar-opacity', v),
+  dragStart: () => ipcRenderer.send('drag-start'),
+  dragMove: (dx, dy) => ipcRenderer.send('drag-move', dx, dy),
+  dragEnd: () => ipcRenderer.send('drag-end'),
 });

@@ -40,6 +40,21 @@ ipcMain.on('bar-opacity', (_e, v) => {
   if (mainWin && isCompact()) mainWin.setOpacity(Math.max(0.5, Math.min(1, Number(v) || 1)));
 });
 
+// Manual drag: the renderer captures the pointer and streams deltas from the
+// position where the drag began. Moving from a fixed origin avoids drift.
+let dragOrigin = null;
+ipcMain.on('drag-start', () => { if (mainWin) dragOrigin = mainWin.getBounds(); });
+ipcMain.on('drag-move', (_e, dx, dy) => {
+  if (!mainWin || !dragOrigin) return;
+  mainWin.setBounds({
+    x: Math.round(dragOrigin.x + (Number(dx) || 0)),
+    y: Math.round(dragOrigin.y + (Number(dy) || 0)),
+    width: dragOrigin.width,
+    height: dragOrigin.height
+  });
+});
+ipcMain.on('drag-end', () => { dragOrigin = null; });
+
 // Menu-bar countdown. The tray appears only while a session is running (the
 // renderer sends the time each visible second, and an empty string to clear).
 // The non-empty title also tells us a timer is active, which drives the
