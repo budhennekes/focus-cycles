@@ -5,6 +5,9 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 ## [Unreleased]
 
 ### Added
+- **Browse or hide the quote.** Hover the quote to get ‹ › arrows (or click it) to scroll through them. A new gear button in the bottom bar lets you turn the quote off entirely.
+- **Hide today's main task.** The same gear menu toggles the "What's today's main thing?" pill on or off. Both choices are remembered.
+
 - **Mini bar.** During a session, the window can shrink to a small floating strip that stays on top of your other apps (and across spaces and fullscreen). Two ways in: the **yellow minimize button** (or Cmd+M) turns the window into the bar instead of hiding it in the Dock, and there's a **Mini button** in the timer controls. It shrinks in place, is **draggable** (grab it anywhere but the buttons), and sits gently translucent so it stays out of the way, going fully solid when you hover it. Click the expand arrows to restore; a session ending pops it back to full size on its own.
 - A little whimsy. Finishing a session sends up a soft burst of sparks and a warm, varied sign-off line instead of the same message every time, with special notes for your first session and streak milestones (3, 7, 14, 30, 50, 100 days). The sprint prompt now rotates through friendlier examples. All of it honors reduced-motion.
 

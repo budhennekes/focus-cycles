@@ -48,7 +48,12 @@ for (const marker of [
   'function sprintExample()',
   'id="miniBtn"',
   'function setCompactWindow(on)',
-  'function isMiniActive()'
+  'function isMiniActive()',
+  'id="prefsMenu"',
+  'function applyDisplayPrefs()',
+  'function setQuote(i)',
+  'id="quotePrev"',
+  'id="quoteNext"'
 ]) {
   if (!html.includes(marker)) throw new Error(`Expected hardening/history marker missing: ${marker}`);
 }

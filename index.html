@@ -375,15 +375,31 @@
     -webkit-backdrop-filter: blur(20px) saturate(160%);
     border: 1px solid var(--panel-border);
     border-radius: 14px;
-    padding: 14px 18px;
+    padding: 14px 10px;
     margin: 0 auto 32px;
     max-width: 600px;
     font-size: 14px;
     line-height: 1.5;
     color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 4px;
   }
-  .quote-chip .q { color: var(--text); }
-  .quote-chip .author { display: block; margin-top: 4px; font-size: 12px; color: var(--text-faint); }
+  .quote-chip.hidden { display: none; }
+  .quote-body { flex: 1; padding: 0 8px; cursor: pointer; }
+  .quote-body .q { color: var(--text); }
+  .quote-body .author { display: block; margin-top: 4px; font-size: 12px; color: var(--text-faint); }
+  .quote-nav {
+    flex-shrink: 0;
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    font-size: 18px; line-height: 1;
+    color: var(--text-faint);
+    opacity: 0;
+    transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+  .quote-chip:hover .quote-nav { opacity: 1; }
+  .quote-nav:hover { background: var(--panel-input); color: var(--text); }
 
   .card {
     background: var(--panel);
@@ -1234,7 +1250,11 @@
       </div>
     </div>
 
-    <div class="quote-chip" id="quoteChip"></div>
+    <div class="quote-chip" id="quoteChip">
+      <button class="quote-nav" id="quotePrev" aria-label="Previous quote">‹</button>
+      <div class="quote-body" id="quoteBody"></div>
+      <button class="quote-nav" id="quoteNext" aria-label="Next quote">›</button>
+    </div>
 
     <div class="card">
       <div class="section-label">How many focus cycles?</div>
@@ -1416,6 +1436,15 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
   </button>
   <div class="music-wrap">
+    <div id="prefsMenu" class="music-menu hidden" role="menu" aria-label="Display options">
+      <button data-pref="quotes" role="menuitem">Quotes</button>
+      <button data-pref="intent" role="menuitem">Today's main task</button>
+    </div>
+    <button class="icon-btn icon-only" id="prefsBtn" title="Display options">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </div>
+  <div class="music-wrap">
     <div id="musicMenu" class="music-menu hidden" role="menu" aria-label="Focus sound">
       <button data-mode="off" role="menuitem">Off</button>
       <button data-mode="lofi" role="menuitem">Lofi</button>
@@ -1470,7 +1499,9 @@ const defaultState = {
     theme: null, // null = follow system, 'dark' | 'light' = manual
     bgIndex: 0,
     musicMode: 'off',
-    musicLast: 'lofi'
+    musicLast: 'lofi',
+    showQuotes: true,
+    showIntent: true
   }
 };
 
@@ -1750,11 +1781,17 @@ const QUOTES = [
   { q: "What you do every day matters more than what you do once in a while.", a: "Gretchen Rubin" },
   { q: "The art of being wise is the art of knowing what to overlook.", a: "William James" }
 ];
-function setRandomQuote() {
-  const q = QUOTES[Math.floor(Math.random() * QUOTES.length)];
-  document.getElementById('quoteChip').innerHTML =
+let quoteIndex = 0;
+function setQuote(i) {
+  quoteIndex = ((i % QUOTES.length) + QUOTES.length) % QUOTES.length;
+  const q = QUOTES[quoteIndex];
+  document.getElementById('quoteBody').innerHTML =
     `<span class="q">"${q.q}"</span><span class="author">${q.a}</span>`;
 }
+function setRandomQuote() { setQuote(Math.floor(Math.random() * QUOTES.length)); }
+document.getElementById('quotePrev').addEventListener('click', () => setQuote(quoteIndex - 1));
+document.getElementById('quoteNext').addEventListener('click', () => setQuote(quoteIndex + 1));
+document.getElementById('quoteBody').addEventListener('click', () => setQuote(quoteIndex + 1));
 
 /* ============================================================
    CLOCK
@@ -3008,6 +3045,38 @@ document.getElementById('bgFileInput').addEventListener('change', (e) => {
 });
 document.addEventListener('click', () => toggleBgMenu(false));
 
+/* Display preferences — show/hide the quote and the "today's main task" pill */
+function applyDisplayPrefs() {
+  document.getElementById('quoteChip').classList.toggle('hidden', state.settings.showQuotes === false);
+  document.getElementById('intentRow').style.display = state.settings.showIntent === false ? 'none' : '';
+}
+const prefsMenu = document.getElementById('prefsMenu');
+function renderPrefsMenu() {
+  prefsMenu.querySelector('[data-pref="quotes"]').classList.toggle('selected', state.settings.showQuotes !== false);
+  prefsMenu.querySelector('[data-pref="intent"]').classList.toggle('selected', state.settings.showIntent !== false);
+}
+function togglePrefsMenu(force) {
+  const show = force !== undefined ? force : prefsMenu.classList.contains('hidden');
+  if (show) renderPrefsMenu();
+  prefsMenu.classList.toggle('hidden', !show);
+}
+document.getElementById('prefsBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  toggleMusicMenu(false); toggleBgMenu(false);
+  togglePrefsMenu();
+});
+prefsMenu.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const btn = e.target.closest('[data-pref]');
+  if (!btn) return;
+  const key = btn.dataset.pref === 'quotes' ? 'showQuotes' : 'showIntent';
+  state.settings[key] = state.settings[key] === false ? true : false;
+  saveState();
+  applyDisplayPrefs();
+  renderPrefsMenu();
+});
+document.addEventListener('click', () => togglePrefsMenu(false));
+
 document.getElementById('themeBtn').addEventListener('click', toggleTheme);
 
 /* Shortcuts overlay — any key or click dismisses */
@@ -3529,6 +3598,7 @@ function init() {
   renderIntent();
   maybeShowFirstRun();
   maybeHideCredit();
+  applyDisplayPrefs();
   // Music never autoplays across launches (browsers block it and surprise
   // audio is bad UX) — it's a per-sitting choice, so reset to off.
   state.settings.musicMode = 'off';
@@ -3587,9 +3657,10 @@ function init() {
     else if (e.key === 'h' || e.key === 'H') { document.getElementById('historyBtn').click(); }
     else if (e.key === 't' || e.key === 'T') { toggleTheme(); }
     else if (e.key === 'Escape') {
-      if (!musicMenu.classList.contains('hidden') || !bgMenu.classList.contains('hidden')) {
+      if (!musicMenu.classList.contains('hidden') || !bgMenu.classList.contains('hidden') || !prefsMenu.classList.contains('hidden')) {
         toggleMusicMenu(false);
         toggleBgMenu(false);
+        togglePrefsMenu(false);
       } else if (!document.getElementById('historyScreen').classList.contains('hidden')) {
         document.getElementById('closeHistoryBtn').click();
       } else if (!document.getElementById('promptScreen').classList.contains('hidden')) {
