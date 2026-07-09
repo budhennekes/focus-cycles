@@ -682,6 +682,53 @@
     .timer-display, .cycle-dot.current::after { animation: none; }
   }
 
+  /* Breathing pacer — a calm signature moment during breaks. Hidden otherwise. */
+  .active-screen > *:not(.breathe-orb-wrap) { position: relative; z-index: 1; }
+  .breathe-orb-wrap {
+    position: absolute;
+    top: 46%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px; height: 300px;
+    display: none;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .breathe-orb {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(110,231,167,0.28) 0%, rgba(96,165,250,0.14) 45%, rgba(96,165,250,0) 72%);
+    animation: breatheOrb 10s ease-in-out infinite;
+  }
+  @keyframes breatheOrb {
+    0%   { transform: scale(0.78); opacity: 0.5; }
+    40%  { transform: scale(1.12); opacity: 1; }
+    100% { transform: scale(0.78); opacity: 0.5; }
+  }
+  .breathe-caption {
+    display: none;
+    position: relative;
+    height: 16px;
+    margin: -6px 0 14px;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.4px;
+    color: var(--ok);
+  }
+  .breathe-caption span { position: absolute; left: 0; right: 0; }
+  .breathe-caption .bi { animation: breatheInLabel 10s ease-in-out infinite; }
+  .breathe-caption .bo { animation: breatheOutLabel 10s ease-in-out infinite; }
+  @keyframes breatheInLabel  { 0%,34% { opacity: 1 } 42%,100% { opacity: 0 } }
+  @keyframes breatheOutLabel { 0%,40% { opacity: 0 } 48%,92% { opacity: 1 } 100% { opacity: 0 } }
+
+  /* Only reveal it on the break screen */
+  .active-screen.breaking .breathe-orb-wrap,
+  .active-screen.breaking .breathe-caption { display: block; }
+  body.window-idle .breathe-orb,
+  body.window-idle .breathe-caption span { animation-play-state: paused; }
+  @media (prefers-reduced-motion: reduce) {
+    .breathe-orb { animation: none; transform: scale(1); opacity: 0.8; }
+    .breathe-caption .bo { display: none; }
+    .breathe-caption .bi { animation: none; opacity: 1; }
+  }
+
   .active-controls { display: flex; gap: 12px; justify-content: center; }
   .btn-ghost {
     background: var(--panel);
@@ -1155,7 +1202,9 @@
       font-size: 12px; min-width: 0;
     }
     #activeScreen .cycle-target,
-    #activeScreen .cycle-dots { display: none; }
+    #activeScreen .cycle-dots,
+    #activeScreen .breathe-orb-wrap,
+    #activeScreen .breathe-caption { display: none !important; }
     #activeScreen .active-controls { margin-left: auto; gap: 5px; flex-shrink: 0; }
     /* Symbol-only controls in the mini bar */
     #activeScreen .timer-btn { padding: 8px; }
@@ -1345,10 +1394,12 @@
   <!-- Active -->
   <section id="activeScreen" class="screen hidden">
     <div class="active-screen">
+      <div class="breathe-orb-wrap" aria-hidden="true"><div class="breathe-orb"></div></div>
       <div class="phase-tag focus" id="phaseTag">FOCUS</div>
       <div class="timer-display" id="timerDisplay">30:00</div>
       <div class="cycle-indicator" id="cycleIndicator">Cycle 1 of 5</div>
       <div class="cycle-target" id="cycleTarget"></div>
+      <div class="breathe-caption" aria-hidden="true"><span class="bi">Breathe in</span><span class="bo">and out</span></div>
       <div class="cycle-dots" id="cycleDots"></div>
       <div class="active-controls">
         <button class="btn-ghost timer-btn" id="pauseBtn" aria-label="Pause">
@@ -2465,6 +2516,10 @@ function renderActive() {
   const tag = document.getElementById('phaseTag');
   tag.className = 'phase-tag ' + timerState.phase;
   tag.textContent = timerState.phase.toUpperCase();
+
+  // Breathing pacer appears only during breaks
+  document.querySelector('#activeScreen .active-screen')
+    .classList.toggle('breaking', timerState.phase === 'break');
 
   const n = timerState.cycleIdx + 1;
   document.getElementById('cycleIndicator').textContent =
