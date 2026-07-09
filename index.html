@@ -122,7 +122,11 @@
     pointer-events: none;
   }
   .top-bar > * { pointer-events: auto; }
-  .top-right { display: flex; align-items: flex-start; gap: 12px; }
+  /* Equal-height chips so their tops and bottoms line up. The weather chip
+     lives inside #weatherSlot, so the slot must pass the stretch through. */
+  .top-right { display: flex; align-items: stretch; gap: 12px; }
+  .top-right .clock-chip { display: flex; flex-direction: column; justify-content: center; }
+  #weatherSlot { display: flex; }
 
   /* Small brand mark, top-left corner */
   .brand-mark {
