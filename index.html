@@ -1173,17 +1173,27 @@
      to one readable row you can park in a corner. Kicks in on short windows. */
   .mini-hint { display: none; }
   @media (max-height: 240px) {
-    .top-bar, .bottom-bar, .drag-region { display: none; }
-    main { padding: 6px 10px; justify-content: center; }
-    .screen { max-width: 100%; margin: auto 0; }
+    /* Clean, solid bar — no photo, no grain, fills the window edge to edge
+       (macOS rounds the window corners for us). */
+    .top-bar, .bottom-bar, .drag-region,
+    .bg-layer, .bg-gradient, .overlay { display: none; }
+    main { padding: 0; justify-content: center; }
+    .screen { max-width: 100%; margin: 0; width: 100%; height: 100%; }
+    #activeScreen { height: 100%; }
 
     #activeScreen .active-screen {
       display: flex;
       align-items: center;
-      gap: 12px;
-      max-width: 100%;
-      padding: 9px 8px 9px 14px;
-      border-radius: 14px;
+      gap: 11px;
+      width: 100%; height: 100%;
+      max-width: none;
+      padding: 0 8px 0 15px;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      background: var(--panel-solid);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
       text-align: left;
       /* Dragging is handled in JS (pointer capture) for reliability, so no
          text selection should ever start when grabbing the bar. */
@@ -1191,13 +1201,14 @@
       user-select: none;
       cursor: grab;
     }
+    #activeScreen .active-screen::after { display: none; } /* no grain in the bar */
     #activeScreen .active-screen.dragging { cursor: grabbing; }
     #activeScreen .phase-tag {
       margin: 0; flex-shrink: 0;
       padding: 4px 9px; font-size: 9px; letter-spacing: 0.8px;
     }
     #activeScreen .timer-display {
-      font-size: 32px; letter-spacing: -1px; line-height: 1;
+      font-size: 30px; letter-spacing: -1px; line-height: 1;
       margin: 0; flex-shrink: 0;
       animation: none; text-shadow: none;
     }

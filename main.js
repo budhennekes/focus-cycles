@@ -13,7 +13,7 @@ function setCompact(on) {
     if (savedBounds) return; // already compact
     savedBounds = mainWin.getBounds();
     const b = savedBounds;
-    const w = 460, h = 128;
+    const w = 420, h = 88;
     // Anchor the bar near the window's current top edge so it shrinks in place
     const area = screen.getDisplayNearestPoint(b).workArea;
     const x = Math.min(Math.max(b.x, area.x), area.x + area.width - w);
@@ -123,7 +123,7 @@ function createWindow() {
     width: 1100,
     height: 820,
     minWidth: 360,
-    minHeight: 96,
+    minHeight: 80,
     titleBarStyle: 'hiddenInset',
     trafficLightPosition: { x: 16, y: 16 },
     backgroundColor: '#0a0a0a',
