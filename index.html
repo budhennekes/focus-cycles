@@ -122,6 +122,33 @@
     pointer-events: none;
   }
   .top-bar > * { pointer-events: auto; }
+  .top-right { display: flex; align-items: flex-start; gap: 12px; }
+
+  /* Small brand mark, top-left corner */
+  .brand-mark {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--panel);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 8px 13px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  .brand-mark-icon { width: 18px; height: 18px; color: var(--accent-2); flex-shrink: 0; }
+  .brand-mark-text {
+    font-size: 14px; font-weight: 600; letter-spacing: -0.3px; line-height: 1;
+    color: var(--text); white-space: nowrap;
+  }
+  .brand-mark-text span { font-weight: 400; opacity: 0.8; }
+  /* In the Mac app the traffic lights sit top-left; nudge the mark clear of them */
+  body.is-electron .brand-mark { margin-left: 60px; }
+  @media (max-width: 540px) {
+    .brand-mark-text { display: none; }
+    body.is-electron .brand-mark { margin-left: 62px; }
+  }
 
   .chip {
     background: var(--panel);
@@ -1205,11 +1232,21 @@
 <div class="drag-region" aria-hidden="true"></div>
 
 <div class="top-bar">
-  <div class="chip clock-chip">
-    <div class="time" id="clockTime">--:--</div>
-    <div class="date" id="clockDate">--</div>
+  <div class="brand-mark" id="brandMark" title="Focus Cycles">
+    <svg class="brand-mark-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="23 4 23 10 17 10"/>
+      <polyline points="1 20 1 14 7 14"/>
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+    </svg>
+    <span class="brand-mark-text">Focus <span>Cycles</span></span>
   </div>
-  <div id="weatherSlot"></div>
+  <div class="top-right">
+    <div class="chip clock-chip">
+      <div class="time" id="clockTime">--:--</div>
+      <div class="date" id="clockDate">--</div>
+    </div>
+    <div id="weatherSlot"></div>
+  </div>
 </div>
 
 <main>
@@ -1236,17 +1273,6 @@
         <span class="intent-mark">✦</span>
         <input type="text" class="intent-input" id="intentInput" placeholder="What's today's main thing?" maxlength="120">
         <button class="intent-save" id="intentSaveBtn">Set</button>
-      </div>
-    </div>
-
-    <div class="brand-row">
-      <div class="brand">
-        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="23 4 23 10 17 10"/>
-          <polyline points="1 20 1 14 7 14"/>
-          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-        </svg>
-        <h1 class="brand-text">Focus <span class="brand-accent">Cycles</span></h1>
       </div>
     </div>
 
@@ -3590,6 +3616,7 @@ function tryResume() {
 }
 function init() {
   applyTheme();
+  if (/Electron/i.test(navigator.userAgent)) document.body.classList.add('is-electron');
   document.body.dataset.screen = 'setupScreen'; // default for mini-bar mode
   hydrateSetupFromState();
   setRandomQuote();
