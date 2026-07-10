@@ -373,6 +373,12 @@
     margin-left: 4px;
   }
   .intent-edit:hover { color: var(--text-dim); }
+  .intent-hide {
+    color: var(--text-faint);
+    font-size: 16px; line-height: 1;
+    padding: 0 2px; margin-left: 2px;
+  }
+  .intent-hide:hover { color: var(--text-dim); }
   .intent-pill-form { min-width: 360px; }
   .intent-input {
     flex: 1;
@@ -1099,8 +1105,8 @@
   }
   .bg-swatch:hover { transform: scale(1.1); }
   .bg-swatch.selected { outline: 2px solid var(--accent-3); outline-offset: 1.5px; }
-  /* A solid color is a clean flat fill — drop the photo vignette overlay */
-  body.solid-bg .overlay { display: none; }
+  /* A color/gradient fill is clean on its own — drop the photo vignette overlay */
+  body.fill-bg .overlay { display: none; }
 
   /* Music picker — small menu above the button, direct selection */
   .music-wrap { position: relative; display: inline-flex; }
@@ -1350,11 +1356,13 @@
         <span class="intent-label">Today:</span>
         <span class="intent-text" id="intentText"></span>
         <button class="intent-edit" id="intentEditBtn" aria-label="Edit intent">Edit</button>
+        <button class="intent-hide" aria-label="Hide" title="Hide (turn back on in the gear menu)">×</button>
       </div>
       <div id="intentForm" class="intent-pill intent-pill-form">
         <span class="intent-mark">✦</span>
         <input type="text" class="intent-input" id="intentInput" placeholder="What's today's main thing?" maxlength="120">
         <button class="intent-save" id="intentSaveBtn">Set</button>
+        <button class="intent-hide" aria-label="Hide" title="Hide (turn back on in the gear menu)">×</button>
       </div>
     </div>
 
@@ -1579,7 +1587,9 @@
       <button data-bg="next" role="menuitem">Next photo</button>
       <button data-bg="add" role="menuitem">Add your photos…</button>
       <button data-bg="builtin" role="menuitem" id="bgBuiltinBtn" style="display: none;">Use built-in set</button>
-      <div class="bg-swatch-label">Solid color</div>
+      <div class="bg-swatch-label">Gradients</div>
+      <div class="bg-swatches" id="bgGradients"></div>
+      <div class="bg-swatch-label">Solid colors</div>
       <div class="bg-swatches" id="bgSwatches"></div>
     </div>
     <button class="icon-btn" id="bgBtn" title="Background · B for next">
@@ -1614,11 +1624,13 @@ const defaultState = {
     musicLast: 'lofi',
     showQuotes: true,
     showIntent: true,
-    solidColor: null
+    bgFill: null   // a solid color or a gradient, used instead of a photo
   }
 };
 
 let state = loadState();
+// Migrate the old solidColor setting into the unified bgFill
+if (state.settings.solidColor && !state.settings.bgFill) state.settings.bgFill = state.settings.solidColor;
 
 function loadState() {
   try {
@@ -1841,11 +1853,23 @@ async function initBackgrounds() {
   }
   document.getElementById('bgBuiltinBtn').style.display = custom.length ? '' : 'none';
   activeBgIndex = Math.min(state.settings.bgIndex || 0, BACKGROUNDS.length - 1);
-  if (state.settings.solidColor) setSolidColor(state.settings.solidColor);
+  if (state.settings.bgFill) setFill(state.settings.bgFill);
   else setBackground(activeBgIndex);
 }
 
-/* Solid-color backgrounds — a clean flat fill instead of a photo. */
+/* Fill backgrounds — a clean gradient or solid color instead of a photo. */
+const GRADIENTS = [
+  { name: 'Deep sea',     css: 'linear-gradient(160deg, #001e3c 0%, #003b6f 100%)' },
+  { name: 'Midnight teal',css: 'linear-gradient(160deg, #0f2027 0%, #203a43 55%, #2c5364 100%)' },
+  { name: 'Cosmos',       css: 'linear-gradient(160deg, #0f0c29 0%, #302b63 55%, #24243e 100%)' },
+  { name: 'Aubergine',    css: 'linear-gradient(160deg, #1f1c2c 0%, #3b2a4d 100%)' },
+  { name: 'Ember',        css: 'linear-gradient(160deg, #221410 0%, #4a2a1e 100%)' },
+  { name: 'Forest',       css: 'linear-gradient(160deg, #0b2018 0%, #1d3b2a 100%)' },
+  { name: 'Dusk rose',    css: 'linear-gradient(160deg, #2b1b2e 0%, #5c3a52 100%)' },
+  { name: 'Steel',        css: 'linear-gradient(160deg, #1c1f26 0%, #2d333f 100%)' },
+  { name: 'Twilight',     css: 'linear-gradient(160deg, #2c3e73 0%, #3f5c8a 100%)' },
+  { name: 'Sand',         css: 'linear-gradient(160deg, #d9c9a8 0%, #b79d76 100%)' }
+];
 const SOLID_COLORS = [
   { name: 'Black',    hex: '#0a0a0c' },
   { name: 'Charcoal', hex: '#17191f' },
@@ -1856,32 +1880,41 @@ const SOLID_COLORS = [
   { name: 'Indigo',   hex: '#171232' },
   { name: 'Plum',     hex: '#221426' },
   { name: 'Espresso', hex: '#241a12' },
+  { name: 'Storm',    hex: '#2b3038' },
+  { name: 'Sage',     hex: '#3a463c' },
   { name: 'Bone',     hex: '#e9e6df' }
 ];
 
-function setSolidColor(color) {
-  state.settings.solidColor = color;
+function setFill(css) {
+  state.settings.bgFill = css;
   saveState();
-  document.body.classList.add('solid-bg');
+  document.body.classList.add('fill-bg');
   const incoming = bg1.classList.contains('active') ? bg2 : bg1;
   const outgoing = bg1.classList.contains('active') ? bg1 : bg2;
-  incoming.style.backgroundImage = 'none';
-  incoming.style.backgroundColor = color;
+  const isColor = /^#|^rgb/.test(css);
+  incoming.style.backgroundColor = isColor ? css : '';
+  incoming.style.backgroundImage = isColor ? 'none' : css;
   incoming.classList.add('active');
   outgoing.classList.remove('active');
   renderSwatches();
 }
 
 function renderSwatches() {
-  const wrap = document.getElementById('bgSwatches');
-  if (!wrap.childElementCount) {
-    wrap.innerHTML = SOLID_COLORS.map(c =>
-      `<button class="bg-swatch" data-color="${c.hex}" title="${c.name}" aria-label="${c.name}" style="background:${c.hex}"></button>`
+  const gwrap = document.getElementById('bgGradients');
+  const swrap = document.getElementById('bgSwatches');
+  if (!gwrap.childElementCount) {
+    gwrap.innerHTML = GRADIENTS.map(g =>
+      `<button class="bg-swatch" data-fill="${g.css}" title="${g.name}" aria-label="${g.name}" style="background:${g.css}"></button>`
     ).join('');
   }
-  const cur = state.settings.solidColor;
-  wrap.querySelectorAll('.bg-swatch').forEach(b =>
-    b.classList.toggle('selected', b.dataset.color === cur));
+  if (!swrap.childElementCount) {
+    swrap.innerHTML = SOLID_COLORS.map(c =>
+      `<button class="bg-swatch" data-fill="${c.hex}" title="${c.name}" aria-label="${c.name}" style="background:${c.hex}"></button>`
+    ).join('');
+  }
+  const cur = state.settings.bgFill;
+  document.querySelectorAll('#bgGradients .bg-swatch, #bgSwatches .bg-swatch').forEach(b =>
+    b.classList.toggle('selected', b.dataset.fill === cur));
 }
 
 function setBackground(index) {
@@ -1890,9 +1923,9 @@ function setBackground(index) {
   if (index >= BACKGROUNDS.length) index = 0;
   activeBgIndex = index;
   state.settings.bgIndex = index;
-  // Choosing a photo clears any solid color
-  state.settings.solidColor = null;
-  document.body.classList.remove('solid-bg');
+  // Choosing a photo clears any color/gradient fill
+  state.settings.bgFill = null;
+  document.body.classList.remove('fill-bg');
   saveState();
 
   const incoming = bg1.classList.contains('active') ? bg2 : bg1;
@@ -3194,9 +3227,9 @@ document.getElementById('bgBtn').addEventListener('click', (e) => {
 });
 bgMenu.addEventListener('click', (e) => {
   e.stopPropagation();
-  // Solid-color swatch — apply and keep the menu open so colors are easy to try
-  const sw = e.target.closest('[data-color]');
-  if (sw) { setSolidColor(sw.dataset.color); return; }
+  // Gradient / solid swatch — apply and keep the menu open so it's easy to explore
+  const sw = e.target.closest('[data-fill]');
+  if (sw) { setFill(sw.dataset.fill); return; }
   const btn = e.target.closest('[data-bg]');
   if (!btn) return;
   toggleBgMenu(false);
@@ -3653,6 +3686,15 @@ document.getElementById('intentEditBtn').addEventListener('click', () => {
   document.getElementById('intentDisplay').classList.add('hidden');
   document.getElementById('intentForm').classList.remove('hidden');
   setTimeout(() => document.getElementById('intentInput').focus(), 50);
+});
+// The × on the pill hides the whole "today's main task" feature (re-enable in the gear)
+document.getElementById('intentRow').addEventListener('click', (e) => {
+  if (!e.target.closest('.intent-hide')) return;
+  state.settings.showIntent = false;
+  saveState();
+  applyDisplayPrefs();
+  renderPrefsMenu();
+  showToast('Hidden. Turn it back on in the gear menu.');
 });
 
 /* ============================================================
