@@ -9,8 +9,7 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 - **The mini bar shows what you're working on.** The floating strip now carries that cycle's task ("Draft the Q3 launch email…") on top with the cycle count beneath it, so a glance tells you what you're on, not just how long is left.
 
 ### Fixed
-- **On-brand selected color.** Selected prompt answers (Concrete / Mixed / Ambiguous, and the review Yes / Partial / No) were painted green/amber/red, which clashed with the deep-blue theme. They now use one calm blue highlight. The answers are still recorded for your history exactly as before.
-- **Break screen goes blue too.** The BREAK pill, the "Breathe in / and out" cue, and the breathing glow were green; they're now the same soft blue as the rest of the app.
+- **One coherent color system.** Did a full pass so every interaction lives in the deep-blue palette instead of scattered green/amber/red. Selected prompt answers (Concrete / Mixed / Ambiguous and the review Yes / Partial / No), the BREAK pill, the "Breathe in / and out" cue and breathing glow, the history target ring and its number, the energy/morale chart (energy deep blue, morale light blue), and the session hit badges all use blue now. A middling result reads neutral gray and a genuinely missed target keeps one calm rose, the only warm accent left. Button and selection shadows were nudged from indigo to the brand blue, and the celebration burst dropped its amber. Your yes/partial/no answers are still recorded for history exactly as before.
 
 ## [1.1.0] — 2026-07-10
 

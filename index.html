@@ -478,7 +478,7 @@
   .cycle-btn:hover { background: var(--panel-hover); transform: translateY(-1px); }
   .cycle-btn.selected {
     background: var(--grad-primary-soft);
-    border-color: rgba(129,140,248,0.55);
+    border-color: rgba(59,130,246,0.55);
   }
   .cycle-btn .n { font-size: 30px; font-weight: 500; letter-spacing: -0.8px; line-height: 1; }
   .cycle-btn .label { font-size: 11px; color: var(--text-dim); margin-top: 4px; font-weight: 500; letter-spacing: 0.1px; }
@@ -523,10 +523,10 @@
     padding: 16px; border-radius: 14px;
     font-size: 15px; font-weight: 600; letter-spacing: -0.1px;
     transition: all 0.2s ease;
-    box-shadow: 0 8px 24px rgba(99,102,241,0.30);
+    box-shadow: 0 8px 24px rgba(59,130,246,0.30);
     -webkit-font-smoothing: antialiased;
   }
-  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 32px rgba(99,102,241,0.40); }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 32px rgba(59,130,246,0.40); }
   .btn-primary:active { transform: translateY(0); }
 
   .projection { text-align: center; font-size: 13px; color: var(--text-dim); margin-top: 14px; }
@@ -842,7 +842,7 @@
   .scale-btn.selected {
     background: var(--grad-primary);
     color: #fff;
-    box-shadow: 0 4px 12px rgba(99,102,241,0.30);
+    box-shadow: 0 4px 12px rgba(59,130,246,0.30);
   }
 
   .choice-row { display: flex; gap: 8px; }
@@ -977,7 +977,8 @@
   .energy-col { flex: 1; display: flex; flex-direction: column-reverse; gap: 2px; }
   .e-bar, .m-bar { height: 0; border-radius: 3px 3px 0 0; min-height: 0; transition: height 0.4s ease; }
   .e-bar { background: linear-gradient(180deg, var(--accent-1), var(--accent-2)); }
-  .m-bar { background: linear-gradient(180deg, var(--ok), #4ac77f); }
+  /* Morale is a lighter blue so the two series stay distinct without leaving the palette. */
+  .m-bar { background: linear-gradient(180deg, #93c5fd, #3b82f6); }
   .energy-labels { display: flex; gap: 6px; }
   .energy-labels > div { flex: 1; text-align: center; font-size: 10px; color: var(--text-faint); }
   .energy-legend { display: flex; gap: 14px; font-size: 11px; color: var(--text-dim); margin-top: 8px; }
@@ -991,11 +992,11 @@
     font-size: 20px; font-weight: 500;
     flex-shrink: 0;
   }
-  .ring.yes { background: conic-gradient(var(--ok) var(--pct), var(--dot-bg) 0); }
+  .ring.yes { background: conic-gradient(var(--accent-3) var(--pct), var(--dot-bg) 0); }
   .ring.inner {
     background: var(--panel-solid);
     width: 60px; height: 60px;
-    color: var(--ok);
+    color: var(--accent-3);
   }
   .target-breakdown { flex: 1; font-size: 13px; color: var(--text-dim); line-height: 1.6; }
   .target-breakdown strong { color: var(--text); font-weight: 500; }
@@ -1039,9 +1040,11 @@
     background: var(--panel-input); color: var(--text-dim);
     flex-shrink: 0;
   }
-  .session-head .hit.good { color: var(--ok); background: rgba(110,231,167,0.12); }
-  .session-head .hit.meh { color: var(--warn); background: rgba(255,184,107,0.12); }
-  .session-head .hit.bad { color: var(--err); background: rgba(255,122,143,0.12); }
+  /* Hit target = brand blue; middling = quiet neutral; missed = one calm rose,
+     the only warm accent left and only on genuinely-missed sessions. */
+  .session-head .hit.good { color: var(--accent-3); background: rgba(59,130,246,0.14); }
+  .session-head .hit.meh { color: var(--text-dim); background: var(--panel-input); }
+  .session-head .hit.bad { color: #d98a97; background: rgba(217,138,151,0.14); }
 
   .session-detail {
     margin-top: 10px;
@@ -1531,7 +1534,7 @@
         <div class="energy-labels" id="energyLabels"></div>
         <div class="energy-legend">
           <span><span class="dot" style="background: var(--accent-2);"></span>Energy</span>
-          <span><span class="dot" style="background: var(--ok);"></span>Morale</span>
+          <span><span class="dot" style="background: #60a5fa;"></span>Morale</span>
         </div>
       </div>
 
@@ -3632,7 +3635,7 @@ function celebrate() {
   const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
 
-  const colors = ['#60a5fa', '#3b82f6', '#fbbf77', '#ffffff', '#93c5fd'];
+  const colors = ['#60a5fa', '#3b82f6', '#1d4ed8', '#ffffff', '#93c5fd'];
   const cx = innerWidth / 2, cy = innerHeight * 0.42;
   const N = 46;
   const parts = Array.from({ length: N }, () => {
