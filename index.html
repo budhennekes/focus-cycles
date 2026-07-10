@@ -1198,20 +1198,25 @@
   /* Mini bar — shrink the window to a strip and the running timer collapses
      to one readable row you can park in a corner. Kicks in on short windows. */
   .mini-hint { display: none; }
-  @media (max-height: 240px) {
+  @media (max-height: 240px), (max-width: 440px) {
     /* Clean, solid bar — no photo, no grain, fills the window edge to edge
-       (macOS rounds the window corners for us). */
+       (macOS rounds the window corners for us). Triggers when the window is
+       short OR narrow. */
     .top-bar, .bottom-bar, .drag-region,
     .bg-layer, .bg-gradient, .overlay { display: none; }
     main { padding: 0; justify-content: center; }
     .screen { max-width: 100%; margin: 0; width: 100%; height: 100%; }
-    #activeScreen { height: 100%; }
+    /* Center a fixed-height bar, so a short window fills exactly and a taller
+       (narrow) window shows the same clean strip instead of a giant box.
+       :not(.hidden) so this ID rule doesn't override the hidden state. */
+    #activeScreen:not(.hidden) { height: 100%; display: flex; flex-direction: column; justify-content: center; }
 
     #activeScreen .active-screen {
       display: flex;
       align-items: center;
       gap: 11px;
-      width: 100%; height: 100%;
+      width: 100%; height: min(88px, 100%);
+      flex-shrink: 0;
       max-width: none;
       padding: 0 8px 0 15px;
       border: none;
@@ -2768,7 +2773,7 @@ startBtn.addEventListener('click', startFlow);
 /* Mini bar — snap the window to a small always-on-top strip and back.
    The CSS mini layout is height-driven, so this works together with any
    manual resize. Falls back to a no-op in a plain browser (no bridge). */
-function isMiniActive() { return matchMedia('(max-height: 240px)').matches; }
+function isMiniActive() { return matchMedia('(max-height: 240px), (max-width: 440px)').matches; }
 function setCompactWindow(on) {
   if (window.focusBridge && window.focusBridge.setCompact) window.focusBridge.setCompact(on);
 }

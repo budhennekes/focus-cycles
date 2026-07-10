@@ -4,7 +4,8 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
-Nothing yet.
+### Changed
+- **Narrow the window to get the bar.** The mini bar now also appears when you make the window narrow, not just short. Drag either edge in and a running session collapses to the same clean floating strip; on the setup or history screens you get a "Click to expand" nudge instead of a squished layout.
 
 ## [1.1.0] — 2026-07-10
 

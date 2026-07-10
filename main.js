@@ -30,6 +30,7 @@ function setCompact(on) {
     mainWin.setVisibleOnAllWorkspaces(false);
     mainWin.setOpacity(1);
     if (savedBounds) { mainWin.setBounds(savedBounds, true); savedBounds = null; }
+    else { mainWin.setSize(1000, 760, true); mainWin.center(); } // manual shrink: restore a usable size
   }
 }
 ipcMain.on('set-compact', (_e, on) => setCompact(!!on));
