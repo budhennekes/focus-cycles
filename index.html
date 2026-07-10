@@ -627,7 +627,7 @@
     border: 1px solid var(--panel-border);
     background: var(--panel);
   }
-  .phase-tag.focus { color: var(--accent-3); border-color: rgba(167,139,250,0.4); }
+  .phase-tag.focus { color: var(--accent-3); border-color: rgba(59,130,246,0.4); }
   .phase-tag.break { color: var(--ok); border-color: rgba(110,231,167,0.32); }
 
   .timer-display {
@@ -857,9 +857,14 @@
     transition: all 0.15s ease;
   }
   .choice-btn:hover { background: var(--panel-hover); }
-  .choice-btn.selected.yes { background: rgba(110,231,167,0.16); border-color: rgba(110,231,167,0.4); color: var(--ok); }
-  .choice-btn.selected.partial { background: rgba(255,184,107,0.16); border-color: rgba(255,184,107,0.4); color: var(--warn); }
-  .choice-btn.selected.no { background: rgba(255,122,143,0.16); border-color: rgba(255,122,143,0.4); color: var(--err); }
+  /* One selected state, on-brand. The choice value (yes/partial/no) is still
+     recorded for history; it just no longer paints the button green/amber/red,
+     which clashed with the deep-blue theme. */
+  .choice-btn.selected {
+    background: var(--grad-primary-soft);
+    border-color: rgba(59,130,246,0.55);
+    color: var(--text);
+  }
 
   .prompt-actions { display: flex; gap: 10px; margin-top: 22px; }
   .prompt-actions .btn-ghost { flex: 1; }
@@ -1243,11 +1248,28 @@
       margin: 0; flex-shrink: 0;
       animation: none; text-shadow: none;
     }
+    /* Middle of the strip: the cycle's task on top, small cycle count under it.
+       Both truncate so the bar never wraps. */
+    #activeScreen .cycle-meta {
+      flex: 1; min-width: 0;
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 1px; text-align: left; margin: 0;
+    }
+    #activeScreen .cycle-target {
+      margin: 0; max-width: none;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 13px; font-style: normal; opacity: 1;
+      color: var(--text); line-height: 1.25; order: 0;
+    }
     #activeScreen .cycle-indicator {
       margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      font-size: 12px; min-width: 0;
+      font-size: 10px; letter-spacing: 0.3px; font-weight: 500;
+      color: var(--text-faint); order: 1;
     }
-    #activeScreen .cycle-target,
+    /* When there's no task set, the count carries the middle on its own. */
+    #activeScreen .cycle-meta:not(.has-task) .cycle-indicator {
+      font-size: 12px; color: var(--text-dim);
+    }
     #activeScreen .cycle-dots,
     #activeScreen .breathe-orb-wrap,
     #activeScreen .breathe-caption { display: none !important; }
@@ -1445,8 +1467,10 @@
       <div class="breathe-orb-wrap" aria-hidden="true"><div class="breathe-orb"></div></div>
       <div class="phase-tag focus" id="phaseTag">FOCUS</div>
       <div class="timer-display" id="timerDisplay">30:00</div>
-      <div class="cycle-indicator" id="cycleIndicator">Cycle 1 of 5</div>
-      <div class="cycle-target" id="cycleTarget"></div>
+      <div class="cycle-meta">
+        <div class="cycle-indicator" id="cycleIndicator">Cycle 1 of 5</div>
+        <div class="cycle-target" id="cycleTarget"></div>
+      </div>
       <div class="breathe-caption" aria-hidden="true"><span class="bi">Breathe in</span><span class="bo">and out</span></div>
       <div class="cycle-dots" id="cycleDots"></div>
       <div class="active-controls">
@@ -2666,7 +2690,10 @@ function renderActive() {
   // Show the cycle's target if user set one
   const cycle = currentSession.cycles[timerState.cycleIdx];
   const tgt = cycle && cycle.plan && cycle.plan.accomplish ? cycle.plan.accomplish : '';
-  document.getElementById('cycleTarget').textContent = timerState.phase === 'focus' && tgt ? `"${tgt}"` : '';
+  const showTask = timerState.phase === 'focus' && tgt;
+  document.getElementById('cycleTarget').textContent = showTask ? `"${tgt}"` : '';
+  // Drives the mini-bar fallback: with no task, the cycle count carries the strip.
+  document.querySelector('.cycle-meta').classList.toggle('has-task', !!showTask);
 
   const dots = document.getElementById('cycleDots');
   dots.innerHTML = '';

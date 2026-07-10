@@ -6,6 +6,10 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 
 ### Changed
 - **Narrow the window to get the bar.** The mini bar now also appears when you make the window narrow, not just short. Drag either edge in and a running session collapses to the same clean floating strip; on the setup or history screens you get a "Click to expand" nudge instead of a squished layout.
+- **The mini bar shows what you're working on.** The floating strip now carries that cycle's task ("Draft the Q3 launch email…") on top with the cycle count beneath it, so a glance tells you what you're on, not just how long is left.
+
+### Fixed
+- **On-brand selected color.** Selected prompt answers (Concrete / Mixed / Ambiguous, and the review Yes / Partial / No) were painted green/amber/red, which clashed with the deep-blue theme. They now use one calm blue highlight. The answers are still recorded for your history exactly as before.
 
 ## [1.1.0] — 2026-07-10
 
