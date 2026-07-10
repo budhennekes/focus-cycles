@@ -8,6 +8,7 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 - **Smaller logo.** The big centered "Focus Cycles" badge is now a small mark in the top-left corner, freeing up the middle of the screen. The clock and weather sit together in the top-right.
 
 ### Added
+- **Solid color backgrounds.** The Background menu now has a row of color swatches (black, charcoal, slate, navy, teal, forest, indigo, plum, espresso, and a light bone) for a clean, distraction-free flat fill instead of a photo. Your pick is remembered; "Next photo" switches back to images.
 - **A breath on your breaks.** When a break starts, a soft glow gently breathes behind the timer with a quiet "Breathe in / and out" cue, so the rest actually resets you. Calm and easy to ignore; honors reduced-motion and stays out of the mini bar.
 - **Browse or hide the quote.** Hover the quote to get ‹ › arrows (or click it) to scroll through them. A new gear button in the bottom bar lets you turn the quote off entirely.
 - **Hide today's main task.** The same gear menu toggles the "What's today's main thing?" pill on or off. Both choices are remembered.

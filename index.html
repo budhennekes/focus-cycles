@@ -1084,6 +1084,24 @@
   .icon-btn.icon-only svg { width: 15px; height: 15px; }
   .icon-btn.music-on { color: var(--accent-3); border-color: rgba(59,130,246,0.35); }
 
+  /* Solid-color swatches in the Background menu */
+  .bg-swatch-label {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase;
+    color: var(--text-faint); padding: 8px 12px 4px; margin-top: 4px;
+    border-top: 1px solid var(--panel-border);
+  }
+  .bg-swatches { display: flex; flex-wrap: wrap; gap: 7px; padding: 4px 12px 8px; max-width: 184px; }
+  .bg-swatch {
+    width: 24px; height: 24px; border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.16);
+    padding: 0; cursor: pointer;
+    transition: transform 0.1s ease;
+  }
+  .bg-swatch:hover { transform: scale(1.1); }
+  .bg-swatch.selected { outline: 2px solid var(--accent-3); outline-offset: 1.5px; }
+  /* A solid color is a clean flat fill — drop the photo vignette overlay */
+  body.solid-bg .overlay { display: none; }
+
   /* Music picker — small menu above the button, direct selection */
   .music-wrap { position: relative; display: inline-flex; }
   .music-menu {
@@ -1558,9 +1576,11 @@
   </button>
   <div class="music-wrap">
     <div id="bgMenu" class="music-menu hidden" role="menu" aria-label="Background">
-      <button data-bg="next" role="menuitem">Next background</button>
+      <button data-bg="next" role="menuitem">Next photo</button>
       <button data-bg="add" role="menuitem">Add your photos…</button>
       <button data-bg="builtin" role="menuitem" id="bgBuiltinBtn" style="display: none;">Use built-in set</button>
+      <div class="bg-swatch-label">Solid color</div>
+      <div class="bg-swatches" id="bgSwatches"></div>
     </div>
     <button class="icon-btn" id="bgBtn" title="Background · B for next">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -1593,7 +1613,8 @@ const defaultState = {
     musicMode: 'off',
     musicLast: 'lofi',
     showQuotes: true,
-    showIntent: true
+    showIntent: true,
+    solidColor: null
   }
 };
 
@@ -1820,7 +1841,47 @@ async function initBackgrounds() {
   }
   document.getElementById('bgBuiltinBtn').style.display = custom.length ? '' : 'none';
   activeBgIndex = Math.min(state.settings.bgIndex || 0, BACKGROUNDS.length - 1);
-  setBackground(activeBgIndex);
+  if (state.settings.solidColor) setSolidColor(state.settings.solidColor);
+  else setBackground(activeBgIndex);
+}
+
+/* Solid-color backgrounds — a clean flat fill instead of a photo. */
+const SOLID_COLORS = [
+  { name: 'Black',    hex: '#0a0a0c' },
+  { name: 'Charcoal', hex: '#17191f' },
+  { name: 'Slate',    hex: '#1a1f29' },
+  { name: 'Navy',     hex: '#0e1b2e' },
+  { name: 'Teal',     hex: '#0b2320' },
+  { name: 'Forest',   hex: '#122019' },
+  { name: 'Indigo',   hex: '#171232' },
+  { name: 'Plum',     hex: '#221426' },
+  { name: 'Espresso', hex: '#241a12' },
+  { name: 'Bone',     hex: '#e9e6df' }
+];
+
+function setSolidColor(color) {
+  state.settings.solidColor = color;
+  saveState();
+  document.body.classList.add('solid-bg');
+  const incoming = bg1.classList.contains('active') ? bg2 : bg1;
+  const outgoing = bg1.classList.contains('active') ? bg1 : bg2;
+  incoming.style.backgroundImage = 'none';
+  incoming.style.backgroundColor = color;
+  incoming.classList.add('active');
+  outgoing.classList.remove('active');
+  renderSwatches();
+}
+
+function renderSwatches() {
+  const wrap = document.getElementById('bgSwatches');
+  if (!wrap.childElementCount) {
+    wrap.innerHTML = SOLID_COLORS.map(c =>
+      `<button class="bg-swatch" data-color="${c.hex}" title="${c.name}" aria-label="${c.name}" style="background:${c.hex}"></button>`
+    ).join('');
+  }
+  const cur = state.settings.solidColor;
+  wrap.querySelectorAll('.bg-swatch').forEach(b =>
+    b.classList.toggle('selected', b.dataset.color === cur));
 }
 
 function setBackground(index) {
@@ -1829,6 +1890,9 @@ function setBackground(index) {
   if (index >= BACKGROUNDS.length) index = 0;
   activeBgIndex = index;
   state.settings.bgIndex = index;
+  // Choosing a photo clears any solid color
+  state.settings.solidColor = null;
+  document.body.classList.remove('solid-bg');
   saveState();
 
   const incoming = bg1.classList.contains('active') ? bg2 : bg1;
@@ -1836,6 +1900,7 @@ function setBackground(index) {
 
   const img = new Image();
   img.onload = () => {
+    incoming.style.backgroundColor = '';
     incoming.style.backgroundImage = `url("${BACKGROUNDS[index]}")`;
     incoming.classList.add('active');
     outgoing.classList.remove('active');
@@ -3119,6 +3184,7 @@ document.getElementById('historyBtn').addEventListener('click', () => {
 const bgMenu = document.getElementById('bgMenu');
 function toggleBgMenu(force) {
   const show = force !== undefined ? force : bgMenu.classList.contains('hidden');
+  if (show) renderSwatches();
   bgMenu.classList.toggle('hidden', !show);
 }
 document.getElementById('bgBtn').addEventListener('click', (e) => {
@@ -3128,10 +3194,13 @@ document.getElementById('bgBtn').addEventListener('click', (e) => {
 });
 bgMenu.addEventListener('click', (e) => {
   e.stopPropagation();
+  // Solid-color swatch — apply and keep the menu open so colors are easy to try
+  const sw = e.target.closest('[data-color]');
+  if (sw) { setSolidColor(sw.dataset.color); return; }
   const btn = e.target.closest('[data-bg]');
   if (!btn) return;
   toggleBgMenu(false);
-  if (btn.dataset.bg === 'next') nextBackground();
+  if (btn.dataset.bg === 'next') nextBackground();       // clears solid color
   else if (btn.dataset.bg === 'add') document.getElementById('bgFileInput').click();
   else if (btn.dataset.bg === 'builtin') clearCustomPhotos();
 });
