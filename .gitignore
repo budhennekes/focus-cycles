@@ -20,3 +20,8 @@ yarn-error.log*
 test-write-check.txt
 local-write-test.txt
 node_modules.dataless-broken-*/
+
+# iCloud conflict duplicates
+* [0-9].js
+* [0-9].html
+* [0-9].json
