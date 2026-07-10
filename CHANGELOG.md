@@ -4,19 +4,21 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
-### Changed
-- **Speed and reliability pass.** Faster first paint (preconnect to the image and weather hosts), background/swatch clicks no longer rewrite your whole session history per click (debounced, flushed on quit), re-importing photos no longer leaks memory, the projections clock stops working when its screen isn't visible (and refreshes on return), the mini bar settles back to its resting translucency after a drag, and choosing a stream while offline points you to Rain.
-- **Smaller logo.** The big centered "Focus Cycles" badge is now a small mark in the top-left corner, freeing up the middle of the screen. The clock and weather sit together in the top-right.
+Nothing yet.
+
+## [1.1.0] — 2026-07-10
 
 ### Added
-- **Gradient and solid backgrounds.** The Background menu now has a Gradients row (deep sea, midnight teal, cosmos, aubergine, ember, forest, dusk rose, steel, twilight, sand) and a larger Solid colors row for a clean fill instead of a photo. Pick from swatches, your choice is remembered, and "Next photo" switches back to images.
-- **Hide "today's main thing" from the pill itself.** A small × on the pill hides it (re-enable anytime in the gear menu).
-- **A breath on your breaks.** When a break starts, a soft glow gently breathes behind the timer with a quiet "Breathe in / and out" cue, so the rest actually resets you. Calm and easy to ignore; honors reduced-motion and stays out of the mini bar.
-- **Browse or hide the quote.** Hover the quote to get ‹ › arrows (or click it) to scroll through them. A new gear button in the bottom bar lets you turn the quote off entirely.
-- **Hide today's main task.** The same gear menu toggles the "What's today's main thing?" pill on or off. Both choices are remembered.
-
 - **Mini bar.** During a session, the window can shrink to a small floating strip that stays on top of your other apps (and across spaces and fullscreen). Two ways in: the **yellow minimize button** (or Cmd+M) turns the window into the bar instead of hiding it in the Dock, and there's a **Mini button** in the timer controls. It shrinks in place, is **draggable** (grab it anywhere but the buttons), and sits gently translucent so it stays out of the way, going fully solid when you hover it. Click the expand arrows to restore; a session ending pops it back to full size on its own.
+- **Gradient and solid backgrounds.** The Background menu now has a Gradients row (deep sea, midnight teal, cosmos, aubergine, ember, forest, dusk rose, steel, twilight, sand) and a larger Solid colors row for a clean fill instead of a photo. Pick from swatches, your choice is remembered, and "Next photo" switches back to images.
+- **A breath on your breaks.** When a break starts, a soft glow gently breathes behind the timer with a quiet "Breathe in / and out" cue, so the rest actually resets you. Calm and easy to ignore; honors reduced-motion and stays out of the mini bar.
+- **Browse or hide the quote.** Hover the quote to get ‹ › arrows (or click it) to scroll through them. A new gear button in the bottom bar turns the quote off entirely.
+- **Hide today's main task.** A small × on the pill hides it, and the gear menu toggles it back on. Both choices are remembered.
 - A little whimsy. Finishing a session sends up a soft burst of sparks and a warm, varied sign-off line instead of the same message every time, with special notes for your first session and streak milestones (3, 7, 14, 30, 50, 100 days). The sprint prompt now rotates through friendlier examples. All of it honors reduced-motion.
+
+### Changed
+- **Smaller logo.** The big centered "Focus Cycles" badge is now a small mark in the top-left corner, freeing up the middle of the screen. The clock and weather sit together in the top-right.
+- **Speed and reliability pass.** Faster first paint (preconnect to the image and weather hosts), background/swatch clicks no longer rewrite your whole session history per click (debounced, flushed on quit), re-importing photos no longer leaks memory, the projections clock stops working when its screen isn't visible (and refreshes on return), the mini bar settles back to its resting translucency after a drag, and choosing a stream while offline points you to Rain.
 
 ## [1.0.2] — 2026-07-06
 
@@ -48,7 +50,8 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 - Focus sounds: Lofi and Synthwave (YouTube streams), locally generated Rain for offline.
 - Today's intent pin, rotating landscape backgrounds, local weather, light and dark themes, keyboard shortcuts with a `?` overlay.
 
-[Unreleased]: https://github.com/budhennekes/focus-cycles/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/budhennekes/focus-cycles/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/budhennekes/focus-cycles/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/budhennekes/focus-cycles/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/budhennekes/focus-cycles/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/budhennekes/focus-cycles/releases/tag/v1.0.0

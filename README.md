@@ -35,6 +35,7 @@ In a hurry? A 1-cycle sprint asks exactly one question and starts the clock. And
 Most timers throw your session away at midnight. Focus Cycles keeps every plan, review, and debrief in a local dashboard, so patterns you'd never notice start surfacing:
 
 - how much focused time you actually log per day, versus what it felt like
+- **when** you focus best, plotted on a timeline of your last seven days
 - your target hit rate, the percentage of cycles that finished what they planned
 - which distractions keep reappearing in your reviews
 - your streak, and your best focus window of the day
@@ -43,15 +44,23 @@ It's the difference between "I was busy" and knowing. Export everything to CSV w
 
 ## Built for people who hate friction
 
-- **Fast.** One HTML file inside a thin Mac wrapper. Opens instantly, idles quietly, animations pause when the window loses focus.
-- **Crash-proof.** Quit, crash, or reboot mid-cycle and the app resumes at the exact second you left, prompts included.
-- **Keyboard-first.** Space to start, S to skip, M for music, numbers to set cycle count. Press `?` inside the app for the full map.
-- **Focus sounds, zero setup.** Lofi (Lofi Girl's 1 A.M Study Session on loop), Synthwave radio, or locally generated rain that works with no internet. One key kills the sound.
-- **Yours.** No account, no server, no analytics. Your history lives in the app on your Mac and nowhere else.
+- **Fast.** One HTML file in a thin Mac wrapper. Opens instantly, idles quietly, and pauses its own animations the moment you switch away.
+- **Always in view.** Shrink the window to a small floating bar and park it in a corner, or read the countdown right in the macOS menu bar while you work in another app.
+- **Crash-proof.** Quit, crash, or reboot mid-cycle and it resumes at the exact second you left, prompts included.
+- **Keyboard-first.** Space to start, S to skip, M for music, numbers to set your cycle count. Press `?` for the full map.
+- **Focus sounds, zero setup.** Lofi and synthwave radio, or locally generated rain that works with no internet. One key kills it.
+- **Calm by design.** Breaks bring a slow breathing pacer so the rest actually resets you. Finish a session and it quietly says well done.
+- **Private.** No account, no server, no analytics. Your history lives on your Mac and nowhere else.
 
-Plus the pleasant stuff: rotating landscape backgrounds, local weather, light and dark themes, a gentle chime when a cycle ends.
+## Make the space yours
 
-**Use your own photos.** Background menu → "Add your photos…" and pick up to 20 images. The app handles the best practices for you: photos are downscaled to 2560px on the long edge and re-encoded (a few hundred KB each), which fixes rotation, keeps memory low, and still looks sharp on a Retina display. Landscape orientation works best since the image fills the window. Everything is stored inside the app on your Mac; your originals are never moved or uploaded. "Use built-in set" switches back anytime.
+Set the background to whatever helps you focus, right from the Background menu:
+
+- **Photos.** A rotating set of calm landscapes, or drop in **your own** (up to 20). The app downscales and re-encodes them for you, so they load fast and look sharp without touching your originals.
+- **Gradients.** Ten hand-picked ones, from deep sea to ember to a warm sand.
+- **Solid colors.** A clean, distraction-free flat fill when you want nothing but the work.
+
+Add light and dark themes, local weather, and the freedom to hide the quote or the daily-intent pill, and the screen ends up looking exactly how you want it.
 
 ## Get started in two minutes
 
@@ -87,7 +96,7 @@ No. Every field is skippable, and "Skip all prompts for this session" turns the 
 In the app's local storage on your Mac. Nothing is transmitted anywhere. The History screen has a one-click CSV export for backups.
 
 **Why does macOS warn me on first open?**
-The app isn't notarized with an Apple Developer certificate. The source is public in this repo, and the bypass in step 2 above is a one-time thing. If you ever see "app is damaged," that was a v1.0.0 bug, fixed in v1.0.1: re-download the latest release.
+The app isn't notarized with an Apple Developer certificate (that needs a paid Apple Developer account). The source is public in this repo, and the bypass in step 2 above is a one-time thing.
 
 **What if the music streams break?**
 Lofi uses a permanent YouTube upload, not a live stream, so it should stay put. Synthwave is a live radio that YouTube rotates every year or two; swapping the ID in `index.html` takes 30 seconds. Rain is generated on your Mac and can't break.
