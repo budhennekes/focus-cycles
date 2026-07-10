@@ -628,7 +628,7 @@
     background: var(--panel);
   }
   .phase-tag.focus { color: var(--accent-3); border-color: rgba(59,130,246,0.4); }
-  .phase-tag.break { color: var(--ok); border-color: rgba(110,231,167,0.32); }
+  .phase-tag.break { color: var(--accent-3); border-color: rgba(59,130,246,0.32); }
 
   .timer-display {
     font-size: clamp(120px, 20vw, 220px);
@@ -708,7 +708,7 @@
   .breathe-orb {
     width: 100%; height: 100%;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(110,231,167,0.28) 0%, rgba(96,165,250,0.14) 45%, rgba(96,165,250,0) 72%);
+    background: radial-gradient(circle, rgba(96,165,250,0.30) 0%, rgba(59,130,246,0.14) 45%, rgba(59,130,246,0) 72%);
     animation: breatheOrb 10s ease-in-out infinite;
   }
   @keyframes breatheOrb {
@@ -722,7 +722,7 @@
     height: 16px;
     margin: -6px 0 14px;
     font-size: 12px; font-weight: 500; letter-spacing: 0.4px;
-    color: var(--ok);
+    color: rgba(96,165,250,0.92); /* soft blue, matches the orb and brand */
   }
   .breathe-caption span { position: absolute; left: 0; right: 0; }
   .breathe-caption .bi { animation: breatheInLabel 10s ease-in-out infinite; }

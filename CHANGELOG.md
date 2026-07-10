@@ -10,6 +10,7 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 
 ### Fixed
 - **On-brand selected color.** Selected prompt answers (Concrete / Mixed / Ambiguous, and the review Yes / Partial / No) were painted green/amber/red, which clashed with the deep-blue theme. They now use one calm blue highlight. The answers are still recorded for your history exactly as before.
+- **Break screen goes blue too.** The BREAK pill, the "Breathe in / and out" cue, and the breathing glow were green; they're now the same soft blue as the rest of the app.
 
 ## [1.1.0] — 2026-07-10
 
