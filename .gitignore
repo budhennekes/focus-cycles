@@ -25,3 +25,5 @@ node_modules.dataless-broken-*/
 * [0-9].js
 * [0-9].html
 * [0-9].json
+.tmp.driveupload/
+.tmp.drivedownload/

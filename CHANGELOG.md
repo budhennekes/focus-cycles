@@ -5,6 +5,7 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 ## [Unreleased]
 
 ### Changed
+- **Speed and reliability pass.** Faster first paint (preconnect to the image and weather hosts), background/swatch clicks no longer rewrite your whole session history per click (debounced, flushed on quit), re-importing photos no longer leaks memory, the projections clock stops working when its screen isn't visible (and refreshes on return), the mini bar settles back to its resting translucency after a drag, and choosing a stream while offline points you to Rain.
 - **Smaller logo.** The big centered "Focus Cycles" badge is now a small mark in the top-left corner, freeing up the middle of the screen. The clock and weather sit together in the top-right.
 
 ### Added

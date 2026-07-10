@@ -7,6 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Focus Cycles">
+<link rel="preconnect" href="https://images.unsplash.com">
+<link rel="preconnect" href="https://api.open-meteo.com">
 <title>Focus Cycles</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='4' y='4' width='92' height='92' rx='22' fill='%231d4ed8'/%3E%3Ccircle cx='50' cy='50' r='11' fill='%23fbbf77'/%3E%3Cpath d='M 28 42 A 25 25 0 0 1 72 42' stroke='white' stroke-width='8' fill='none' stroke-linecap='round'/%3E%3Cpath d='M 72 58 A 25 25 0 0 1 28 58' stroke='white' stroke-width='8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
@@ -1658,6 +1660,18 @@ function saveState() {
   catch (e) { showToast('Could not save settings locally.'); }
 }
 
+// Debounced save for cosmetic settings (background clicks, music label, etc.)
+// so cycling backgrounds doesn't serialize the entire session history per click.
+// Session data always uses the immediate saveState().
+let saveSoonTimer = null;
+function saveStateSoon() {
+  clearTimeout(saveSoonTimer);
+  saveSoonTimer = setTimeout(() => { saveSoonTimer = null; saveState(); }, 400);
+}
+function flushPendingSave() {
+  if (saveSoonTimer) { clearTimeout(saveSoonTimer); saveSoonTimer = null; saveState(); }
+}
+
 /* ============================================================
    THEME
 ============================================================ */
@@ -1846,6 +1860,8 @@ async function initBackgrounds() {
   const custom = await bgDbAll();
   if (custom.length > 0) {
     custom.sort((a, b) => a.added - b.added);
+    // Release object URLs from a previous init so re-imports don't leak memory
+    BACKGROUNDS.forEach(u => { if (typeof u === 'string' && u.startsWith('blob:')) URL.revokeObjectURL(u); });
     BACKGROUNDS = custom.map(p => URL.createObjectURL(p.blob));
   } else {
     const local = await discoverLocalBackgrounds();
@@ -1887,7 +1903,7 @@ const SOLID_COLORS = [
 
 function setFill(css) {
   state.settings.bgFill = css;
-  saveState();
+  saveStateSoon(); // cosmetic; swatch exploring shouldn't hammer localStorage
   document.body.classList.add('fill-bg');
   const incoming = bg1.classList.contains('active') ? bg2 : bg1;
   const outgoing = bg1.classList.contains('active') ? bg1 : bg2;
@@ -1926,7 +1942,7 @@ function setBackground(index) {
   // Choosing a photo clears any color/gradient fill
   state.settings.bgFill = null;
   document.body.classList.remove('fill-bg');
-  saveState();
+  saveStateSoon(); // cosmetic; don't serialize history on every B press
 
   const incoming = bg1.classList.contains('active') ? bg2 : bg1;
   const outgoing = bg1.classList.contains('active') ? bg1 : bg2;
@@ -2090,6 +2106,8 @@ function selectedCycles() {
 }
 
 function updateProjections() {
+  // Nothing to project when the setup screen isn't on screen
+  if (document.getElementById('setupScreen').classList.contains('hidden')) return;
   const focus = parseInt(focusSel.value, 10);
   const brk = parseInt(breakSel.value, 10);
   const now = new Date();
@@ -2795,6 +2813,8 @@ document.querySelector('.mini-hint').addEventListener('click', () => setCompactW
     bar.classList.remove('dragging');
     try { bar.releasePointerCapture(e.pointerId); } catch (err) {}
     if (bridge.dragEnd) bridge.dragEnd();
+    // If the pointer ended off the bar, settle back to the resting translucency
+    if (isMiniActive() && !bar.matches(':hover')) setOpacity(0.9);
   }
   bar.addEventListener('pointerup', endDrag);
   bar.addEventListener('pointercancel', endDrag);
@@ -3201,6 +3221,8 @@ function showScreen(id) {
     else el.classList.add('hidden');
   });
   document.body.dataset.screen = id; // lets mini-bar mode know what's on screen
+  // Projections skip updates while setup is hidden — refresh on the way back in
+  if (id === 'setupScreen') updateProjections();
 }
 
 function currentVisibleScreen() {
@@ -3384,6 +3406,9 @@ function stopMusic() {
 }
 
 function startStream(stream) {
+  if (navigator.onLine === false) {
+    showToast('No internet for streams. Rain works offline.');
+  }
   const frame = document.createElement('iframe');
   frame.id = 'musicFrame';
   frame.className = 'music-frame';
@@ -3818,6 +3843,7 @@ function init() {
   // Save active state on tab close — last line of defense
   window.addEventListener('beforeunload', () => {
     if (currentSession) saveActive(true);
+    flushPendingSave(); // don't lose a debounced cosmetic save on quit
   });
 
   // Pause decorative animations while the window is in the background —
