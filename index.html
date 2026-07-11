@@ -20,6 +20,10 @@
     --grad-primary: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
     --grad-primary-soft: linear-gradient(135deg, rgba(30,58,138,0.24) 0%, rgba(59,130,246,0.14) 100%);
     --accent-glow: rgba(59, 130, 246, 0.42);
+    /* Motion — strong custom curves; the built-in easings are too weak to feel intentional. */
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);      /* entrances + interactions: fast start, soft land */
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);  /* on-screen movement */
+    --ease-pop: cubic-bezier(0.34, 1.4, 0.64, 1);    /* gentle overshoot for the odd playful moment */
     --ok: #6ee7a7;
     --warn: #fbbf77;
     --err: #ff7a8f;
@@ -250,6 +254,15 @@
     -webkit-app-region: no-drag;
   }
 
+  /* Press feedback — every pressable control dips slightly on press so the
+     interface feels like it's truly listening. Fast in, fast out. */
+  .icon-btn:active, .btn-ghost:active, .cycle-btn:active, .scale-btn:active,
+  .choice-btn:active, .quote-nav:active, .music-menu button:active,
+  .bg-swatch:active, .session-row:active {
+    transform: scale(0.97);
+    transition-duration: 0.08s;
+  }
+
   /* Brand / logo — always lives on a panel pill */
   .brand-row {
     display: flex;
@@ -435,7 +448,7 @@
     font-size: 18px; line-height: 1;
     color: var(--text-faint);
     opacity: 0;
-    transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+    transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease, transform 0.12s var(--ease-out);
   }
   .quote-chip:hover .quote-nav { opacity: 1; }
   .quote-nav:hover { background: var(--panel-input); color: var(--text); }
@@ -473,7 +486,7 @@
     border: 1px solid var(--panel-border);
     border-radius: 14px;
     padding: 16px 8px;
-    transition: all 0.2s ease;
+    transition: transform 0.18s var(--ease-out), background 0.15s ease, border-color 0.15s ease;
   }
   .cycle-btn:hover { background: var(--panel-hover); transform: translateY(-1px); }
   .cycle-btn.selected {
@@ -522,12 +535,12 @@
     color: #fff;
     padding: 16px; border-radius: 14px;
     font-size: 15px; font-weight: 600; letter-spacing: -0.1px;
-    transition: all 0.2s ease;
+    transition: transform 0.16s var(--ease-out), box-shadow 0.2s var(--ease-out);
     box-shadow: 0 8px 24px rgba(59,130,246,0.30);
     -webkit-font-smoothing: antialiased;
   }
   .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 32px rgba(59,130,246,0.40); }
-  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:active { transform: scale(0.985); transition-duration: 0.08s; }
 
   .projection { text-align: center; font-size: 13px; color: var(--text-dim); margin-top: 14px; }
 
@@ -662,7 +675,7 @@
   .cycle-dots { display: flex; gap: 8px; justify-content: center; margin-bottom: 32px; }
   .cycle-dot {
     width: 10px; height: 10px; border-radius: 50%;
-    background: var(--dot-bg); transition: all 0.3s ease;
+    background: var(--dot-bg); transition: background 0.3s ease, transform 0.3s var(--ease-out), opacity 0.3s ease;
   }
   .cycle-dot.done { background: var(--accent-3); opacity: 0.7; }
   .cycle-dot.current {
@@ -749,7 +762,7 @@
     padding: 12px 22px; border-radius: 12px;
     font-size: 14px; font-weight: 500;
     letter-spacing: -0.1px;
-    transition: all 0.15s ease;
+    transition: transform 0.15s var(--ease-out), background 0.15s ease;
     position: relative;
     overflow: hidden;
     isolation: isolate;
@@ -835,7 +848,7 @@
   .scale-btn {
     flex: 1; padding: 8px 0;
     border-radius: 7px; font-size: 13px; font-weight: 500;
-    transition: all 0.12s ease;
+    transition: transform 0.12s var(--ease-out), background 0.12s ease, color 0.12s ease, box-shadow 0.15s var(--ease-out);
     color: var(--text-dim);
   }
   .scale-btn:hover { background: var(--panel-hover); color: var(--text); }
@@ -854,7 +867,7 @@
     padding: 12px;
     font-size: 14px; font-weight: 500;
     color: var(--text);
-    transition: all 0.15s ease;
+    transition: transform 0.15s var(--ease-out), background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   }
   .choice-btn:hover { background: var(--panel-hover); }
   /* One selected state, on-brand. The choice value (yes/partial/no) is still
@@ -941,6 +954,12 @@
   .stat .label { font-size: 10.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
   .stat .value { font-size: 28px; font-weight: 500; margin-top: 4px; letter-spacing: -0.8px; line-height: 1.1; }
   .stat .sub { font-size: 11px; color: var(--text-faint); margin-top: 4px; font-weight: 400; }
+  /* Stats cascade in when you open history — a small, decorative flourish. */
+  .stat-grid .stat { animation: fadeIn 0.4s var(--ease-out) both; }
+  .stat-grid .stat:nth-child(1) { animation-delay: 0.02s; }
+  .stat-grid .stat:nth-child(2) { animation-delay: 0.07s; }
+  .stat-grid .stat:nth-child(3) { animation-delay: 0.12s; }
+  .stat-grid .stat:nth-child(4) { animation-delay: 0.17s; }
 
   .panel-card {
     background: var(--panel);
@@ -1027,7 +1046,7 @@
     border-bottom: 1px solid var(--panel-border);
     font-size: 13px;
     cursor: pointer;
-    transition: background 0.1s ease;
+    transition: background 0.1s ease, transform 0.12s var(--ease-out);
   }
   .session-row:hover { background: var(--panel-hover); }
   .session-row:last-child { border-bottom: none; }
@@ -1078,7 +1097,7 @@
     padding: 22px 26px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.35);
     min-width: 340px;
-    animation: fadeIn 0.18s ease;
+    animation: popIn 0.18s var(--ease-out); /* centered modal — scales from center */
   }
   .shortcuts-title { font-size: 14px; font-weight: 600; margin-bottom: 14px; letter-spacing: -0.1px; }
   .shortcuts-grid {
@@ -1134,7 +1153,9 @@
     flex-direction: column;
     gap: 2px;
     z-index: 40;
-    animation: fadeIn 0.14s ease;
+    /* Scale up from the trigger button (bottom-right) rather than fading from center. */
+    transform-origin: bottom right;
+    animation: popIn 0.16s var(--ease-out);
   }
   .music-menu.hidden { display: none; }
   .music-menu button {
@@ -1145,6 +1166,7 @@
     font-weight: 500;
     color: var(--text-dim);
   }
+  .music-menu button { transition: background 0.12s ease, color 0.12s ease, transform 0.12s var(--ease-out); }
   .music-menu button:hover { background: var(--panel-input); color: var(--text); }
   .music-menu button.selected {
     background: var(--grad-primary-soft);
@@ -1177,7 +1199,7 @@
     font-size: 13px; font-weight: 500;
     letter-spacing: -0.05px;
     display: inline-flex; align-items: center; gap: 6px;
-    transition: all 0.15s ease;
+    transition: transform 0.15s var(--ease-out), background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     position: relative;
     overflow: hidden;
     isolation: isolate;
@@ -1316,16 +1338,34 @@
     padding: 12px 18px;
     font-size: 13px;
     opacity: 0;
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s var(--ease-out);
     z-index: 100;
     pointer-events: none;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  .fade-in { animation: fadeIn 0.4s ease; }
+  .fade-in { animation: fadeIn 0.42s var(--ease-out); }
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(10px) scale(0.99); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  /* Popover / modal entrance — scales up rather than fading flat. */
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* Respect reduced-motion: keep the gentle fade, drop the movement + scale. */
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in { animation: rmFade 0.25s ease; }
+    .music-menu, .shortcuts-panel { animation: rmFade 0.15s ease; }
+    .stat-grid .stat { animation: rmFade 0.25s ease both; }
+    .icon-btn:active, .btn-ghost:active, .cycle-btn:active, .scale-btn:active,
+    .choice-btn:active, .quote-nav:active, .music-menu button:active,
+    .bg-swatch:active, .session-row:active, .chip:active, .btn-primary:active {
+      transform: none;
+    }
+    @keyframes rmFade { from { opacity: 0; } to { opacity: 1; } }
   }
 </style>
 </head>
