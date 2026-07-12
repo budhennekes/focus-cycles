@@ -4,6 +4,10 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [1.2.0] — 2026-07-11
+
 ### Changed
 - **Motion polish pass.** Every pressable control now dips slightly when you press it, so the app feels like it's listening. Menus scale up out of their button instead of fading in from nowhere, the history stats cascade in when you open the dashboard, and all the little transitions moved onto a stronger, snappier easing curve. Honors reduced-motion (keeps the fades, drops the movement).
 - **Narrow the window to get the bar.** The mini bar now also appears when you make the window narrow, not just short. Drag either edge in and a running session collapses to the same clean floating strip; on the setup or history screens you get a "Click to expand" nudge instead of a squished layout.
@@ -56,7 +60,8 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 - Focus sounds: Lofi and Synthwave (YouTube streams), locally generated Rain for offline.
 - Today's intent pin, rotating landscape backgrounds, local weather, light and dark themes, keyboard shortcuts with a `?` overlay.
 
-[Unreleased]: https://github.com/budhennekes/focus-cycles/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/budhennekes/focus-cycles/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/budhennekes/focus-cycles/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/budhennekes/focus-cycles/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/budhennekes/focus-cycles/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/budhennekes/focus-cycles/compare/v1.0.0...v1.0.1
