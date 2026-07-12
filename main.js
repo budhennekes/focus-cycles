@@ -62,13 +62,26 @@ ipcMain.on('drag-end', () => { dragOrigin = null; });
 // "minimize turns into the mini bar" behavior below.
 let tray = null;
 let sessionRunning = false;
+function sendTrayAction(action) {
+  if (mainWin) mainWin.webContents.send('tray-action', action);
+}
+function buildTrayMenu() {
+  return Menu.buildFromTemplate([
+    { label: 'Show Focus Cycles', click: () => { if (mainWin) { mainWin.show(); mainWin.focus(); } } },
+    { type: 'separator' },
+    { label: 'Pause / Resume', click: () => sendTrayAction('pause') },
+    { label: 'Skip', click: () => sendTrayAction('skip') },
+    { label: 'Stop session', click: () => sendTrayAction('stop') }
+  ]);
+}
 function setMenuBarTitle(text) {
   sessionRunning = !!text;
   if (text) {
     if (!tray) {
       tray = new Tray(nativeImage.createEmpty());
       tray.setToolTip('Focus Cycles');
-      tray.on('click', () => { if (mainWin) { mainWin.show(); mainWin.focus(); } });
+      // Click the menu-bar countdown to steer the session without leaving your app.
+      tray.setContextMenu(buildTrayMenu());
     }
     tray.setTitle(' ' + text);
   } else if (tray) {

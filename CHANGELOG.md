@@ -8,6 +8,12 @@ Nothing yet.
 
 ## [1.2.0] — 2026-07-11
 
+### Added
+- **A real app icon.** The Dock, Cmd-Tab switcher, and notifications now show the blue Focus Cycles mark instead of the generic Electron atom (its center dot recolored to match the palette).
+- **Menu-bar controls.** Clicking the menu-bar countdown now opens a menu with Pause / Resume, Skip, and Stop, so you can steer a running session without leaving whatever app you're in.
+- **Chime toggle.** The soft tone at each focus/break transition can now be turned off in the display menu (the gear). On by default.
+- **Keyboard focus rings.** Tabbing through the app now shows a clear on-brand focus outline; mouse clicks stay clean.
+
 ### Changed
 - **Motion polish pass.** Every pressable control now dips slightly when you press it, so the app feels like it's listening. Menus scale up out of their button instead of fading in from nowhere, the history stats cascade in when you open the dashboard, and all the little transitions moved onto a stronger, snappier easing curve. Honors reduced-motion (keeps the fades, drops the movement).
 - **Narrow the window to get the bar.** The mini bar now also appears when you make the window narrow, not just short. Drag either edge in and a running session collapses to the same clean floating strip; on the setup or history screens you get a "Click to expand" nudge instead of a squished layout.

@@ -263,6 +263,13 @@
     transition-duration: 0.08s;
   }
 
+  /* Keyboard focus — a clear on-brand ring for keyboard users; pointer clicks
+     stay clean (no lingering outline). Inputs keep their own focus border. */
+  :focus-visible { outline: 2px solid var(--accent-3); outline-offset: 2px; border-radius: 8px; }
+  :focus:not(:focus-visible) { outline: none; }
+  .field-input:focus-visible, .field-textarea:focus-visible,
+  .custom-row input:focus-visible, .duration-field select:focus-visible { outline: none; }
+
   /* Brand / logo — always lives on a panel pill */
   .brand-row {
     display: flex;
@@ -1631,6 +1638,7 @@
     <div id="prefsMenu" class="music-menu hidden" role="menu" aria-label="Display options">
       <button data-pref="quotes" role="menuitem">Quotes</button>
       <button data-pref="intent" role="menuitem">Today's main task</button>
+      <button data-pref="sound" role="menuitem">Chime</button>
     </div>
     <button class="icon-btn icon-only" id="prefsBtn" title="Display options">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1698,6 +1706,7 @@ const defaultState = {
     musicLast: 'lofi',
     showQuotes: true,
     showIntent: true,
+    sound: true,   // the soft chime at phase transitions
     bgFill: null   // a solid color or a gradient, used instead of a photo
   }
 };
@@ -2851,6 +2860,17 @@ document.getElementById('miniBtn').addEventListener('click', () => setCompactWin
 // Clicking the "grow the window" hint expands back out too
 document.querySelector('.mini-hint').addEventListener('click', () => setCompactWindow(false));
 
+// Menu-bar (tray) menu drives the same Pause / Skip / Stop as the on-screen
+// buttons, so you can steer a session without leaving your current app.
+if (window.focusBridge && window.focusBridge.onTrayAction) {
+  window.focusBridge.onTrayAction((action) => {
+    if (!timerState) return;
+    const id = { pause: 'pauseBtn', skip: 'skipBtn', stop: 'stopBtn' }[action];
+    const btn = id && document.getElementById(id);
+    if (btn) btn.click();
+  });
+}
+
 // Mini-bar dragging + hover-to-solidify. Dragging is done manually with pointer
 // capture (not -webkit-app-region) so it works reliably and keeps tracking even
 // when the cursor leaves the small window.
@@ -3349,6 +3369,7 @@ const prefsMenu = document.getElementById('prefsMenu');
 function renderPrefsMenu() {
   prefsMenu.querySelector('[data-pref="quotes"]').classList.toggle('selected', state.settings.showQuotes !== false);
   prefsMenu.querySelector('[data-pref="intent"]').classList.toggle('selected', state.settings.showIntent !== false);
+  prefsMenu.querySelector('[data-pref="sound"]').classList.toggle('selected', state.settings.sound !== false);
 }
 function togglePrefsMenu(force) {
   const show = force !== undefined ? force : prefsMenu.classList.contains('hidden');
@@ -3364,11 +3385,13 @@ prefsMenu.addEventListener('click', (e) => {
   e.stopPropagation();
   const btn = e.target.closest('[data-pref]');
   if (!btn) return;
-  const key = btn.dataset.pref === 'quotes' ? 'showQuotes' : 'showIntent';
+  const key = { quotes: 'showQuotes', intent: 'showIntent', sound: 'sound' }[btn.dataset.pref];
+  if (!key) return;
   state.settings[key] = state.settings[key] === false ? true : false;
   saveState();
   applyDisplayPrefs();
   renderPrefsMenu();
+  if (key === 'sound' && state.settings.sound) chime('break'); // preview the tone when turned on
 });
 document.addEventListener('click', () => togglePrefsMenu(false));
 
@@ -3398,6 +3421,7 @@ function notify(msg) {
 }
 let audioCtx = null;
 function chime(kind) {
+  if (state.settings.sound === false) return; // muted from the display menu
   try {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') audioCtx.resume();

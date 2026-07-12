@@ -32,6 +32,6 @@
   </g>
 
   <!-- focus point -->
-  <circle cx="512" cy="512" r="86" fill="#fbbf77"/>
+  <circle cx="512" cy="512" r="86" fill="#93c5fd"/>
   <circle cx="512" cy="512" r="86" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="6"/>
 </svg>

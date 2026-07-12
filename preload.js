@@ -8,4 +8,6 @@ contextBridge.exposeInMainWorld('focusBridge', {
   dragStart: () => ipcRenderer.send('drag-start'),
   dragMove: (dx, dy) => ipcRenderer.send('drag-move', dx, dy),
   dragEnd: () => ipcRenderer.send('drag-end'),
+  // The menu-bar (tray) menu sends pause/skip/stop back to the running session.
+  onTrayAction: (cb) => ipcRenderer.on('tray-action', (_e, action) => cb(action)),
 });
