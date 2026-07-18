@@ -58,10 +58,17 @@ for (const marker of [
   'function applyDisplayPrefs()',
   'function setQuote(i)',
   'id="quotePrev"',
-  'id="quoteNext"'
+  'id="quoteNext"',
+  'musicVolume',
+  'dailyGoalMinutes',
+  'applySessionPreset',
+  'renderDailyGoal'
 ]) {
   if (!html.includes(marker)) throw new Error(`Expected hardening/history marker missing: ${marker}`);
 }
+// v1.3.0 removes YouTube streaming and its CSP frame-src allowance
+if (html.includes('youtube') || html.includes('frame-src')) throw new Error('YouTube/frame-src remnants should be removed in v1.3.0');
+if (main.includes('youtube') || main.includes('frame-src')) throw new Error('main.js YouTube/frame-src remnants should be removed in v1.3.0');
 
 const scripts = [...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)];
 if (!scripts.length) throw new Error('No inline script found');

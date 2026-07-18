@@ -6,6 +6,25 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 
 Nothing yet.
 
+## [1.3.0] — 2026-07-17
+
+### Added
+- **All-local focus sounds.** Lofi, Synthwave, and Rain are now generated entirely on your Mac with the Web Audio API — no YouTube embeds, no network dependency, no hidden iframes. Rain keeps its filtered-white-noise patter; Deep is a brown-noise drone; Drift is a slow warm pad; and Lofi combines soft Rhodes-like chords, vinyl crackle, and a brushed beat. The menu still reads Off / Lofi / Synthwave / Rain, with Synthwave now mapped to the Drift pad.
+- **Focus-sound volume.** A slider in the music menu sets the level (default 65%) and persists it.
+- **Daily focus goal.** Set a minutes target in the display-prefs menu; the setup screen shows a quiet "Today: 45 / 120 min" progress pill that updates after each completed cycle.
+- **Session presets.** One-click Sprint (1×25 + 5), Deep Work (4×50 + 10), and Standard (5×30 + 10) chips configure cycles, focus duration, break duration, and projection in one tap.
+- **Mac App Store packaging.** New `build/entitlements.mas.plist`, `build/entitlements.mas.inherit.plist`, and `build/Info.plist` support an MAS build via `npm run package-mas`.
+
+### Changed
+- **Timer tick accuracy.** The runner now ticks every 1000 ms (was 250 ms) and reconciles against the deadline immediately on visibility/focus events to prevent drift after sleep or backgrounding.
+- **Notification permission.** The app no longer asks for notification permission when a session starts. It only checks permission right before showing a notification and silently skips it if not already granted.
+- **State save safety.** The sessions array is capped at 500 entries (FIFO eviction) to keep localStorage bounded.
+- **Escape behavior.** Escape now closes the music, prefs, and background menus before cancelling a session.
+- **AudioContext robustness.** The app now resumes a suspended AudioContext after sleep/wake or backgrounding before playing sounds.
+
+### Removed
+- YouTube iframe music player, `MUSIC_STREAMS`, and the Referer/CSP plumbing that supported it.
+
 ## [1.2.0] — 2026-07-11
 
 ### Added
@@ -66,7 +85,8 @@ Nothing yet.
 - Focus sounds: Lofi and Synthwave (YouTube streams), locally generated Rain for offline.
 - Today's intent pin, rotating landscape backgrounds, local weather, light and dark themes, keyboard shortcuts with a `?` overlay.
 
-[Unreleased]: https://github.com/budhennekes/focus-cycles/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/budhennekes/focus-cycles/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/budhennekes/focus-cycles/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/budhennekes/focus-cycles/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/budhennekes/focus-cycles/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/budhennekes/focus-cycles/compare/v1.0.1...v1.0.2

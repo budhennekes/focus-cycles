@@ -48,7 +48,7 @@ It's the difference between "I was busy" and knowing. Export everything to CSV w
 - **Always in view.** Shrink the window to a small floating bar and park it in a corner, or read the countdown right in the macOS menu bar while you work in another app.
 - **Crash-proof.** Quit, crash, or reboot mid-cycle and it resumes at the exact second you left, prompts included.
 - **Keyboard-first.** Space to start, S to skip, M for music, numbers to set your cycle count. Press `?` for the full map.
-- **Focus sounds, zero setup.** Lofi and synthwave radio, or locally generated rain that works with no internet. One key kills it.
+- **Focus sounds, zero setup.** Lofi, synthwave, and rain are all generated locally on your Mac with the Web Audio API — no streams, no network, no buffering. One key kills it.
 - **Calm by design.** Breaks bring a slow breathing pacer so the rest actually resets you. Finish a session and it quietly says well done.
 - **Private.** No account, no server, no analytics. Your history lives on your Mac and nowhere else.
 
@@ -98,8 +98,8 @@ In the app's local storage on your Mac. Nothing is transmitted anywhere. The His
 **Why does macOS warn me on first open?**
 The app isn't notarized with an Apple Developer certificate (that needs a paid Apple Developer account). The source is public in this repo, and the bypass in step 2 above is a one-time thing.
 
-**What if the music streams break?**
-Lofi uses a permanent YouTube upload, not a live stream, so it should stay put. Synthwave is a live radio that YouTube rotates every year or two; swapping the ID in `index.html` takes 30 seconds. Rain is generated on your Mac and can't break.
+**What if the music breaks?**
+All focus sounds are generated locally on your Mac, so they work offline and can't be taken down by a streaming service.
 
 **Why Electron for a single-page app?**
 It was the fastest path from working prototype to a real Mac app. The entire UI is [index.html](index.html), so if you'd rather run it as a browser tab or Safari web app, you can.
@@ -117,8 +117,19 @@ npm run package    # build the .app into dist/
 ## Credits
 
 - The **Work Cycles** method was created by **Sebastian Marshall** and the team at Ultraworking. This app is an independent tribute, built to keep the method alive after the original tool went offline. All credit for the thinking belongs to them.
-- Lofi and synthwave audio from [Lofi Girl](https://www.youtube.com/@LofiGirl), played through YouTube's embedded player.
+- Focus sounds are generated locally on your Mac using the Web Audio API.
 - Weather by [Open-Meteo](https://open-meteo.com). Built-in backgrounds from [Unsplash](https://unsplash.com).
+
+## Mac App Store build
+
+A sandboxed Mac App Store configuration is included. The regular `npm run package` builds the direct-distribution `.app` in `dist/`.
+
+To build a Mac App Store package:
+
+1. Join the Apple Developer Program and create a **Mac App Distribution** certificate + **Mac Installer Distribution** certificate.
+2. In `package.json`, replace `'3rd Party Mac Developer Application: Bud (TEAM_ID)'` in the `package-mas` script with your real certificate name (e.g. `3rd Party Mac Developer Application: Your Name (ABCD123456)`).
+3. Run `npm run package-mas` to produce `dist-mas/Focus Cycles-darwin-arm64/Focus Cycles.app`.
+4. Use `productbuild` to wrap it in a `.pkg` for App Store Connect upload.
 
 ## License
 

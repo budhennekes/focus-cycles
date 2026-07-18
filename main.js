@@ -110,13 +110,8 @@ const CONTENT_SECURITY_POLICY = [
   "media-src 'self'",
   "object-src 'none'",
   "base-uri 'none'",
-  "form-action 'none'",
-  // Focus-music streams run in an embedded YouTube player
-  "frame-src https://www.youtube-nocookie.com https://www.youtube.com"
+  "form-action 'none'"
 ].join('; ');
-
-// The music stream starts from a hidden player; don't require a gesture inside the frame
-app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
 // Two instances would race each other's localStorage writes — allow only one.
 let mainWin = null;
@@ -184,19 +179,8 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  // YouTube embeds refuse to play from file:// pages ("Error 153") because no
-  // Referer header is sent. Identify ourselves so the music player works.
-  session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
-    if (/^https:\/\/([a-z0-9-]+\.)*(youtube(-nocookie)?\.com|googlevideo\.com|ytimg\.com)\//i.test(details.url)) {
-      details.requestHeaders['Referer'] = 'https://focuscycles.app/';
-    }
-    callback({ requestHeaders: details.requestHeaders });
-  });
-
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-    // Apply our CSP only to the app's own documents. Third-party frames
-    // (the YouTube music player) must keep their own headers — stamping our
-    // restrictive CSP on them blocks their scripts and the player never starts.
+    // Apply our CSP only to the app's own documents.
     if (details.url.startsWith('file://')) {
       callback({
         responseHeaders: {

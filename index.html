@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.open-meteo.com https://ipwho.is https://ipapi.co; font-src 'self' data:; media-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src https://www.youtube-nocookie.com https://www.youtube.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.open-meteo.com https://ipwho.is https://ipapi.co; font-src 'self' data:; media-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Focus Cycles">
@@ -550,6 +550,63 @@
   .btn-primary:active { transform: scale(0.985); transition-duration: 0.08s; }
 
   .projection { text-align: center; font-size: 13px; color: var(--text-dim); margin-top: 14px; }
+
+  /* Session presets — one-click cycle/duration/break bundles */
+  .preset-row {
+    display: flex; gap: 8px; justify-content: center;
+    margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .preset-chip {
+    background: var(--panel-input);
+    border: 1px solid var(--panel-border);
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 12px; font-weight: 500;
+    color: var(--text-dim);
+    transition: transform 0.12s var(--ease-out), background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+  }
+  .preset-chip:hover { background: var(--panel-hover); color: var(--text); }
+  .preset-chip.selected {
+    background: var(--grad-primary-soft);
+    border-color: rgba(59,130,246,0.55);
+    color: var(--text);
+  }
+
+  /* Daily goal pill */
+  .goal-pill {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--panel);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    padding: 10px 16px;
+    margin: 0 auto 18px;
+    width: fit-content;
+    max-width: 90%;
+    font-size: 13px; font-weight: 500; color: var(--text-dim);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .goal-pill .label { white-space: nowrap; }
+  .goal-pill .value { color: var(--text); font-weight: 600; }
+  .goal-bar {
+    width: 80px; height: 6px;
+    background: var(--panel-input);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .goal-bar > i {
+    display: block; height: 100%; width: 0%;
+    background: var(--grad-primary);
+    border-radius: 3px;
+    transition: width 0.4s var(--ease-out);
+  }
+  @media (max-width: 540px) {
+    .goal-bar { width: 56px; }
+  }
 
   .credit-wrap { display: flex; justify-content: center; margin-top: 22px; }
   .credit-wrap.hidden { display: none; }
@@ -1150,7 +1207,7 @@
     position: absolute;
     bottom: calc(100% + 8px);
     right: 0;
-    min-width: 130px;
+    min-width: 180px;
     background: var(--panel-solid);
     border: 1px solid var(--panel-border);
     border-radius: 12px;
@@ -1180,16 +1237,36 @@
     color: var(--text);
   }
   .music-menu button.selected::after { content: ' ✓'; color: var(--accent-3); }
-  /* Hidden stream player — offscreen but not display:none so audio keeps playing */
-  .music-frame {
-    position: fixed;
-    left: -9999px;
-    top: 0;
-    width: 320px;
-    height: 180px;
-    border: 0;
-    opacity: 0.001;
-    pointer-events: none;
+  .music-volume {
+    padding: 8px 12px;
+    border-top: 1px solid var(--panel-border);
+    margin-top: 2px;
+  }
+  .music-volume label {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--text-faint); font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .music-volume input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none; appearance: none;
+    height: 4px;
+    background: var(--panel-input);
+    border-radius: 2px;
+    outline: none;
+  }
+  .music-volume input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    background: var(--accent-3);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .music-volume input[type="range"]::-moz-range-thumb {
+    width: 14px; height: 14px;
+    background: var(--accent-3);
+    border-radius: 50%; border: none;
+    cursor: pointer;
   }
 
   /* Bottom bar */
@@ -1451,7 +1528,19 @@
       <button class="quote-nav" id="quoteNext" aria-label="Next quote">›</button>
     </div>
 
+    <div class="goal-pill" id="goalPill">
+      <span class="label">Today:</span>
+      <span class="value" id="goalValue">0 / 120 min</span>
+      <span class="goal-bar"><i id="goalBar"></i></span>
+    </div>
+
     <div class="card">
+      <div class="preset-row" id="presetRow">
+        <button class="preset-chip" data-preset="sprint">Sprint · 1×25 + 5</button>
+        <button class="preset-chip" data-preset="deep">Deep Work · 4×50 + 10</button>
+        <button class="preset-chip" data-preset="standard">Standard · 5×30 + 10</button>
+      </div>
+
       <div class="section-label">How many focus cycles?</div>
 
       <div class="cycle-grid" id="cycleGrid">
@@ -1639,6 +1728,10 @@
       <button data-pref="quotes" role="menuitem">Quotes</button>
       <button data-pref="intent" role="menuitem">Today's main task</button>
       <button data-pref="sound" role="menuitem">Chime</button>
+      <div class="music-volume" style="border-top: 1px solid var(--panel-border); margin-top: 2px; padding-top: 8px;">
+        <label>Daily goal (minutes)</label>
+        <input type="number" id="dailyGoalInput" min="10" max="600" value="120" style="width: 100%; background: var(--panel-input); border: 1px solid var(--input-border); border-radius: 8px; padding: 6px 8px; font-size: 13px; color: var(--text);">
+      </div>
     </div>
     <button class="icon-btn icon-only" id="prefsBtn" title="Display options">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1650,6 +1743,10 @@
       <button data-mode="lofi" role="menuitem">Lofi</button>
       <button data-mode="synth" role="menuitem">Synthwave</button>
       <button data-mode="rain" role="menuitem">Rain</button>
+      <div class="music-volume">
+        <label>Volume <span id="musicVolumeValue">65%</span></label>
+        <input type="range" id="musicVolume" min="0" max="100" value="65" aria-label="Focus sound volume">
+      </div>
     </div>
     <button class="icon-btn" id="musicBtn" title="Focus sound · M toggles on/off">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
@@ -1704,6 +1801,8 @@ const defaultState = {
     bgIndex: 0,
     musicMode: 'off',
     musicLast: 'lofi',
+    musicVolume: 0.65,
+    dailyGoalMinutes: 120,
     showQuotes: true,
     showIntent: true,
     sound: true,   // the soft chime at phase transitions
@@ -1727,8 +1826,11 @@ function loadState() {
     return {
       ...structuredClone(defaultState),
       ...parsed,
-      // A corrupt sessions value would break every history read and session save
-      sessions: Array.isArray(parsed.sessions) ? parsed.sessions : [],
+      // A corrupt sessions value would break every history read and session save.
+      // Cap at 500 entries (FIFO) so localStorage stays bounded.
+      sessions: Array.isArray(parsed.sessions)
+        ? parsed.sessions.slice(Math.max(0, parsed.sessions.length - 500))
+        : [],
       settings: { ...defaultState.settings, ...(parsed.settings || {}) },
       intent: { ...defaultState.intent, ...(parsed.intent || {}) }
     };
@@ -2247,6 +2349,70 @@ function hydrateSetupFromState() {
   if (!MUSIC_MODES.includes(state.settings.musicLast) || state.settings.musicLast === 'off') {
     state.settings.musicLast = 'lofi';
   }
+  if (typeof state.settings.musicVolume !== 'number' || state.settings.musicVolume < 0 || state.settings.musicVolume > 1) {
+    state.settings.musicVolume = 0.65;
+  }
+  let goal = parseInt(state.settings.dailyGoalMinutes, 10);
+  if (isNaN(goal) || goal < 10 || goal > 600) { goal = 120; state.settings.dailyGoalMinutes = 120; }
+  document.getElementById('dailyGoalInput').value = goal;
+  document.getElementById('musicVolume').value = Math.round(state.settings.musicVolume * 100);
+  document.getElementById('musicVolumeValue').textContent = Math.round(state.settings.musicVolume * 100) + '%';
+  renderPresets();
+  renderDailyGoal();
+}
+
+/* ============================================================
+   SESSION PRESETS + DAILY GOAL
+============================================================ */
+const PRESETS = {
+  sprint: { cycles: 1, focusDuration: 25, breakDuration: 5 },
+  deep: { cycles: 4, focusDuration: 50, breakDuration: 10 },
+  standard: { cycles: 5, focusDuration: 30, breakDuration: 10 }
+};
+const presetRow = document.getElementById('presetRow');
+function applySessionPreset(name) {
+  const p = PRESETS[name];
+  if (!p) return;
+  state.settings.cycles = p.cycles;
+  state.settings.focusDuration = p.focusDuration;
+  state.settings.breakDuration = p.breakDuration;
+  focusSel.value = p.focusDuration;
+  breakSel.value = p.breakDuration;
+  customInput.value = p.cycles;
+  cycleGrid.querySelectorAll('.cycle-btn').forEach(b => b.classList.toggle('selected', parseInt(b.dataset.cycles, 10) === p.cycles));
+  renderPresets();
+  updateProjections();
+  saveState();
+}
+function renderPresets() {
+  const cur = { cycles: state.settings.cycles, focusDuration: state.settings.focusDuration, breakDuration: state.settings.breakDuration };
+  presetRow.querySelectorAll('[data-preset]').forEach(btn => {
+    const p = PRESETS[btn.dataset.preset];
+    const selected = p && p.cycles === cur.cycles && p.focusDuration === cur.focusDuration && p.breakDuration === cur.breakDuration;
+    btn.classList.toggle('selected', !!selected);
+  });
+}
+presetRow.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-preset]');
+  if (!btn) return;
+  applySessionPreset(btn.dataset.preset);
+});
+
+function getTodayFocusMinutes() {
+  const key = todayKey();
+  let mins = 0;
+  state.sessions.forEach(s => {
+    if (s.startedAt && new Date(s.startedAt).toISOString().slice(0, 10) === key) {
+      s.cycles.forEach(c => { if (c.completed && typeof c.minutes === 'number') mins += c.minutes; });
+    }
+  });
+  return mins;
+}
+function renderDailyGoal() {
+  const goal = state.settings.dailyGoalMinutes || 120;
+  const done = getTodayFocusMinutes();
+  document.getElementById('goalValue').textContent = `${done} / ${goal} min`;
+  document.getElementById('goalBar').style.width = Math.min(100, goal > 0 ? (done / goal) * 100 : 0) + '%';
 }
 
 /* ============================================================
@@ -2272,7 +2438,6 @@ function startFlow() {
     debrief: null,
     skippedPrompts: false
   };
-  requestNotificationPermission();
   if (cycles === 1) showSprintStart();
   else showPrep();
 }
@@ -2628,7 +2793,7 @@ function startRunner() {
   if (runner) clearInterval(runner);
   lastTimerRender = ''; // force a fresh render for the new timer
   document.getElementById('timerDisplay').classList.remove('paused');
-  runner = setInterval(tick, 250);
+  runner = setInterval(tick, 1000);
 }
 function stopRunner() {
   if (runner) clearInterval(runner);
@@ -2934,6 +3099,7 @@ function endSession(completed) {
   setRandomQuote();
   updateProjections();
   renderIntent();
+  renderDailyGoal();
   showScreen('setupScreen');
   if (completed) {
     showToast(completionMessage());
@@ -3393,6 +3559,16 @@ prefsMenu.addEventListener('click', (e) => {
   renderPrefsMenu();
   if (key === 'sound' && state.settings.sound) chime('break'); // preview the tone when turned on
 });
+const dailyGoalInput = document.getElementById('dailyGoalInput');
+dailyGoalInput.addEventListener('change', () => {
+  let v = parseInt(dailyGoalInput.value, 10);
+  if (isNaN(v) || v < 10) v = 10;
+  if (v > 600) v = 600;
+  state.settings.dailyGoalMinutes = v;
+  dailyGoalInput.value = v;
+  renderDailyGoal();
+  saveState();
+});
 document.addEventListener('click', () => togglePrefsMenu(false));
 
 document.getElementById('themeBtn').addEventListener('click', toggleTheme);
@@ -3409,14 +3585,19 @@ shortcutsOverlay.addEventListener('click', () => toggleShortcuts(false));
 /* ============================================================
    NOTIFICATIONS + CHIME
 ============================================================ */
-function requestNotificationPermission() {
-  if ('Notification' in window && Notification.permission === 'default') {
-    try { Notification.requestPermission(); } catch (e) {}
-  }
-}
 function notify(msg) {
-  if ('Notification' in window && Notification.permission === 'granted' && document.hidden) {
+  if (!('Notification' in window) || !document.hidden) return;
+  if (Notification.permission === 'granted') {
     try { new Notification('Focus Cycles', { body: msg, silent: false }); } catch (e) {}
+  } else if (Notification.permission === 'default') {
+    // Only ask the first time a notification would actually fire.
+    try {
+      Notification.requestPermission().then((perm) => {
+        if (perm === 'granted') {
+          try { new Notification('Focus Cycles', { body: msg, silent: false }); } catch (e) {}
+        }
+      });
+    } catch (e) {}
   }
 }
 let audioCtx = null;
@@ -3442,27 +3623,21 @@ function chime(kind) {
 
 /* ============================================================
    FOCUS SOUND — generated locally with WebAudio.
-   No network, no buffering, works offline. Three sounds:
-   Rain (filtered noise + gentle patter), Deep (brown noise),
-   Drift (slow warm pad). M key or the Music button cycles them.
+   No network, no buffering, works offline.
+   Menu labels stay Off / Lofi / Synthwave / Rain for existing habits;
+   "Synthwave" maps to the warm Drift pad.
 ============================================================ */
 const MUSIC_MODES = ['off', 'lofi', 'synth', 'rain'];
 const MUSIC_LABELS = { off: 'Music', lofi: 'Lofi', synth: 'Synthwave', rain: 'Rain' };
-// Lofi Girl audio, embedded in a hidden player only while playing.
-// Lofi = "1 A.M Study Session", a permanent upload looped forever — uploaded
-// video IDs never rotate, unlike live streams, so this URL is stable for good.
-// Synth = the synthwave live radio (verified live July 2026; if it ever dies,
-// grab the new ID from youtube.com/@LofiGirl/streams).
-// Rain stays locally generated so one sound always works offline.
-const MUSIC_STREAMS = {
-  lofi: { id: 'lTRiuFIWV54', loop: true },
-  synth: { id: '4xDzrJKXOOY' }
-};
-let musicNodes = null; // active WebAudio graph, null when off/streaming
+// Internal generator names. The UI still says "Synthwave", but it plays Drift.
+const MUSIC_MAP = { lofi: 'lofi', synth: 'drift', rain: 'rain' };
+let musicNodes = null; // active WebAudio graph, null when off
 
 function ensureAudioCtx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume().catch(() => {});
+  }
   return audioCtx;
 }
 
@@ -3485,17 +3660,17 @@ function makeNoiseBuffer(ctx, kind) {
   return buf;
 }
 
-function stopMusic() {
-  // Drop the stream player entirely — frees its memory and network
-  const frame = document.getElementById('musicFrame');
-  if (frame) frame.remove();
+function musicVolumeGain(baseLevel) {
+  return baseLevel * (typeof state.settings.musicVolume === 'number' ? state.settings.musicVolume : 0.65);
+}
 
+function stopMusic() {
   if (!musicNodes) return;
   const { master, sources, timers } = musicNodes;
   musicNodes = null;
   timers.forEach(clearInterval);
   try {
-    // 300ms fade-out, then release the graph
+    // ~300 ms fade-out, then release the graph
     master.gain.setTargetAtTime(0, audioCtx.currentTime, 0.08);
     setTimeout(() => {
       sources.forEach(s => { try { s.stop(); } catch (e) {} });
@@ -3504,45 +3679,9 @@ function stopMusic() {
   } catch (e) {}
 }
 
-function startStream(stream) {
-  if (navigator.onLine === false) {
-    showToast('No internet for streams. Rain works offline.');
-  }
-  const frame = document.createElement('iframe');
-  frame.id = 'musicFrame';
-  frame.className = 'music-frame';
-  frame.allow = 'autoplay; encrypted-media';
-  frame.title = 'Focus music stream';
-  let src = `https://www.youtube-nocookie.com/embed/${stream.id}?enablejsapi=1&autoplay=1&controls=0&disablekb=1&fs=0&iv_load_policy=3`;
-  // Looping a single video requires the playlist param set to its own id
-  if (stream.loop) src += `&loop=1&playlist=${stream.id}`;
-  frame.src = src;
-  document.body.appendChild(frame);
-  // Live streams don't reliably honor autoplay=1 — drive the player through
-  // the official JS API instead. Commands are idempotent; send a few while
-  // the player boots, stop once the frame is gone.
-  let attempts = 0;
-  const kick = setInterval(() => {
-    const f = document.getElementById('musicFrame');
-    if (!f || attempts >= 6) { clearInterval(kick); return; }
-    attempts += 1;
-    try {
-      ['playVideo', 'unMute', 'setVolume'].forEach(func => {
-        f.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args: func === 'setVolume' ? [65] : [] }), '*');
-      });
-    } catch (e) {}
-  }, 1500);
-}
-
 function startMusic(mode) {
   stopMusic();
   if (mode === 'off') return;
-
-  // Streamed modes — hidden YouTube player, created only while playing
-  if (MUSIC_STREAMS[mode]) {
-    startStream(MUSIC_STREAMS[mode]);
-    return;
-  }
 
   try {
     const ctx = ensureAudioCtx();
@@ -3551,8 +3690,10 @@ function startMusic(mode) {
     master.connect(ctx.destination);
     const sources = [];
     const timers = [];
+    const now = ctx.currentTime;
+    const kind = MUSIC_MAP[mode] || mode;
 
-    if (mode === 'rain') {
+    if (kind === 'rain') {
       const src = ctx.createBufferSource();
       src.buffer = makeNoiseBuffer(ctx, 'white');
       src.loop = true;
@@ -3563,15 +3704,162 @@ function startMusic(mode) {
       src.connect(hp); hp.connect(lp); lp.connect(master);
       src.start();
       sources.push(src);
-      // Slow filter wander so the rain doesn't sound like a static hiss
       timers.push(setInterval(() => {
         if (!musicNodes) return;
         lp.frequency.setTargetAtTime(1100 + Math.random() * 700, ctx.currentTime, 2.5);
       }, 4000));
-      master.gain.setTargetAtTime(0.14, ctx.currentTime, 0.4);
+      master.gain.setTargetAtTime(musicVolumeGain(0.14), now, 0.4);
+    }
+
+    if (kind === 'deep') {
+      const src = ctx.createBufferSource();
+      src.buffer = makeNoiseBuffer(ctx, 'brown');
+      src.loop = true;
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 400; lp.Q.value = 0.5;
+      src.connect(lp); lp.connect(master);
+      src.start();
+      sources.push(src);
+      master.gain.setTargetAtTime(musicVolumeGain(0.12), now, 0.6);
+    }
+
+    if (kind === 'drift') {
+      // Slow warm pad with subtle chord movement (Fmaj7-ish).
+      const freqs = [174.61, 220.00, 261.63, 329.63]; // F3 A3 C4 E4
+      const lfo = ctx.createOscillator();
+      lfo.type = 'sine'; lfo.frequency.value = 0.07;
+      const lfoGain = ctx.createGain(); lfoGain.gain.value = 400;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass'; filter.frequency.value = 900; filter.Q.value = 0.6;
+      lfo.connect(lfoGain); lfoGain.connect(filter.frequency);
+      lfo.start();
+      sources.push(lfo);
+      freqs.forEach((f, idx) => {
+        const osc = ctx.createOscillator();
+        osc.type = idx === 0 ? 'triangle' : 'sine';
+        osc.frequency.value = f;
+        const g = ctx.createGain();
+        g.gain.value = 0;
+        // Slow beating between voices
+        const detune = ctx.createOscillator();
+        detune.type = 'sine';
+        detune.frequency.value = 0.05 + idx * 0.02;
+        const dg = ctx.createGain();
+        dg.gain.value = 4;
+        detune.connect(dg); dg.connect(osc.detune);
+        detune.start();
+        sources.push(osc, detune);
+        osc.connect(g); g.connect(filter);
+        osc.start();
+        // Chord swell ~6 s in; volume is handled at the master gain
+        g.gain.setValueAtTime(0, now);
+        g.gain.linearRampToValueAtTime(0.035, now + 6);
+      });
+      filter.connect(master);
+      // Gentle chord re-trigger every ~24 s so the pad keeps evolving
+      timers.push(setInterval(() => {
+        if (!musicNodes) return;
+        const t = ctx.currentTime;
+        filter.frequency.setValueAtTime(700 + Math.random() * 400, t);
+      }, 24000));
+      master.gain.setTargetAtTime(musicVolumeGain(1), now, 1.2);
+    }
+
+    if (kind === 'lofi') {
+      // Soft Rhodes-like chords
+      const chordSets = [
+        [261.63, 329.63, 392.00, 493.88], // Cmaj7
+        [293.66, 349.23, 440.00, 523.25], // Fmaj7
+        [220.00, 261.63, 329.63, 392.00], // Amin7
+        [246.94, 293.66, 349.23, 440.00]  // Bmin7b5
+      ];
+      let chordIdx = 0;
+      const chordGain = ctx.createGain();
+      chordGain.gain.value = 0;
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 1800; lp.Q.value = 0.5;
+      chordGain.connect(lp); lp.connect(master);
+
+      function playChord() {
+        if (!musicNodes) return;
+        const freqs = chordSets[chordIdx];
+        chordIdx = (chordIdx + 1) % chordSets.length;
+        const t = ctx.currentTime;
+        chordGain.gain.cancelScheduledValues(t);
+        chordGain.gain.setValueAtTime(0, t);
+        chordGain.gain.linearRampToValueAtTime(0.045, t + 0.8);
+        chordGain.gain.exponentialRampToValueAtTime(0.001, t + 9);
+        freqs.forEach((f, i) => {
+          const osc = ctx.createOscillator();
+          osc.type = 'sine';
+          osc.frequency.value = f;
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0, t);
+          g.gain.linearRampToValueAtTime(0.08, t + 0.05 + i * 0.04);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 8);
+          osc.connect(g); g.connect(lp);
+          osc.start(t); osc.stop(t + 9);
+        });
+      }
+      playChord();
+      timers.push(setInterval(playChord, 10000));
+
+      // Vinyl crackle
+      const crackleSrc = ctx.createBufferSource();
+      crackleSrc.buffer = makeNoiseBuffer(ctx, 'white');
+      crackleSrc.loop = true;
+      const crackleHp = ctx.createBiquadFilter();
+      crackleHp.type = 'highpass'; crackleHp.frequency.value = 3000;
+      const crackleGain = ctx.createGain();
+      crackleGain.gain.value = 0.018;
+      crackleSrc.connect(crackleHp); crackleHp.connect(crackleGain); crackleGain.connect(master);
+      crackleSrc.start();
+      sources.push(crackleSrc);
+      // Occasional pops
+      timers.push(setInterval(() => {
+        if (!musicNodes || Math.random() > 0.25) return;
+        const t = ctx.currentTime;
+        const pop = ctx.createBufferSource();
+        pop.buffer = makeNoiseBuffer(ctx, 'white');
+        const popHp = ctx.createBiquadFilter();
+        popHp.type = 'highpass'; popHp.frequency.value = 2000;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.006, t);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.02);
+        pop.connect(popHp); popHp.connect(g); g.connect(master);
+        pop.start(t); pop.stop(t + 0.02);
+      }, 700));
+
+      // Gentle brushed beat
+      timers.push(setInterval(() => {
+        if (!musicNodes) return;
+        const t = ctx.currentTime;
+        const beat = ctx.createBufferSource();
+        beat.buffer = makeNoiseBuffer(ctx, 'white');
+        const bpf = ctx.createBiquadFilter();
+        bpf.type = 'bandpass'; bpf.frequency.value = 1200; bpf.Q.value = 0.8;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(0.025, t + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+        beat.connect(bpf); bpf.connect(g); g.connect(master);
+        beat.start(t); beat.stop(t + 0.15);
+      }, 2200));
+
+      master.gain.setTargetAtTime(musicVolumeGain(1), now, 0.6);
     }
 
     musicNodes = { master, sources, timers };
+  } catch (e) {}
+}
+
+function applyMusicVolume() {
+  if (!musicNodes) return;
+  try {
+    const kind = MUSIC_MAP[state.settings.musicMode] || state.settings.musicMode;
+    // The master gain already carries the base mix level; rescale it.
+    const base = kind === 'rain' ? 0.14 : kind === 'deep' ? 0.12 : kind === 'drift' ? 1 : kind === 'lofi' ? 1 : 0;
+    musicNodes.master.gain.setTargetAtTime(musicVolumeGain(base), audioCtx.currentTime, 0.1);
   } catch (e) {}
 }
 
@@ -3620,6 +3908,14 @@ musicMenu.addEventListener('click', (e) => {
   if (!btn) return;
   setMusicMode(btn.dataset.mode);
   toggleMusicMenu(false);
+});
+const musicVolumeInput = document.getElementById('musicVolume');
+musicVolumeInput.addEventListener('input', (e) => {
+  const v = Math.max(0, Math.min(100, parseInt(e.target.value, 10) || 0)) / 100;
+  state.settings.musicVolume = v;
+  document.getElementById('musicVolumeValue').textContent = Math.round(v * 100) + '%';
+  applyMusicVolume();
+  saveStateSoon();
 });
 // Click anywhere else closes the menu
 document.addEventListener('click', () => toggleMusicMenu(false));
@@ -3952,11 +4248,13 @@ function init() {
 
   // Reconcile immediately after sleep, focus, or tab visibility changes. The timer
   // is deadline-based, so this avoids displaying stale time until the next interval.
+  function onWindowActive() {
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+    if (timerState && !timerState.paused) tick();
+    if (currentSession) saveActive(true);
+  }
   ['visibilitychange', 'focus', 'pageshow'].forEach((eventName) => {
-    window.addEventListener(eventName, () => {
-      if (timerState && !timerState.paused) tick();
-      if (currentSession) saveActive(true);
-    });
+    window.addEventListener(eventName, onWindowActive);
   });
 
   // Delegated cancel-link handler — works for any prompt screen
