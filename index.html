@@ -736,6 +736,11 @@
     font-style: italic; opacity: 0.9;
     line-height: 1.5;
   }
+  .cycle-next-action {
+    max-width: 500px; margin: -12px auto 20px;
+    color: var(--text-faint); font-size: 12px; line-height: 1.4;
+  }
+  .cycle-next-action strong { color: var(--text-dim); font-weight: 600; }
   .cycle-dots { display: flex; gap: 8px; justify-content: center; margin-bottom: 32px; }
   .cycle-dot {
     width: 10px; height: 10px; border-radius: 50%;
@@ -1370,10 +1375,16 @@
       font-size: 13px; font-style: normal; opacity: 1;
       color: var(--text); line-height: 1.25; order: 0;
     }
+    #activeScreen .cycle-next-action {
+      display: block; order: 1; margin: 0; max-width: none;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 11px; color: var(--text-dim); line-height: 1.25;
+    }
+    #activeScreen .cycle-next-action:empty { display: none; }
     #activeScreen .cycle-indicator {
       margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       font-size: 10px; letter-spacing: 0.3px; font-weight: 500;
-      color: var(--text-faint); order: 1;
+      color: var(--text-faint); order: 2;
     }
     /* When there's no task set, the count carries the middle on its own. */
     #activeScreen .cycle-meta:not(.has-task) .cycle-indicator {
@@ -1536,9 +1547,9 @@
 
     <div class="card">
       <div class="preset-row" id="presetRow">
-        <button class="preset-chip" data-preset="sprint">Sprint · 1×25 + 5</button>
-        <button class="preset-chip" data-preset="deep">Deep Work · 4×50 + 10</button>
-        <button class="preset-chip" data-preset="standard">Standard · 5×30 + 10</button>
+        <button class="preset-chip" data-preset="start">Start small · 1×10 + 5</button>
+        <button class="preset-chip" data-preset="admin">Admin · 2×25 + 5</button>
+        <button class="preset-chip" data-preset="deep">Deep work · 2×45 + 10</button>
       </div>
 
       <div class="section-label">How many focus cycles?</div>
@@ -1560,6 +1571,7 @@
         <div class="duration-field">
           <label>Focus duration</label>
           <select id="focusDuration">
+            <option value="10">10 min</option>
             <option value="15">15 min</option>
             <option value="20">20 min</option>
             <option value="25">25 min</option>
@@ -1609,6 +1621,7 @@
       <div class="cycle-meta">
         <div class="cycle-indicator" id="cycleIndicator">Cycle 1 of 5</div>
         <div class="cycle-target" id="cycleTarget"></div>
+        <div class="cycle-next-action" id="cycleNextAction"></div>
       </div>
       <div class="breathe-caption" aria-hidden="true"><span class="bi">Breathe in</span><span class="bo">and out</span></div>
       <div class="cycle-dots" id="cycleDots"></div>
@@ -2365,9 +2378,9 @@ function hydrateSetupFromState() {
    SESSION PRESETS + DAILY GOAL
 ============================================================ */
 const PRESETS = {
-  sprint: { cycles: 1, focusDuration: 25, breakDuration: 5 },
-  deep: { cycles: 4, focusDuration: 50, breakDuration: 10 },
-  standard: { cycles: 5, focusDuration: 30, breakDuration: 10 }
+  start: { cycles: 1, focusDuration: 10, breakDuration: 5 },
+  admin: { cycles: 2, focusDuration: 25, breakDuration: 5 },
+  deep: { cycles: 2, focusDuration: 45, breakDuration: 10 }
 };
 const presetRow = document.getElementById('presetRow');
 function applySessionPreset(name) {
@@ -2562,7 +2575,8 @@ function showSprintEnd() {
     ${fieldChoice('sprint_hit', 'Completed your target?', [
       {value: 'yes', label: 'Yes'}, {value: 'partial', label: 'Partial'}, {value: 'no', label: 'No'}
     ])}
-    ${fieldTextarea('sprint_note', 'Anything noteworthy?', 'Wins, blockers, surprises...', '', 2)}
+    ${fieldTextarea('sprint_note', 'What moved forward?', 'The output, win, or useful insight...', '', 2)}
+    ${fieldText('sprint_next_action', 'What is the next physical action?', 'The first thing to do when you return...', '')}
     <div class="prompt-actions">
       <button class="btn-ghost" id="sprintEndSkipBtn">Skip</button>
       <button class="btn-primary" id="sprintEndSaveBtn">Save and finish</button>
@@ -2580,7 +2594,9 @@ function showSprintEnd() {
       cycle.review = {
         completed_target: readChoice(c, 'sprint_hit'),
         noteworthy: readField(c, 'sprint_note'),
-        distractions: '', improvements: ''
+        distractions: '',
+        next_action: readField(c, 'sprint_next_action'),
+        improvements: ''
       };
     }
     endSession(true);
@@ -2594,16 +2610,11 @@ function showPrep() {
   const c = document.getElementById('promptContent');
   c.innerHTML = `
     <div class="phase-tag focus" style="display: block; text-align: center; margin: 0 auto 14px; width: fit-content;">PREPARE THE SESSION</div>
-    <h2 class="prompt-title">Get in the right mindset</h2>
-    <p class="prompt-sub">Two minutes here saves an hour of drift. Skip any field that doesn't apply.</p>
+    <h2 class="prompt-title">Set up the work, not a perfect plan</h2>
+    <p class="prompt-sub">Thirty seconds. Name the outcome, define done, and remove the obvious distraction.</p>
     ${fieldTextarea('prep_accomplish', 'What am I trying to accomplish?', 'e.g. Ship the Q2 email campaign, 3 emails + assets', '', 2)}
-    ${fieldTextarea('prep_why', 'Why is this important and valuable?', 'Who benefits? What depends on this?', '', 2)}
     ${fieldTextarea('prep_complete', 'How will I know this is complete?', 'What does done look like?', '', 2)}
-    ${fieldTextarea('prep_hazards', 'Any risks, hazards, or likely distractions?', 'Slack, context-switching, perfectionism...', '', 2)}
-    ${fieldChoice('prep_measurable', 'Is this concrete or ambiguous?', [
-      {value: 'yes', label: 'Concrete'}, {value: 'partial', label: 'Mixed'}, {value: 'no', label: 'Ambiguous'}
-    ])}
-    ${fieldTextarea('prep_other', 'Anything else noteworthy?', '', '', 1)}
+    ${fieldText('prep_hazards', 'What will you protect this block from?', 'Slack, context-switching, perfectionism...', '')}
     <div class="prompt-actions">
       <button class="btn-ghost" id="prepSkipBtn">Skip prep</button>
       <button class="btn-primary" id="prepContinueBtn">Continue to cycle 1</button>
@@ -2624,11 +2635,8 @@ function showPrep() {
     if (!skip) {
       currentSession.prep = {
         accomplish: readField(c, 'prep_accomplish'),
-        why: readField(c, 'prep_why'),
         complete_signal: readField(c, 'prep_complete'),
-        hazards: readField(c, 'prep_hazards'),
-        measurable: readChoice(c, 'prep_measurable'),
-        other: readField(c, 'prep_other')
+        hazards: readField(c, 'prep_hazards')
       };
     }
     showCyclePlan(0);
@@ -2649,10 +2657,10 @@ function showCyclePlan(cycleIdx) {
   c.innerHTML = `
     <div class="phase-tag focus" style="display: block; text-align: center; margin: 0 auto 14px; width: fit-content;">PLAN CYCLE ${n} OF ${currentSession.totalCycles}</div>
     <h2 class="prompt-title">Set this cycle up for a win</h2>
-    <p class="prompt-sub">30 seconds of planning beats 30 minutes of drift.</p>
-    ${fieldTextarea('plan_accomplish', 'What am I trying to accomplish this cycle?', 'e.g. Finish the hero copy draft', '', 2)}
-    ${fieldText('plan_start', 'How will I get started?', 'The first action — open the doc, pull up the brief...', '')}
-    ${fieldText('plan_hazards', 'Any hazards present right now?', 'What could pull me off course?', '')}
+    <p class="prompt-sub">Name the outcome and the first physical action. That is enough to start.</p>
+    ${fieldTextarea('plan_accomplish', 'What outcome will move forward?', 'e.g. Finish the hero copy draft', '', 2)}
+    ${fieldText('plan_start', 'What is the next physical action?', 'Open the brief, write the first paragraph, pull the source...', priorNextAction(cycleIdx))}
+    ${fieldText('plan_hazards', 'What could pull you off course?', 'Slack, context-switching, perfectionism...', '')}
     ${fieldScale('plan_energy', 'Energy (1 low → 10 peak)', 7)}
     ${fieldScale('plan_morale', 'Morale (1 low → 10 great)', 7)}
     <div class="prompt-actions">
@@ -2707,14 +2715,14 @@ function showCycleReview(cycleIdx, isLast) {
   const c = document.getElementById('promptContent');
   c.innerHTML = `
     <div class="phase-tag focus" style="display: block; text-align: center; margin: 0 auto 14px; width: fit-content;">CYCLE ${cycleIdx + 1} REVIEW</div>
-    <h2 class="prompt-title">How did that cycle go?</h2>
-    <p class="prompt-sub">Quick review. Skip anything that doesn't apply.</p>
+    <h2 class="prompt-title">Close the loop</h2>
+    <p class="prompt-sub">Capture what moved, what blocked you, and the next action before the break.</p>
     ${fieldChoice('rev_target', "Completed cycle's target?", [
       {value: 'yes', label: 'Yes'}, {value: 'partial', label: 'Partial'}, {value: 'no', label: 'No'}
     ])}
-    ${fieldTextarea('rev_noteworthy', 'Anything noteworthy?', 'Wins, insights, surprises...', '', 2)}
-    ${fieldText('rev_distractions', 'Any distractions?', 'What pulled you off?')}
-    ${fieldText('rev_improve', 'Things to improve for next cycle?', '')}
+    ${fieldTextarea('rev_noteworthy', 'What moved forward?', 'The output, win, or useful insight...', '', 2)}
+    ${fieldText('rev_distractions', 'What blocked you?', 'Distraction, uncertainty, missing input...', '')}
+    ${fieldText('rev_next_action', 'What is the next physical action?', 'The first thing to do after the break...', '')}
     <div class="prompt-actions">
       <button class="btn-ghost" id="revSkipBtn">Skip</button>
       <button class="btn-primary" id="revContinueBtn">${isLast ? 'Finish session' : 'Take a break'}</button>
@@ -2732,7 +2740,8 @@ function showCycleReview(cycleIdx, isLast) {
         completed_target: readChoice(c, 'rev_target'),
         noteworthy: readField(c, 'rev_noteworthy'),
         distractions: readField(c, 'rev_distractions'),
-        improvements: readField(c, 'rev_improve')
+        next_action: readField(c, 'rev_next_action'),
+        improvements: ''
       };
     }
     proceedAfterReview(cycleIdx, isLast);
@@ -2742,6 +2751,12 @@ function showCycleReview(cycleIdx, isLast) {
 function proceedAfterReview(cycleIdx, isLast) {
   if (isLast) { showDebrief(); return; }
   startBreakTimer(cycleIdx);
+}
+
+function priorNextAction(cycleIdx) {
+  if (cycleIdx < 1 || !currentSession || !currentSession.cycles[cycleIdx - 1]) return '';
+  const review = currentSession.cycles[cycleIdx - 1].review || {};
+  return review.next_action || review.improvements || '';
 }
 
 /* ---------- Debrief (after full session) ---------- */
@@ -2907,8 +2922,10 @@ function renderActive() {
   // Show the cycle's target if user set one
   const cycle = currentSession.cycles[timerState.cycleIdx];
   const tgt = cycle && cycle.plan && cycle.plan.accomplish ? cycle.plan.accomplish : '';
+  const next = cycle && cycle.plan && cycle.plan.start ? cycle.plan.start : '';
   const showTask = timerState.phase === 'focus' && tgt;
   document.getElementById('cycleTarget').textContent = showTask ? `"${tgt}"` : '';
+  document.getElementById('cycleNextAction').innerHTML = timerState.phase === 'focus' && next ? `<strong>Next:</strong> ${escapeHtml(next)}` : '';
   // Drives the mini-bar fallback: with no task, the cycle count carries the strip.
   document.querySelector('.cycle-meta').classList.toggle('has-task', !!showTask);
 
@@ -3377,7 +3394,7 @@ function renderSessionDetail(s) {
       if (review.completed_target) parts2.push(`target: ${review.completed_target}`);
       if (review.noteworthy) parts2.push(`note: ${escapeHtml(review.noteworthy)}`);
       if (review.distractions) parts2.push(`distractions: ${escapeHtml(review.distractions)}`);
-      if (review.improvements) parts2.push(`next: ${escapeHtml(review.improvements)}`);
+      if (review.next_action || review.improvements) parts2.push(`next: ${escapeHtml(review.next_action || review.improvements)}`);
     }
     parts.push(`<span class="dk">Cycle ${i + 1}${c.completed ? '' : ' (incomplete)'}</span><span class="dv">${parts2.join(' · ') || '(no plan/review)'}</span>`);
   });
@@ -3430,7 +3447,7 @@ function escapeAttr(s) {
 
 /* Export CSV */
 function exportCsv() {
-  const rows = [['session_id', 'session_started', 'cycle_index', 'cycle_started', 'cycle_ended', 'minutes', 'completed', 'target', 'energy', 'morale', 'plan_accomplish', 'plan_hazards', 'review_note', 'review_distractions', 'review_improve']];
+  const rows = [['session_id', 'session_started', 'cycle_index', 'cycle_started', 'cycle_ended', 'minutes', 'completed', 'target', 'energy', 'morale', 'plan_accomplish', 'plan_next_action', 'plan_hazards', 'review_note', 'review_distractions', 'review_next_action']];
   state.sessions.forEach(s => {
     s.cycles.forEach(c => {
       rows.push([
@@ -3440,10 +3457,10 @@ function exportCsv() {
         c.minutes, c.completed ? 'yes' : 'no',
         (c.review && c.review.completed_target) || '',
         (c.plan && c.plan.energy) || '', (c.plan && c.plan.morale) || '',
-        (c.plan && c.plan.accomplish) || '', (c.plan && c.plan.hazards) || '',
+        (c.plan && c.plan.accomplish) || '', (c.plan && c.plan.start) || '', (c.plan && c.plan.hazards) || '',
         (c.review && c.review.noteworthy) || '',
         (c.review && c.review.distractions) || '',
-        (c.review && c.review.improvements) || ''
+        (c.review && (c.review.next_action || c.review.improvements)) || ''
       ]);
     });
   });

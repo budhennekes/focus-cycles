@@ -15,7 +15,7 @@ new vm.Script(main, { filename: 'main.js' });
 
 const html = fs.readFileSync('index.html', 'utf8');
 for (const id of [
-  'setupScreen', 'promptScreen', 'activeScreen', 'historyScreen', 'timerDisplay',
+  'setupScreen', 'promptScreen', 'activeScreen', 'historyScreen', 'timerDisplay', 'cycleNextAction',
   'statGrid', 'bars', 'sessionList', 'targetPanel', 'targetRing', 'energyPanel',
   'energyBars', 'energyLabels', 'wisdomPanel', 'wisdomList', 'hazardPanel', 'hazardList'
 ]) {
@@ -62,7 +62,14 @@ for (const marker of [
   'musicVolume',
   'dailyGoalMinutes',
   'applySessionPreset',
-  'renderDailyGoal'
+  'renderDailyGoal',
+  "data-preset=\"start\"",
+  "data-preset=\"admin\"",
+  'function priorNextAction',
+  "'rev_next_action'",
+  "'sprint_next_action'",
+  'plan_next_action',
+  'review_next_action'
 ]) {
   if (!html.includes(marker)) throw new Error(`Expected hardening/history marker missing: ${marker}`);
 }

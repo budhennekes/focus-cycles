@@ -4,7 +4,12 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+- **Work-cycle presets for real conditions.** Start small (1×10 + 5), Admin (2×25 + 5), and Deep work (2×45 + 10) make the first choice useful instead of making every task fit the same timer.
+- **Next-action handoff.** The next physical action is visible during focus, captured at cycle review, and prefilled into the next cycle after a break. The CSV export now includes plan and review next actions.
+
+### Changed
+- **Faster planning and review.** Full-session prep now asks only for the outcome, completion signal, and protected focus. Cycle planning centers the outcome and first physical action. Reviews close the loop with what moved, what blocked you, and what to do next.
 
 ## [1.3.0] — 2026-07-17
 
