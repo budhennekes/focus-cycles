@@ -1,95 +1,178 @@
-const { app, BrowserWindow, Menu, Tray, nativeImage, ipcMain, screen, shell, session } = require('electron');
+const { app, BrowserWindow, Menu, Tray, nativeImage, ipcMain, screen, shell, session, dialog } = require('electron');
+const fs = require('fs/promises');
 const path = require('path');
 
 app.setName('Focus Cycles');
 
-// Compact "mini bar" — shrink the window in place to a small always-on-top
-// strip (so it clearly reads as the same window getting smaller), and restore.
+const { pathToFileURL } = require('url');
+const APP_URL = pathToFileURL(path.join(__dirname, 'index.html')).href;
+const NORMAL_MIN = [480, 560];
 let savedBounds = null;
-function isCompact() { return savedBounds !== null; }
-function setCompact(on) {
-  if (!mainWin) return;
-  if (on) {
-    if (savedBounds) return; // already compact
-    savedBounds = mainWin.getBounds();
-    const b = savedBounds;
-    const w = 420, h = 88;
-    // Anchor the bar near the window's current top edge so it shrinks in place
-    const area = screen.getDisplayNearestPoint(b).workArea;
-    const x = Math.min(Math.max(b.x, area.x), area.x + area.width - w);
-    const y = Math.min(Math.max(b.y, area.y), area.y + area.height - h);
-    mainWin.setBounds({ x, y, width: w, height: h }, true);
-    mainWin.setMovable(true);
-    // Float above normal windows, and stay visible across spaces and over
-    // fullscreen apps — the standard for a floating mini widget.
-    mainWin.setAlwaysOnTop(true, 'floating');
-    mainWin.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-    mainWin.setOpacity(0.9); // gently translucent; solid on hover (see renderer)
-  } else {
-    mainWin.setAlwaysOnTop(false);
-    mainWin.setVisibleOnAllWorkspaces(false);
-    mainWin.setOpacity(1);
-    if (savedBounds) { mainWin.setBounds(savedBounds, true); savedBounds = null; }
-    else { mainWin.setSize(1000, 760, true); mainWin.center(); } // manual shrink: restore a usable size
-  }
-}
-ipcMain.on('set-compact', (_e, on) => setCompact(!!on));
-
-// Hover-to-solidify: the mini bar sits slightly translucent so it stays out of
-// the way, and goes fully opaque while the pointer is over it.
-ipcMain.on('bar-opacity', (_e, v) => {
-  if (mainWin && isCompact()) mainWin.setOpacity(Math.max(0.5, Math.min(1, Number(v) || 1)));
-});
-
-// Manual drag: the renderer captures the pointer and streams deltas from the
-// position where the drag began. Moving from a fixed origin avoids drift.
+let compact = false;
+let quitting = false;
 let dragOrigin = null;
-ipcMain.on('drag-start', () => { if (mainWin) dragOrigin = mainWin.getBounds(); });
-ipcMain.on('drag-move', (_e, dx, dy) => {
-  if (!mainWin || !dragOrigin) return;
-  mainWin.setBounds({
-    x: Math.round(dragOrigin.x + (Number(dx) || 0)),
-    y: Math.round(dragOrigin.y + (Number(dy) || 0)),
-    width: dragOrigin.width,
-    height: dragOrigin.height
-  });
-});
-ipcMain.on('drag-end', () => { dragOrigin = null; });
-
-// Menu-bar countdown. The tray appears only while a session is running (the
-// renderer sends the time each visible second, and an empty string to clear).
-// The non-empty title also tells us a timer is active, which drives the
-// "minimize turns into the mini bar" behavior below.
 let tray = null;
-let sessionRunning = false;
+let trayMenuKey = '';
+let lastCompactAvailability = null;
+let windowStatus = { phase: 'idle', paused: false, seconds: 0 };
+function isCompact() { return compact; }
+function hasTimer() { return ['focus', 'break'].includes(windowStatus.phase); }
+function canCompact() { return !!mainWin && !mainWin.isDestroyed() && hasTimer() && !compact && !mainWin.isFullScreen(); }
+function isTrustedAppFrame(event) {
+  return !!mainWin && !mainWin.isDestroyed() && event?.sender === mainWin.webContents &&
+    event.senderFrame === mainWin.webContents.mainFrame && event.senderFrame?.url === APP_URL;
+}
+function clampBounds(bounds) {
+  const area = screen.getDisplayMatching(bounds).workArea;
+  const width = Math.min(bounds.width, area.width), height = Math.min(bounds.height, area.height);
+  return { x: Math.round(Math.max(area.x, Math.min(bounds.x, area.x + area.width - width))),
+    y: Math.round(Math.max(area.y, Math.min(bounds.y, area.y + area.height - height))), width, height };
+}
+function setCompact(on) {
+  if (!mainWin || mainWin.isDestroyed() || on === compact || (on && !hasTimer())) return;
+  dragOrigin = null;
+  if (on) {
+    if (mainWin.isFullScreen()) return; // Leave native full screen using its standard control first.
+    if (mainWin.isMaximized()) mainWin.unmaximize();
+    savedBounds = mainWin.getBounds();
+    compact = true;
+    mainWin.setMinimumSize(320, 100);
+    mainWin.setWindowButtonVisibility(false);
+    mainWin.setBounds(clampBounds({ ...savedBounds, width: 480, height: 112 }), false);
+    mainWin.setResizable(false);
+    mainWin.setAlwaysOnTop(true, 'floating');
+  } else {
+    compact = false;
+    mainWin.setAlwaysOnTop(false);
+    mainWin.setResizable(true);
+    const restore = savedBounds || { ...mainWin.getBounds(), width: 1100, height: 900 };
+    const bounds = clampBounds({ ...restore, width: Math.max(NORMAL_MIN[0], restore.width), height: Math.max(NORMAL_MIN[1], restore.height) });
+    // A display smaller than the normal minimum must still contain the window.
+    mainWin.setMinimumSize(Math.min(NORMAL_MIN[0], bounds.width), Math.min(NORMAL_MIN[1], bounds.height));
+    mainWin.setBounds(bounds, false);
+    mainWin.setWindowButtonVisibility(true);
+    savedBounds = null;
+  }
+  mainWin.webContents.send('compact-state', compact);
+  refreshMenus();
+}
+function showFullWindow() {
+  if (!mainWin || mainWin.isDestroyed()) { createWindow(); return; }
+  setCompact(false);
+  if (mainWin.isMinimized()) mainWin.restore();
+  mainWin.setBounds(clampBounds(mainWin.getBounds()), false);
+  mainWin.show();
+  mainWin.focus();
+}
 function sendTrayAction(action) {
-  if (mainWin) mainWin.webContents.send('tray-action', action);
+  if (!hasTimer() || !['pause', 'skip', 'stop'].includes(action) || !mainWin || mainWin.isDestroyed()) return;
+  mainWin.webContents.send('tray-action', action);
+}
+function statusLabel() {
+  const labels = { idle: 'Ready to focus', focus: 'Focus', break: 'Break', planning: 'Plan your next focus', review: 'Ready for review', 'save-retry': 'Session needs saving' };
+  return (windowStatus.paused ? 'Paused · ' : '') + labels[windowStatus.phase];
 }
 function buildTrayMenu() {
+  const active = hasTimer();
   return Menu.buildFromTemplate([
-    { label: 'Show Focus Cycles', click: () => { if (mainWin) { mainWin.show(); mainWin.focus(); } } },
+    { id: 'status', label: statusLabel(), enabled: false },
+    { id: 'show-full', label: 'Show full window', click: showFullWindow },
+    { id: 'compact', label: 'Compact window', enabled: canCompact(), click: () => { if (!canCompact()) return; setCompact(true); if (mainWin?.isMinimized()) mainWin.restore(); mainWin?.show(); } },
     { type: 'separator' },
-    { label: 'Pause / Resume', click: () => sendTrayAction('pause') },
-    { label: 'Skip', click: () => sendTrayAction('skip') },
-    { label: 'Stop session', click: () => sendTrayAction('stop') }
+    { id: 'pause', label: windowStatus.paused ? 'Resume' : 'Pause', enabled: active, click: () => sendTrayAction('pause') },
+    { id: 'skip', label: windowStatus.phase === 'break' ? 'Skip break' : 'Skip focus', enabled: active, click: () => sendTrayAction('skip') },
+    { id: 'stop', label: 'Stop session', enabled: active, click: () => sendTrayAction('stop') },
+    { type: 'separator' },
+    { id: 'quit', label: 'Quit Focus Cycles', click: () => app.quit() }
   ]);
 }
-function setMenuBarTitle(text) {
-  sessionRunning = !!text;
-  if (text) {
-    if (!tray) {
-      tray = new Tray(nativeImage.createEmpty());
-      tray.setToolTip('Focus Cycles');
-      // Click the menu-bar countdown to steer the session without leaving your app.
-      tray.setContextMenu(buildTrayMenu());
-    }
-    tray.setTitle(' ' + text);
-  } else if (tray) {
-    tray.destroy();
-    tray = null;
+function refreshMenus() {
+  const available = canCompact();
+  const key = JSON.stringify([windowStatus.phase, windowStatus.paused, compact, available]);
+  if (tray && key !== trayMenuKey) { tray.setContextMenu(buildTrayMenu()); trayMenuKey = key; }
+  const item = Menu.getApplicationMenu()?.getMenuItemById('window-compact');
+  if (item) item.enabled = available;
+  if (mainWin && !mainWin.isDestroyed() && lastCompactAvailability !== available) {
+    lastCompactAvailability = available;
+    mainWin.webContents.send('compact-availability', available);
   }
 }
-ipcMain.on('menubar-title', (_e, text) => setMenuBarTitle(text));
+function createTray() {
+  if (tray) return;
+  const icon = nativeImage.createFromPath(path.join(__dirname, 'assets', 'trayTemplate.png'));
+  icon.setTemplateImage(true);
+  tray = new Tray(icon);
+  updateTray();
+}
+function updateTray() {
+  if (!tray) return;
+  const seconds = windowStatus.seconds;
+  const time = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+  const title = hasTimer() ? `${windowStatus.paused ? 'Ⅱ ' : ''}${time}` : '';
+  if (tray.getTitle() !== title) tray.setTitle(title, { fontType: 'monospacedDigit' });
+  tray.setToolTip(`Focus Cycles · ${statusLabel()}${hasTimer() ? ' · ' + time : ''}`);
+  refreshMenus();
+}
+function acceptStatus(value) {
+  if (!value || typeof value !== 'object' || !['idle', 'focus', 'break', 'planning', 'review', 'save-retry'].includes(value.phase) ||
+      typeof value.paused !== 'boolean' || typeof value.seconds !== 'number' || !Number.isFinite(value.seconds)) return false;
+  const active = ['focus', 'break'].includes(value.phase);
+  const next = { phase: value.phase, paused: active && value.paused, seconds: active ? Math.round(Math.max(0, Math.min(86400, value.seconds))) : 0 };
+  if (JSON.stringify(next) === JSON.stringify(windowStatus)) return true;
+  windowStatus = next;
+  updateTray();
+  return true;
+}
+ipcMain.on('window-status', (event, value) => { if (isTrustedAppFrame(event)) acceptStatus(value); });
+ipcMain.on('set-compact', (event, on) => { if (isTrustedAppFrame(event) && typeof on === 'boolean') setCompact(on); });
+ipcMain.on('window-controls-ready', event => {
+  if (isTrustedAppFrame(event)) {
+    mainWin.webContents.send('compact-state', compact);
+    mainWin.webContents.send('compact-availability', canCompact());
+  }
+});
+ipcMain.on('drag-start', event => { if (isTrustedAppFrame(event) && compact) dragOrigin = mainWin.getBounds(); });
+ipcMain.on('drag-move', (event, dx, dy) => {
+  if (!isTrustedAppFrame(event) || !compact || !dragOrigin || !Number.isFinite(dx) || !Number.isFinite(dy) || Math.abs(dx) > 100000 || Math.abs(dy) > 100000) return;
+  mainWin.setBounds(clampBounds({ ...dragOrigin, x: Math.round(dragOrigin.x + dx), y: Math.round(dragOrigin.y + dy) }), false);
+});
+ipcMain.on('drag-end', event => { if (isTrustedAppFrame(event)) dragOrigin = null; });
+
+ipcMain.handle('save-history-csv', async (event, csv, suggestedName) => {
+  if (!isTrustedAppFrame(event)) {
+    return { ok: false, error: 'Untrusted export request.' };
+  }
+  if (typeof csv !== 'string' || csv.length > 10 * 1024 * 1024) {
+    return { ok: false, error: 'Invalid export data.' };
+  }
+  const safeName = typeof suggestedName === 'string' && /^focus-history-\d{4}-\d{2}-\d{2}\.csv$/.test(suggestedName)
+    ? suggestedName
+    : 'focus-history.csv';
+  const result = await dialog.showSaveDialog(mainWin, {
+    title: 'Export Focus History',
+    defaultPath: safeName,
+    filters: [{ name: 'CSV file', extensions: ['csv'] }]
+  });
+  if (result.canceled || !result.filePath) return { ok: false, canceled: true };
+  await fs.writeFile(result.filePath, csv, 'utf8');
+  return { ok: true };
+});
+
+// Offline Help does not inherit timer permissions or app storage.
+function openLocalHelp(page) {
+  if (!['privacy', 'support'].includes(page)) throw new Error('Unknown help document');
+  const file = path.join(__dirname, page + '.html');
+  const url = pathToFileURL(file).href;
+  const win = new BrowserWindow({ width: 720, height: 760, minWidth: 480, minHeight: 400,
+    show: false, title: page === 'privacy' ? 'Focus Cycles Privacy' : 'Focus Cycles Support',
+    webPreferences: { partition: 'focus-help', sandbox: true, contextIsolation: true, nodeIntegration: false } });
+  win.webContents.session.setPermissionRequestHandler((contents, permission, callback) => callback(false));
+  const external = target => { if (isSafeExternalUrl(target) || target === 'mailto:bud@aboundlessworld.com') shell.openExternal(target); };
+  win.webContents.setWindowOpenHandler(({ url: target }) => { external(target); return { action: 'deny' }; });
+  win.webContents.on('will-navigate', (event, target) => { if (target !== url) { event.preventDefault(); external(target); } });
+  win.loadFile(file);
+  win.once('ready-to-show', () => win.show());
+}
 
 const isSafeExternalUrl = (url) => {
   try {
@@ -105,7 +188,7 @@ const CONTENT_SECURITY_POLICY = [
   "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://images.unsplash.com",
-  "connect-src 'self' https://api.open-meteo.com https://ipwho.is https://ipapi.co",
+  "connect-src 'self'",
   "font-src 'self' data:",
   "media-src 'self'",
   "object-src 'none'",
@@ -119,26 +202,22 @@ const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) {
   app.quit();
 } else {
-  app.on('second-instance', () => {
-    if (mainWin) {
-      if (mainWin.isMinimized()) mainWin.restore();
-      mainWin.focus();
-    }
-  });
+  app.on('second-instance', showFullWindow);
 }
 
 function createWindow() {
   const win = new BrowserWindow({
     width: 1100,
-    height: 820,
-    minWidth: 360,
-    minHeight: 80,
+    height: 900,
+    minWidth: NORMAL_MIN[0],
+    minHeight: NORMAL_MIN[1],
     titleBarStyle: 'hiddenInset',
     trafficLightPosition: { x: 16, y: 16 },
     backgroundColor: '#0a0a0a',
     show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      backgroundThrottling: false,
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
@@ -148,18 +227,15 @@ function createWindow() {
   });
 
   mainWin = win;
-  win.on('closed', () => { if (mainWin === win) mainWin = null; });
-
-  // Make the yellow minimize button (and Cmd+M) do what people expect here:
-  // during a session it turns the window into the mini bar instead of hiding
-  // it in the Dock. The 'minimize' event isn't cancelable, so we bounce it
-  // back out and shrink instead. With no active session it minimizes normally.
-  win.on('minimize', () => {
-    if (sessionRunning && !isCompact()) {
-      win.restore();
-      setCompact(true);
-    }
+  win.on('enter-full-screen', refreshMenus);
+  win.on('leave-full-screen', refreshMenus);
+  win.on('close', event => { if (!quitting) { event.preventDefault(); dragOrigin = null; win.hide(); } });
+  win.on('blur', () => { dragOrigin = null; });
+  win.on('closed', () => {
+    if (mainWin === win) { mainWin = null; compact = false; savedBounds = null; dragOrigin = null; acceptStatus({ phase: 'idle', paused: false, seconds: 0 }); }
   });
+  win.webContents.on('did-start-loading', () => acceptStatus({ phase: 'idle', paused: false, seconds: 0 }));
+  win.webContents.on('render-process-gone', () => acceptStatus({ phase: 'idle', paused: false, seconds: 0 }));
 
   win.loadFile(path.join(__dirname, 'index.html'));
   win.once('ready-to-show', () => win.show());
@@ -194,8 +270,7 @@ app.whenReady().then(() => {
   });
 
   session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
-    const allowedPermissions = new Set(['geolocation', 'notifications']);
-    callback(allowedPermissions.has(permission) && webContents.getURL().startsWith('file://'));
+    callback(permission === 'notifications' && webContents.getURL().startsWith('file://'));
   });
 
   // macOS standard menu so Cmd+Q, Cmd+W, copy/paste etc. work
@@ -238,16 +313,26 @@ app.whenReady().then(() => {
       label: 'Window',
       submenu: [
         { role: 'minimize' },
+        { id: 'window-compact', label: 'Compact window', accelerator: 'CommandOrControl+Shift+M', enabled: false, click: () => setCompact(true) },
+        { label: 'Show full window', click: showFullWindow },
         { role: 'close' }
+      ]
+    },
+    {
+      role: 'help',
+      submenu: [
+        { label: 'Focus Cycles Support', click: () => openLocalHelp('support') },
+        { label: 'Privacy Policy', click: () => openLocalHelp('privacy') }
       ]
     }
   ]));
 
+  createTray();
   createWindow();
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
+  app.on('activate', showFullWindow);
 });
+
+app.on('before-quit', () => { quitting = true; });
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();

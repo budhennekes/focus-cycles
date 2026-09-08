@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "root": "/Users/budhennekes/Documents/Projects/Apps/pomodoro-app/dist/Focus Cycles-darwin-arm64/Focus Cycles.app/Contents/Resources/app.asar",
+  "profile": "/tmp/focus-store-Y1H1kT",
+  "captures": [
+    "/Users/budhennekes/Documents/Projects/Apps/pomodoro-app/docs/store-assets-no-weather/01-work-cycles.png",
+    "/Users/budhennekes/Documents/Projects/Apps/pomodoro-app/docs/store-assets-no-weather/05-dark-mode.png",
+    "/Users/budhennekes/Documents/Projects/Apps/pomodoro-app/docs/store-assets-no-weather/02-plan.png",
+    "/Users/budhennekes/Documents/Projects/Apps/pomodoro-app/docs/store-assets-no-weather/03-focus.png",
+    "/Users/budhennekes/Documents/Projects/Apps/pomodoro-app/docs/store-assets-no-weather/04-review.png"
+  ],
+  "helpChecks": [
+    {
+      "label": "Privacy Policy",
+      "url": "file:///Users/budhennekes/Documents/Projects/Apps/pomodoro-app/dist/Focus%20Cycles-darwin-arm64/Focus%20Cycles.app/Contents/Resources/app.asar/privacy.html",
+      "screenshot": "/tmp/focus-store-Y1H1kT/privacy.png"
+    },
+    {
+      "label": "Focus Cycles Support",
+      "url": "file:///Users/budhennekes/Documents/Projects/Apps/pomodoro-app/dist/Focus%20Cycles-darwin-arm64/Focus%20Cycles.app/Contents/Resources/app.asar/support.html",
+      "screenshot": "/tmp/focus-store-Y1H1kT/support.png"
+    }
+  ],
+  "sampleData": "Fictional text, real UI. No user data. Review reached by Skip, not fabricated elapsed time."
+}

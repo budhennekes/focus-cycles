@@ -1,0 +1,98 @@
+{
+  "passed": true,
+  "kind": "Isolated offline native Electron lab; rendererReadyMs is runtime start to loaded visible window, not OS cold launch",
+  "results": [
+    {
+      "rendererReadyMs": 322.683542,
+      "history": {
+        "sessions": 500,
+        "cycles": 6000,
+        "samplesMs": [
+          12.5,
+          8.599999997764826,
+          7.600000001490116,
+          7.800000000745058,
+          8.799999997019768
+        ],
+        "saveMs": 3.100000001490116,
+        "saved": true,
+        "rows": 50,
+        "serializedBytes": 1844931
+      },
+      "rapid": {
+        "pauseResumePairs": 20,
+        "elapsedMs": 1,
+        "tickSamplesMs": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "paused": false,
+        "recovery": false
+      },
+      "compact": {
+        "roundTrips": 10,
+        "elapsedMs": 127.16949999999997
+      },
+      "hidden": {
+        "beforeTitle": "30:00",
+        "afterTitle": "29:57",
+        "menuRebuilds": 0
+      },
+      "errors": [],
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetKB": 168384,
+          "cpuPercent": 0
+        },
+        {
+          "type": "GPU",
+          "workingSetKB": 128816,
+          "cpuPercent": 0
+        },
+        {
+          "type": "Utility",
+          "workingSetKB": 45968,
+          "cpuPercent": 0
+        },
+        {
+          "type": "Tab",
+          "workingSetKB": 199168,
+          "cpuPercent": 0
+        }
+      ],
+      "profile": "/tmp/focus-performance-v1BMBh",
+      "processRunMs": 4265.816708
+    },
+    {
+      "rendererReadyMs": 329.593125,
+      "profile": "/tmp/focus-performance-QUUAxk",
+      "checks": "Fresh isolated launch",
+      "processRunMs": 405.7365
+    },
+    {
+      "rendererReadyMs": 279.691959,
+      "profile": "/tmp/focus-performance-Mlyxuj",
+      "checks": "Fresh isolated launch",
+      "processRunMs": 376.3595409999998
+    }
+  ]
+}

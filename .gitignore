@@ -5,7 +5,19 @@ node_modules/
 dist/
 dist-mas/
 dist.previous-*/
+dist-mas.previous-*/
 *.asar
+
+# Local signing material and secrets
+.env
+.env.*
+*.p12
+*.pfx
+*.pem
+*.key
+*.provisionprofile
+*.mobileprovision
+signing/
 
 # Logs
 *.log

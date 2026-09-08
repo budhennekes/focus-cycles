@@ -1,24 +1,31 @@
 {
   "name": "focus-cycles",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Focus Cycles — built on Sebastian Marshall's Work Cycles framework.",
   "main": "main.js",
-  "author": "Bud",
+  "productName": "Focus Cycles",
+  "author": "Bud Hennekes",
   "license": "MIT",
   "private": true,
   "scripts": {
     "start": "electron .",
-    "prepackage": "node -e \"require('debug');require('semver');require('@electron/packager/package.json')\" 2>/dev/null || npm ci",
-    "package": "electron-packager . 'Focus Cycles' --platform=darwin --arch=arm64 --overwrite --out=dist --icon=build/icon --app-bundle-id=com.bud.focuscycles --ignore='^/dist$' --ignore='^/build$' --ignore='^/dist\\.previous-' --ignore='^/tasks$' --ignore='^/scripts$' --ignore='^/\\.overnight-npm-temp-backup' --ignore='^/\\.claude' --ignore='^/node_modules\\.dataless-broken-' --ignore='^/\\.gitignore$' --ignore='\\.md$' --ignore='^/node_modules/\\.electron-' && node scripts/stamp-icon.js",
-    "package-mas": "electron-packager . 'Focus Cycles' --platform=darwin --arch=arm64 --overwrite --out=dist-mas --icon=build/icon --app-bundle-id=com.bud.focuscycles --app-category-type=public.app-category.productivity --extend-info=build/Info.plist --ignore='^/dist$' --ignore='^/build$' --ignore='^/dist\\.previous-' --ignore='^/tasks$' --ignore='^/scripts$' --ignore='^/\\.overnight-npm-temp-backup' --ignore='^/\\.claude' --ignore='^/node_modules\\.dataless-broken-' --ignore='^/\\.gitignore$' --ignore='\\.md$' --ignore='^/node_modules/\\.electron-' --osx-sign.identity='3rd Party Mac Developer Application: Bud (TEAM_ID)' --osx-sign.entitlements=build/entitlements.mas.plist --osx-sign.entitlements-inherit=build/entitlements.mas.inherit.plist --osx-sign.hardenedRuntime=false --osx-sign.gatekeeper-assess=false",
+    "package": "node scripts/package-direct.js",
+    "package-mas": "node scripts/package-mas.js",
+    "package-mas:unsigned": "node scripts/package-mas.js --unsigned",
+    "verify:direct": "node scripts/verify-package.js 'dist/Focus Cycles-darwin-arm64/Focus Cycles.app'",
+    "verify:mas": "node scripts/verify-package.js 'dist-mas/Focus Cycles-mas-arm64/Focus Cycles.app'",
     "smoke": "node scripts/smoke-check.js",
-    "test": "npm run smoke",
+    "verify:quotes": "node scripts/verify-quotes.cjs",
+    "verify:performance": "node scripts/verify-performance.cjs",
+    "verify:polish": "node scripts/verify-polish.cjs",
+    "verify:native": "node scripts/verify-navigation.cjs && node scripts/verify-no-weather.cjs && node scripts/verify-window-controls.cjs && node scripts/verify-onboarding.cjs && node scripts/verify-quotes.cjs && node scripts/verify-polish.cjs && node scripts/verify-history-timezone.cjs && node scripts/verify-media-lifecycle.cjs && electron docs/qa/native-reliability-verification.cjs",
+    "test": "npm run smoke && node scripts/controlled-clock-probe.cjs && node scripts/onboarding-regression.cjs && node --test scripts/window-controls.test.cjs scripts/package-contracts.test.cjs scripts/local-help.test.cjs",
+    "audit:release": "npm audit && npm test && node --check main.js && node --check preload.js && node --check scripts/package-direct.js && node --check scripts/package-mas.js && node --check scripts/stamp-icon.js && node --check scripts/verify-package.js",
     "release-zip": "rm -rf /tmp/fc-sign && mkdir -p /tmp/fc-sign && ditto --norsrc --noextattr --noacl \"dist/Focus Cycles-darwin-arm64/Focus Cycles.app\" \"/tmp/fc-sign/Focus Cycles.app\" && codesign --force --deep --sign - \"/tmp/fc-sign/Focus Cycles.app\" && codesign --verify --deep --strict \"/tmp/fc-sign/Focus Cycles.app\" && cd /tmp/fc-sign && ditto -c -k --keepParent \"Focus Cycles.app\" /tmp/FocusCycles-mac-arm64.zip && echo 'Signed zip at /tmp/FocusCycles-mac-arm64.zip'"
   },
   "devDependencies": {
-    "@electron/packager": "^19.1.1",
-    "@types/http-cache-semantics": "^4.2.0",
-    "electron": "^42.2.0",
-    "electron-packager": "^17.1.2"
+    "@electron/osx-sign": "^2.7.0",
+    "@electron/packager": "^20.3.0",
+    "electron": "^42.9.3"
   }
 }

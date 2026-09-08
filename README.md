@@ -35,10 +35,10 @@ In a hurry? A 1-cycle sprint asks exactly one question and starts the clock. And
 Most timers throw your session away at midnight. Focus Cycles keeps every plan, review, and debrief in a local dashboard, so patterns you'd never notice start surfacing:
 
 - how much focused time you actually log per day, versus what it felt like
-- **when** you focus best, plotted on a timeline of your last seven days
+- **when** you focused, plotted on a timeline of your last seven days
 - your target hit rate, the percentage of cycles that finished what they planned
 - which distractions keep reappearing in your reviews
-- your streak, and your best focus window of the day
+- your streak, and your most common start hour among completed cycles
 
 It's the difference between "I was busy" and knowing. Export everything to CSV whenever you want.
 
@@ -60,7 +60,7 @@ Set the background to whatever helps you focus, right from the Background menu:
 - **Gradients.** Ten hand-picked ones, from deep sea to ember to a warm sand.
 - **Solid colors.** A clean, distraction-free flat fill when you want nothing but the work.
 
-Add light and dark themes, local weather, and the freedom to hide the quote or the daily-intent pill, and the screen ends up looking exactly how you want it.
+Add light and dark themes and the freedom to hide the quote or the daily-intent pill, and the screen ends up looking exactly how you want it.
 
 ## Get started in two minutes
 
@@ -118,18 +118,37 @@ npm run package    # build the .app into dist/
 
 - The **Work Cycles** method was created by **Sebastian Marshall** and the team at Ultraworking. This app is an independent tribute, built to keep the method alive after the original tool went offline. All credit for the thinking belongs to them.
 - Focus sounds are generated locally on your Mac using the Web Audio API.
-- Weather by [Open-Meteo](https://open-meteo.com). Built-in backgrounds from [Unsplash](https://unsplash.com).
+- Built-in backgrounds from [Unsplash](https://unsplash.com). Weather is deferred; see [the backlog](docs/BACKLOG_WEATHER.md).
 
 ## Mac App Store build
 
-A sandboxed Mac App Store configuration is included. The regular `npm run package` builds the direct-distribution `.app` in `dist/`.
+The repository includes a sandboxed `mas` target and a signed `.pkg` pipeline.
 
-To build a Mac App Store package:
+### One-time Apple setup
 
-1. Join the Apple Developer Program and create a **Mac App Distribution** certificate + **Mac Installer Distribution** certificate.
-2. In `package.json`, replace `'3rd Party Mac Developer Application: Bud (TEAM_ID)'` in the `package-mas` script with your real certificate name (e.g. `3rd Party Mac Developer Application: Your Name (ABCD123456)`).
-3. Run `npm run package-mas` to produce `dist-mas/Focus Cycles-darwin-arm64/Focus Cycles.app`.
-4. Use `productbuild` to wrap it in a `.pkg` for App Store Connect upload.
+1. Create the app record in App Store Connect with bundle ID `com.bud.focuscycles`.
+2. Install a **Mac App Distribution** certificate and a **Mac Installer Distribution** certificate in Keychain Access.
+3. Create and download a Mac App Store distribution provisioning profile for the same bundle ID.
+
+### Validate the unsigned MAS target
+
+```bash
+npm run audit:release
+npm run package-mas:unsigned
+```
+
+### Create the upload package
+
+Set these values in your shell. Do not put certificates, profiles, passwords, or API keys in the repository.
+
+```bash
+export MAS_APP_IDENTITY='3rd Party Mac Developer Application: Your Name (TEAMID)'
+export MAS_INSTALLER_IDENTITY='3rd Party Mac Developer Installer: Your Name (TEAMID)'
+export MAS_PROVISIONING_PROFILE="$HOME/Downloads/Focus_Cycles_Mac_App_Store.provisionprofile"
+npm run package-mas
+```
+
+The signed upload package is written to `dist-mas/Focus-Cycles.pkg`. Upload it with Transporter or App Store Connect tooling. The release script verifies the app signature and installer signature before it reports success.
 
 ## License
 

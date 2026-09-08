@@ -1,0 +1,35 @@
+{
+  "delivery": "/Users/budhennekes/Documents/HermesPreview/FocusCycles-Submission-gwgynpp7",
+  "screenshots": [
+    {
+      "file": "01-work-cycles.png",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB"
+    },
+    {
+      "file": "02-plan.png",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB"
+    },
+    {
+      "file": "03-focus.png",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB"
+    },
+    {
+      "file": "04-review.png",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB"
+    },
+    {
+      "file": "05-dark-mode.png",
+      "width": 1440,
+      "height": 900,
+      "mode": "RGB"
+    }
+  ]
+}

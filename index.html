@@ -3,12 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://api.open-meteo.com https://ipwho.is https://ipapi.co; font-src 'self' data:; media-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self'; font-src 'self' data:; media-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Focus Cycles">
-<link rel="preconnect" href="https://images.unsplash.com">
-<link rel="preconnect" href="https://api.open-meteo.com">
 <title>Focus Cycles</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='4' y='4' width='92' height='92' rx='22' fill='%231d4ed8'/%3E%3Ccircle cx='50' cy='50' r='11' fill='%23fbbf77'/%3E%3Cpath d='M 28 42 A 25 25 0 0 1 72 42' stroke='white' stroke-width='8' fill='none' stroke-linecap='round'/%3E%3Cpath d='M 72 58 A 25 25 0 0 1 28 58' stroke='white' stroke-width='8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
@@ -17,7 +15,7 @@
     --accent-1: #1e3a8a;          /* blue-900 (deepest, for primary CTA) */
     --accent-2: #1d4ed8;          /* blue-700 (rich, for icon + wordmark) */
     --accent-3: #3b82f6;          /* blue-500 (highlight + glow) */
-    --grad-primary: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    --grad-primary: linear-gradient(135deg, #1e3a8a 0%, #2f65d6 100%);
     --grad-primary-soft: linear-gradient(135deg, rgba(30,58,138,0.24) 0%, rgba(59,130,246,0.14) 100%);
     --accent-glow: rgba(59, 130, 246, 0.42);
     /* Motion — strong custom curves; the built-in easings are too weak to feel intentional. */
@@ -27,47 +25,49 @@
     --ok: #6ee7a7;
     --warn: #fbbf77;
     --err: #ff7a8f;
-    /* Subtle film grain — tiles 200px, near-invisible alone, gives panels a sense of material */
-    --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   /* Dark theme */
   [data-theme="dark"] {
-    --panel: rgba(18, 20, 28, 0.72);
+    --panel: rgba(18, 22, 30, 0.94);
+    --accent-3: #95b4ff;
+    --panel-shadow: none;
     --panel-solid: rgba(14, 16, 22, 0.94);
     --panel-hover: rgba(30, 34, 44, 0.85);
     --panel-input: rgba(255, 255, 255, 0.09);
     --panel-border: rgba(255, 255, 255, 0.10);
     --input-border: rgba(255, 255, 255, 0.18);
     --text: rgba(255, 255, 255, 0.96);
-    --text-dim: rgba(255, 255, 255, 0.62);
-    --text-faint: rgba(255, 255, 255, 0.38);
+    --text-dim: #c1c7d2;
+    --text-faint: #a0aabb;
     --overlay-grad: linear-gradient(180deg, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0.08) 40%, rgba(0,0,0,0.50) 100%);
     --radial: radial-gradient(ellipse at center, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.40) 100%);
     --btn-hover: rgba(30,34,44,0.85);
     --dot-bg: rgba(255,255,255,0.14);
     --gradient-fallback: linear-gradient(135deg, #0a1530 0%, #0f1f3d 50%, #07101f 100%);
     /* Pre-blended surface for small elements — no backdrop-filter cost */
-    --panel-opaque: rgba(21, 24, 33, 0.90);
+    --panel-opaque: rgba(22, 26, 34, 0.97);
   }
 
   /* Light theme */
   [data-theme="light"] {
-    --panel: rgba(248, 250, 254, 0.88);
+    --panel: rgba(250, 251, 253, 0.96);
+    --accent-3: #315ed0;
+    --panel-shadow: 0 14px 40px rgba(12, 20, 34, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.6);
     --panel-solid: rgba(252, 252, 255, 0.97);
     --panel-hover: rgba(255, 255, 255, 0.94);
     --panel-input: rgba(0, 0, 0, 0.06);
     --panel-border: rgba(20, 25, 40, 0.12);
     --input-border: rgba(20, 25, 40, 0.18);
     --text: rgba(18, 22, 32, 0.94);
-    --text-dim: rgba(18, 22, 32, 0.62);
-    --text-faint: rgba(18, 22, 32, 0.42);
+    --text-dim: #505b6a;
+    --text-faint: #505b6a;
     --overlay-grad: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 40%, rgba(0,0,0,0.18) 100%);
     --radial: radial-gradient(ellipse at center, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.14) 100%);
     --btn-hover: rgba(255,255,255,0.92);
     --dot-bg: rgba(0,0,0,0.12);
     --gradient-fallback: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 50%, #e0e7ff 100%);
-    --panel-opaque: rgba(247, 249, 253, 0.93);
+    --panel-opaque: rgba(247, 249, 253, 0.97);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -123,16 +123,15 @@
   .top-bar {
     position: fixed; top: 0; left: 0; right: 0;
     display: flex; justify-content: space-between; align-items: flex-start;
-    padding: 20px 24px;
+    padding: 16px 24px;
+    gap: 12px;
     z-index: 10;
     pointer-events: none;
   }
   .top-bar > * { pointer-events: auto; }
-  /* Equal-height chips so their tops and bottoms line up. The weather chip
-     lives inside #weatherSlot, so the slot must pass the stretch through. */
-  .top-right { display: flex; align-items: stretch; gap: 12px; }
+  /* Keep the clock aligned with the top bar. */
+  .top-right { display: flex; align-items: stretch; gap: 8px; min-width: 0; }
   .top-right .clock-chip { display: flex; flex-direction: column; justify-content: center; }
-  #weatherSlot { display: flex; }
 
   /* Small brand mark, top-left corner */
   .brand-mark {
@@ -140,8 +139,8 @@
     align-items: center;
     gap: 8px;
     background: var(--panel);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     border-radius: 12px;
     padding: 8px 13px;
@@ -162,11 +161,11 @@
 
   .chip {
     background: var(--panel);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     border-radius: 14px;
-    padding: 12px 16px;
+    padding: 10px 14px;
     font-size: 13px;
     line-height: 1.3;
     box-shadow: 0 8px 32px rgba(0,0,0,0.2);
@@ -175,53 +174,12 @@
     isolation: isolate;
   }
 
-  /* Texture layer — grain on the hero panels only. Each grain layer costs an
-     offscreen surface (mix-blend-mode), so small chrome doesn't get one. */
-  .chip::after,
-  .card::after,
-  .prompt-wrap::after,
-  .active-screen::after,
-  .history-header::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: var(--noise);
-    background-size: 200px 200px;
-    opacity: 0.35;
-    pointer-events: none;
-    border-radius: inherit;
-    z-index: -1;
-    mix-blend-mode: overlay;
-  }
-  [data-theme="light"] .chip::after,
-  [data-theme="light"] .card::after,
-  [data-theme="light"] .prompt-wrap::after,
-  [data-theme="light"] .active-screen::after,
-  [data-theme="light"] .history-header::after {
-    opacity: 0.45;
-    mix-blend-mode: multiply;
-  }
-
-  /* Performance diet: backdrop-filter blur only on the hero panels
-     (.card, .prompt-wrap, .active-screen, .history-header, .chip, .quote-chip).
-     Small chrome uses a pre-blended opaque surface — visually near-identical
-     at these sizes, and crossfades/scrolling no longer re-blur a dozen regions. */
+  /* Solid-tinted surfaces preserve scenery without grain or backdrop re-blurring. */
   .brand, .first-run, .intent-pill, .btn-ghost, .credit,
-  .stat, .panel-card, .session-list, .icon-btn {
-    background: var(--panel-opaque);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
+  .stat, .panel-card, .session-list, .icon-btn { background: var(--panel-opaque); }
 
   .clock-chip .time { font-size: 18px; font-weight: 600; letter-spacing: -0.2px; font-variant-numeric: tabular-nums; }
-  .clock-chip .date { font-size: 12px; color: var(--text-dim); margin-top: 2px; font-weight: 500; letter-spacing: 0.05px; }
-
-  .weather-chip { display: flex; align-items: center; gap: 10px; min-width: 0; }
-  .weather-chip .icon { font-size: 20px; line-height: 1; }
-  .weather-chip .temp { font-size: 16px; font-weight: 600; letter-spacing: -0.2px; }
-  .weather-chip .cond { font-size: 12px; color: var(--text-dim); font-weight: 500; }
-  .weather-chip.enable-prompt { cursor: pointer; padding: 10px 14px; }
-  .weather-chip.enable-prompt:hover { background: var(--panel-hover); }
+  .clock-chip .date { font-size: 11px; color: var(--text-dim); margin-top: 2px; font-weight: 500; letter-spacing: 0.05px; }
 
   /* Main */
   main {
@@ -231,7 +189,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 90px 24px 90px;
+    padding: 96px 24px 88px;
     overflow-y: auto;
   }
 
@@ -281,8 +239,8 @@
     align-items: center;
     gap: 12px;
     background: var(--panel);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     border-radius: 18px;
     padding: 12px 22px;
@@ -320,8 +278,8 @@
     align-items: center;
     gap: 14px;
     background: var(--panel);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     border-radius: 14px;
     padding: 14px 18px;
@@ -364,8 +322,8 @@
     align-items: center;
     gap: 10px;
     background: var(--panel);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     border-radius: 14px;
     padding: 10px 16px;
@@ -430,8 +388,8 @@
 
   .quote-chip {
     background: var(--panel);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     border-radius: 14px;
     padding: 14px 10px;
@@ -445,25 +403,26 @@
     gap: 4px;
   }
   .quote-chip.hidden { display: none; }
-  .quote-body { flex: 1; padding: 0 8px; cursor: pointer; }
+  .quote-body { flex: 1; min-width: 0; padding: 0 8px; cursor: pointer; text-wrap: pretty; }
   .quote-body .q { color: var(--text); }
   .quote-body .author { display: block; margin-top: 4px; font-size: 12px; color: var(--text-faint); }
   .quote-nav {
     flex-shrink: 0;
-    width: 26px; height: 26px;
+    width: 30px; height: 30px;
     border-radius: 8px;
     font-size: 18px; line-height: 1;
     color: var(--text-faint);
-    opacity: 0;
-    transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease, transform 0.12s var(--ease-out);
+    opacity: 1;
+    transition: transform 0.12s var(--ease-out);
   }
-  .quote-chip:hover .quote-nav { opacity: 1; }
+  .quote-chip:hover .quote-nav,
+  .quote-chip:focus-within .quote-nav { opacity: 1; }
   .quote-nav:hover { background: var(--panel-input); color: var(--text); }
 
   .card {
     background: var(--panel);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     border-radius: 20px;
     padding: 32px;
@@ -493,16 +452,19 @@
     border: 1px solid var(--panel-border);
     border-radius: 14px;
     padding: 16px 8px;
-    transition: transform 0.18s var(--ease-out), background 0.15s ease, border-color 0.15s ease;
+    position: relative;
+    transition: transform 0.12s var(--ease-out);
   }
   .cycle-btn:hover { background: var(--panel-hover); transform: translateY(-1px); }
   .cycle-btn.selected {
     background: var(--grad-primary-soft);
     border-color: rgba(59,130,246,0.55);
   }
+  .cycle-btn.selected::after { content: '✓'; position: absolute; top: 7px; right: 10px; font-size: 13px; font-weight: 600; color: var(--accent-3); }
+  .cycle-btn.selected .ends, .cycle-btn.selected .label { color: var(--text); }
   .cycle-btn .n { font-size: 30px; font-weight: 500; letter-spacing: -0.8px; line-height: 1; }
-  .cycle-btn .label { font-size: 11px; color: var(--text-dim); margin-top: 4px; font-weight: 500; letter-spacing: 0.1px; }
-  .cycle-btn .ends { font-size: 10px; color: var(--text-faint); margin-top: 6px; font-weight: 400; letter-spacing: 0.1px; }
+  .cycle-btn .label { font-size: 12px; color: var(--text-dim); margin-top: 4px; font-weight: 500; letter-spacing: 0.1px; }
+  .cycle-btn .ends { font-size: 11px; color: var(--text-faint); margin-top: 6px; font-weight: 400; letter-spacing: 0.1px; }
 
   .custom-row {
     display: flex; align-items: center; gap: 10px; justify-content: center;
@@ -576,8 +538,8 @@
   .goal-pill {
     display: flex; align-items: center; gap: 10px;
     background: var(--panel);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     border-radius: 14px;
     padding: 10px 16px;
@@ -667,8 +629,8 @@
     text-align: center;
     max-width: 480px;
     background: var(--panel);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     border-radius: 12px;
     padding: 10px 18px;
@@ -685,8 +647,8 @@
     max-width: 640px;
     margin: 0 auto;
     background: var(--panel);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     border-radius: 24px;
     padding: 44px 36px 36px;
@@ -694,6 +656,11 @@
     position: relative;
     overflow: hidden;
     isolation: isolate;
+  }
+  .active-screen.phase-pop { animation: panelPop 0.18s var(--ease-out) both; }
+  @keyframes panelPop {
+    0% { transform: translateY(8px) scale(0.985); opacity: 0.82; }
+    100% { transform: none; opacity: 1; }
   }
   .phase-tag {
     display: inline-block;
@@ -707,22 +674,34 @@
   .phase-tag.focus { color: var(--accent-3); border-color: rgba(59,130,246,0.4); }
   .phase-tag.break { color: var(--accent-3); border-color: rgba(59,130,246,0.32); }
 
+  .timer-shell {
+    position: relative;
+    display: grid;
+    place-items: center;
+    margin-bottom: 14px;
+  }
+  .timer-progress {
+    position: relative; width: min(100%, 440px); height: 6px;
+    border-radius: 999px; overflow: hidden; margin: 22px auto 6px;
+    background: var(--dot-bg);
+  }
+  .timer-progress-fill { display: block; height: 100%; width: var(--progress, 0%);
+    background: var(--accent-3); border-radius: inherit; transition: width .25s linear; }
+  .timer-progress.paused .timer-progress-fill { transition: none; }
+  @media (prefers-reduced-motion: reduce) { .timer-progress-fill { transition: none; } }
   .timer-display {
+    position: relative;
     font-size: clamp(120px, 20vw, 220px);
     font-weight: 300;
     letter-spacing: -5px;
     line-height: 1;
     font-variant-numeric: tabular-nums;
-    margin-bottom: 14px;
+    margin-bottom: 0;
     text-shadow: 0 4px 40px rgba(0,0,0,0.35);
-    animation: breathe 4.5s ease-in-out infinite;
+
     transform-origin: center;
   }
   .timer-display.paused { animation: none; }
-  @keyframes breathe {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.012); }
-  }
   .cycle-indicator {
     font-size: 14px;
     color: var(--text-dim);
@@ -731,14 +710,22 @@
     letter-spacing: 0.1px;
   }
   .cycle-target {
-    font-size: 13px; color: var(--text-dim); margin-bottom: 20px;
-    max-width: 500px; margin-left: auto; margin-right: auto;
-    font-style: italic; opacity: 0.9;
-    line-height: 1.5;
+    display: none;
+    font-size: 14px; color: var(--text); margin: 0 auto 8px;
+    max-width: 500px;
+    line-height: 1.45;
+    font-weight: 600;
+  }
+  .cycle-target:not(:empty) {
+    display: block;
+    padding: 10px 14px;
+    border: 1px solid rgba(59,130,246,0.28);
+    border-radius: 14px;
+    background: var(--grad-primary-soft);
   }
   .cycle-next-action {
-    max-width: 500px; margin: -12px auto 20px;
-    color: var(--text-faint); font-size: 12px; line-height: 1.4;
+    max-width: 500px; margin: 0 auto 20px;
+    color: var(--text-dim); font-size: 12.5px; line-height: 1.45;
   }
   .cycle-next-action strong { color: var(--text-dim); font-weight: 600; }
   .cycle-dots { display: flex; gap: 8px; justify-content: center; margin-bottom: 32px; }
@@ -753,80 +740,10 @@
     transform: scale(1.15);
     position: relative;
   }
-  /* Pulse halo animates only transform + opacity — compositor-only, no repaint */
-  .cycle-dot.current::after {
-    content: '';
-    position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    background: rgba(59,130,246,0.25);
-    animation: dot-pulse 2.4s ease-in-out infinite;
-  }
-  @keyframes dot-pulse {
-    0%, 100% { transform: scale(1); opacity: 0.7; }
-    50% { transform: scale(1.6); opacity: 0; }
-  }
-  /* The renderer idles completely when the window is in the background or the
-     user prefers reduced motion. */
-  body.window-idle .timer-display,
-  body.window-idle .cycle-dot.current::after {
-    animation-play-state: paused;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .timer-display, .cycle-dot.current::after { animation: none; }
-  }
-
-  /* Breathing pacer — a calm signature moment during breaks. Hidden otherwise. */
-  .active-screen > *:not(.breathe-orb-wrap) { position: relative; z-index: 1; }
-  .breathe-orb-wrap {
-    position: absolute;
-    top: 46%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 300px; height: 300px;
-    display: none;
-    pointer-events: none;
-    z-index: 0;
-  }
-  .breathe-orb {
-    width: 100%; height: 100%;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(96,165,250,0.30) 0%, rgba(59,130,246,0.14) 45%, rgba(59,130,246,0) 72%);
-    animation: breatheOrb 10s ease-in-out infinite;
-  }
-  @keyframes breatheOrb {
-    0%   { transform: scale(0.78); opacity: 0.5; }
-    40%  { transform: scale(1.12); opacity: 1; }
-    100% { transform: scale(0.78); opacity: 0.5; }
-  }
-  .breathe-caption {
-    display: none;
-    position: relative;
-    height: 16px;
-    margin: -6px 0 14px;
-    font-size: 12px; font-weight: 500; letter-spacing: 0.4px;
-    color: rgba(96,165,250,0.92); /* soft blue, matches the orb and brand */
-  }
-  .breathe-caption span { position: absolute; left: 0; right: 0; }
-  .breathe-caption .bi { animation: breatheInLabel 10s ease-in-out infinite; }
-  .breathe-caption .bo { animation: breatheOutLabel 10s ease-in-out infinite; }
-  @keyframes breatheInLabel  { 0%,34% { opacity: 1 } 42%,100% { opacity: 0 } }
-  @keyframes breatheOutLabel { 0%,40% { opacity: 0 } 48%,92% { opacity: 1 } 100% { opacity: 0 } }
-
-  /* Only reveal it on the break screen */
-  .active-screen.breaking .breathe-orb-wrap,
-  .active-screen.breaking .breathe-caption { display: block; }
-  body.window-idle .breathe-orb,
-  body.window-idle .breathe-caption span { animation-play-state: paused; }
-  @media (prefers-reduced-motion: reduce) {
-    .breathe-orb { animation: none; transform: scale(1); opacity: 0.8; }
-    .breathe-caption .bo { display: none; }
-    .breathe-caption .bi { animation: none; opacity: 1; }
-  }
-
   .active-controls { display: flex; gap: 12px; justify-content: center; }
   .btn-ghost {
     background: var(--panel);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: none; -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     padding: 12px 22px; border-radius: 12px;
     font-size: 14px; font-weight: 500;
@@ -846,8 +763,8 @@
     max-width: 620px;
     margin: 0 auto;
     background: var(--panel);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     border-radius: 20px;
     padding: 32px;
@@ -964,8 +881,8 @@
   /* History header lives in its own panel chip */
   .history-header {
     background: var(--panel);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     border-radius: 16px;
     padding: 18px 22px;
@@ -1016,7 +933,7 @@
   }
   .stat {
     background: var(--panel);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: none; -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     border-radius: 14px; padding: 16px;
   }
@@ -1032,7 +949,7 @@
 
   .panel-card {
     background: var(--panel);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: none; -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     border-radius: 14px;
     padding: 18px 20px;
@@ -1100,7 +1017,7 @@
 
   .session-list {
     background: var(--panel);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: none; -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     border-radius: 14px;
     padding: 6px 0;
@@ -1168,6 +1085,8 @@
     min-width: 340px;
     animation: popIn 0.18s var(--ease-out); /* centered modal — scales from center */
   }
+  .method-help { max-width: 360px; margin-bottom: 18px; font-size: 13px; line-height: 1.5; color: var(--text-dim); }
+  .method-help strong { color: var(--text); }
   .shortcuts-title { font-size: 14px; font-weight: 600; margin-bottom: 14px; letter-spacing: -0.1px; }
   .shortcuts-grid {
     display: grid;
@@ -1276,12 +1195,17 @@
 
   /* Bottom bar */
   .bottom-bar {
-    position: fixed; bottom: 20px; right: 24px;
-    display: flex; gap: 10px; z-index: 10;
+    position: fixed; bottom: 16px; right: 24px;
+    display: flex; align-items: center; gap: 4px; z-index: 10;
+    padding: 5px;
+    background: var(--panel-opaque);
+    border: 1px solid var(--panel-border);
+    border-radius: 16px;
+    box-shadow: var(--panel-shadow);
   }
   .icon-btn {
     background: var(--panel);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: none; -webkit-backdrop-filter: none;
     border: 1px solid var(--panel-border);
     border-radius: 12px;
     padding: 10px 14px;
@@ -1295,6 +1219,13 @@
   }
   .icon-btn:hover { background: var(--btn-hover); transform: translateY(-1px); }
   .icon-btn svg { width: 14px; height: 14px; opacity: 0.85; }
+
+  /* Clean material surfaces avoid live blur and grain during every repaint. */
+  .card, .prompt-wrap, .active-screen, .history-header { box-shadow: var(--panel-shadow); }
+  .bottom-bar .icon-btn { background: transparent; border-color: transparent; padding: 9px 10px; border-radius: 10px; }
+  .bottom-bar .icon-btn:hover { background: var(--panel-input); }
+  [data-theme="dark"] .brand-mark, [data-theme="dark"] .chip, [data-theme="dark"] .intent-pill, [data-theme="dark"] .goal-pill, [data-theme="dark"] .music-menu { box-shadow: none; }
+  .cycle-btn .n, .cycle-btn .ends, .goal-pill .value { font-variant-numeric: tabular-nums; }
 
   /* Scrollbar */
   ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -1314,114 +1245,60 @@
     .icon-btn span { display: none; }
   }
 
-  /* Mini bar — shrink the window to a strip and the running timer collapses
-     to one readable row you can park in a corner. Kicks in on short windows. */
-  .mini-hint { display: none; }
-  @media (max-height: 240px), (max-width: 440px) {
-    /* Clean, solid bar — no photo, no grain, fills the window edge to edge
-       (macOS rounds the window corners for us). Triggers when the window is
-       short OR narrow. */
-    .top-bar, .bottom-bar, .drag-region,
-    .bg-layer, .bg-gradient, .overlay { display: none; }
-    main { padding: 0; justify-content: center; }
-    .screen { max-width: 100%; margin: 0; width: 100%; height: 100%; }
-    /* Center a fixed-height bar, so a short window fills exactly and a taller
-       (narrow) window shows the same clean strip instead of a giant box.
-       :not(.hidden) so this ID rule doesn't override the hidden state. */
-    #activeScreen:not(.hidden) { height: 100%; display: flex; flex-direction: column; justify-content: center; }
-
-    #activeScreen .active-screen {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      width: 100%; height: min(88px, 100%);
-      flex-shrink: 0;
-      max-width: none;
-      padding: 0 8px 0 15px;
-      border: none;
-      border-radius: 0;
-      box-shadow: none;
-      background: var(--panel-solid);
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-      text-align: left;
-      /* Dragging is handled in JS (pointer capture) for reliability, so no
-         text selection should ever start when grabbing the bar. */
-      -webkit-user-select: none;
-      user-select: none;
-      cursor: grab;
-    }
-    #activeScreen .active-screen::after { display: none; } /* no grain in the bar */
-    #activeScreen .active-screen.dragging { cursor: grabbing; }
-    #activeScreen .phase-tag {
-      margin: 0; flex-shrink: 0;
-      padding: 4px 9px; font-size: 9px; letter-spacing: 0.8px;
-    }
-    #activeScreen .timer-display {
-      font-size: 30px; letter-spacing: -1px; line-height: 1;
-      margin: 0; flex-shrink: 0;
-      animation: none; text-shadow: none;
-    }
-    /* Middle of the strip: the cycle's task on top, small cycle count under it.
-       Both truncate so the bar never wraps. */
-    #activeScreen .cycle-meta {
-      flex: 1; min-width: 0;
-      display: flex; flex-direction: column; justify-content: center;
-      gap: 1px; text-align: left; margin: 0;
-    }
-    #activeScreen .cycle-target {
-      margin: 0; max-width: none;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      font-size: 13px; font-style: normal; opacity: 1;
-      color: var(--text); line-height: 1.25; order: 0;
-    }
-    #activeScreen .cycle-next-action {
-      display: block; order: 1; margin: 0; max-width: none;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      font-size: 11px; color: var(--text-dim); line-height: 1.25;
-    }
-    #activeScreen .cycle-next-action:empty { display: none; }
-    #activeScreen .cycle-indicator {
-      margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      font-size: 10px; letter-spacing: 0.3px; font-weight: 500;
-      color: var(--text-faint); order: 2;
-    }
-    /* When there's no task set, the count carries the middle on its own. */
-    #activeScreen .cycle-meta:not(.has-task) .cycle-indicator {
-      font-size: 12px; color: var(--text-dim);
-    }
-    #activeScreen .cycle-dots,
-    #activeScreen .breathe-orb-wrap,
-    #activeScreen .breathe-caption { display: none !important; }
-    #activeScreen .active-controls { margin-left: auto; gap: 5px; flex-shrink: 0; }
-    /* Symbol-only controls in the mini bar */
-    #activeScreen .timer-btn { padding: 8px; }
-    #activeScreen .timer-btn .btn-label { display: none; }
-    #activeScreen .timer-btn .btn-icon { display: block; }
-    #activeScreen #pauseBtn .icon-play { display: none; }
-    #activeScreen #pauseBtn.is-paused .icon-pause { display: none; }
-    #activeScreen #pauseBtn.is-paused .icon-play { display: block; }
-
-    /* Setup, prompts, and history can't live in a strip — hide the active one
-       and show a nudge to grow the window instead of a broken layout. */
-    body[data-screen="setupScreen"] #setupScreen,
-    body[data-screen="promptScreen"] #promptScreen,
-    body[data-screen="historyScreen"] #historyScreen { display: none; }
-    body:not([data-screen="activeScreen"]) .mini-hint {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--panel-solid);
-      border: 1px solid var(--panel-border);
-      border-radius: 12px;
-      padding: 10px 16px;
-      font-size: 12px;
-      color: var(--text-dim);
-      cursor: pointer;
-      -webkit-app-region: no-drag;
-    }
-    body:not([data-screen="activeScreen"]) .mini-hint:hover { color: var(--text); }
+  /* Keep the main action visible in a normal laptop-height window. Decorative
+     setup content yields first; the timer and history screens keep their space. */
+  @media (max-height: 900px) and (min-width: 441px) {
+    main { padding-top: 96px; padding-bottom: 88px; }
+    #setupScreen { margin: 0; }
+    #setupScreen .quote-chip { margin-bottom: 10px; padding: 10px; }
+    #setupScreen .credit-wrap { display: none; }
+    #setupScreen .first-run { padding: 10px 14px; margin-bottom: 10px; }
+    #setupScreen .intent-row { margin-bottom: 10px; }
+    #setupScreen .goal-pill { margin-bottom: 8px; }
+    #setupScreen .card { padding: 16px 24px; }
+    #setupScreen .preset-row { margin-bottom: 10px; }
+    #setupScreen .section-label { margin-bottom: 10px; }
+    #setupScreen .cycle-grid { margin-bottom: 12px; }
+    #setupScreen .cycle-btn { padding: 12px 8px; }
+    #setupScreen .custom-row { margin-bottom: 10px; }
+    #setupScreen .duration-row { margin-bottom: 14px; padding-top: 12px; }
+    #setupScreen .btn-primary { padding: 14px; }
+    #setupScreen .projection { margin-top: 8px; }
   }
+  #compactPanel { display: none; }
+  body[data-compact="true"] { background: #faf9f6; color: #242624; }
+  body[data-compact="true"] .top-bar,
+  body[data-compact="true"] .bottom-bar,
+  body[data-compact="true"] .drag-region,
+  body[data-compact="true"] .bg-layer,
+  body[data-compact="true"] .bg-gradient,
+  body[data-compact="true"] .overlay,
+  body[data-compact="true"] main { display: none; }
+  body[data-compact="true"] #compactPanel {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 14px;
+    width: 100%; height: 100vh; padding: 12px 16px; box-sizing: border-box;
+    background: #faf9f6; color: #242624; user-select: none; cursor: grab;
+  }
+  #compactPanel.dragging { cursor: grabbing; }
+  .compact-summary { min-width: 0; display: flex; align-items: baseline; gap: 10px; }
+  #compactCountdown { font-size: 30px; font-weight: 600; letter-spacing: -1px; font-variant-numeric: tabular-nums; line-height: 1.1; flex-shrink: 0; }
+  #compactPhase { font-size: 14px; font-weight: 500; white-space: nowrap; }
+  .compact-details { min-width: 0; }
+  #compactTarget { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; line-height: 1.3; }
+  #compactCycle { color: #575b55; font-size: 12px; line-height: 1.5; }
+  .compact-controls { grid-column: 2; grid-row: 1 / 3; display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+  #compactPanel button { height: 34px; min-width: 82px; padding: 0 10px; border-radius: 7px; border: 1px solid #777d72; background: #faf9f6; color: #242624; font: 500 13px -apple-system, BlinkMacSystemFont, sans-serif; cursor: pointer; -webkit-app-region: no-drag; }
+  #compactPanel button:hover { background: #e8eae3; }
+  #compactPanel #compactAction { background: #2f4931; border-color: #2f4931; color: #fff; }
+  #compactPanel #compactAction:hover { background: #203922; }
+  #compactPanel button:focus-visible { outline: 2px solid #2673ce; outline-offset: 2px; }
+  body[data-theme="dark"][data-compact="true"], body[data-theme="dark"] #compactPanel { background: #20231f; color: #f3f4ef; }
+  body[data-theme="dark"] #compactCycle { color: #c0c5b9; }
+  body[data-theme="dark"] #compactPanel button { background: #20231f; color: #f3f4ef; border-color: #858c7d; }
+  body[data-theme="dark"] #compactPanel button:hover { background: #343b2e; }
+  body[data-theme="dark"] #compactPanel #compactAction { background: #c9deb4; color: #172011; border-color: #c9deb4; }
+  body[data-theme="dark"] #compactPanel #compactAction:hover { background: #d9ecc8; }
+  @media (prefers-reduced-motion: reduce) { #compactPanel, #compactPanel * { animation: none !important; transition: none !important; } }
 
   /* Toast */
   .toast {
@@ -1439,7 +1316,7 @@
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  .fade-in { animation: fadeIn 0.42s var(--ease-out); }
+  .fade-in { animation: fadeIn 0.18s var(--ease-out); }
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px) scale(0.99); }
     to { opacity: 1; transform: translateY(0) scale(1); }
@@ -1462,6 +1339,54 @@
     }
     @keyframes rmFade { from { opacity: 0; } to { opacity: 1; } }
   }
+  .welcome-dialog {
+    color: var(--text); background: var(--panel-solid); border: 1px solid var(--panel-border);
+    border-radius: 24px; padding: 32px; margin: auto; width: min(480px, calc(100vw - 32px));
+    max-height: calc(100dvh - 32px); overflow: auto; box-shadow: 0 24px 80px rgba(0,0,0,.35);
+  }
+  .welcome-dialog[open] { animation: fadeIn .28s var(--ease-out); }
+  .welcome-dialog::backdrop { background: rgba(0,0,0,.32); }
+  .welcome-eyebrow { color: var(--accent-3); font-size: 11px; letter-spacing: 2px; font-weight: 700; }
+  .welcome-dialog h1 { font-size: 28px; line-height: 1.2; letter-spacing: -.6px; margin: 14px 0 10px; }
+  .welcome-dialog p { color: var(--text-dim); line-height: 1.5; font-size: 14px; }
+  .welcome-steps { list-style: none; counter-reset: step; margin: 24px 0; padding: 0; display: grid; gap: 18px; }
+  .welcome-steps li { counter-increment: step; display: grid; grid-template-columns: 28px 1fr; gap: 3px 12px; }
+  .welcome-steps li::before { content: counter(step); grid-row: span 2; color: var(--accent-3); font-size: 13px; padding-top: 2px; }
+  .welcome-steps span { grid-column: 2; color: var(--text-dim); font-size: 14px; line-height: 1.45; }
+  .welcome-dialog .welcome-credit, .welcome-dialog .welcome-footnote { font-size: 11px; }
+  .welcome-actions { display: flex; gap: 12px; margin-top: 22px; }
+  .welcome-actions button { flex: 1; font-size: 14px; padding: 12px; }
+  .welcome-footnote { margin: 12px 0 0; text-align: center; }
+  @media (max-height: 560px) { .welcome-dialog { padding: 20px; } .welcome-steps { gap: 10px; margin: 16px 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+
+  /* Clear destinations; appearance controls remain secondary. */
+  .home-session.hidden, #setupScreen .card.hidden { display: none; }
+  .prefs-wrap #prefsBtn span { display: inline; }
+  .top-bar { align-items: start; }
+  .main-nav { display: flex; gap: 3px; padding: 4px; background: var(--panel-opaque);
+    border: 1px solid var(--panel-border); border-radius: 12px; }
+  .main-nav button { padding: 9px 14px; border: 0; border-radius: 8px; background: transparent;
+    color: var(--text-dim); font: inherit; font-size: 13px; cursor: pointer; }
+  .main-nav button[aria-current="page"] { background: var(--grad-primary-soft); color: var(--text); font-weight: 650; box-shadow: inset 0 -2px var(--accent-3); }
+  .main-nav button:disabled { opacity: .45; cursor: default; }
+  .main-nav button:focus-visible { outline: 2px solid var(--accent-3); outline-offset: 2px; }
+  .top-right { align-items: flex-start; }
+  .prefs-wrap #prefsMenu { top: calc(100% + 10px); bottom: auto; right: 0; }
+  .prefs-wrap #prefsBtn { min-height: 43px; background: var(--panel-opaque); border: 1px solid var(--panel-border); }
+  .home-session { padding: 28px; margin-bottom: 20px; background: var(--panel-opaque); border: 1px solid var(--panel-border); border-radius: 22px; text-align: left; }
+  .home-session h1 { margin: 0 0 8px; font-size: 26px; letter-spacing: -.6px; }
+  .home-session p { margin: 0 0 20px; color: var(--text-dim); line-height: 1.5; }
+  @media (max-width: 800px) {
+    .top-bar { display: grid; grid-template-columns: auto 1fr; gap: 10px; }
+    .top-right { justify-self: end; }
+    .main-nav { grid-row: 2; grid-column: 1 / -1; }
+    .main-nav button { flex: 1; }
+    body:not([data-compact="true"]) main { padding-top: 142px; }
+  }
+
 </style>
 </head>
 <body data-theme="dark">
@@ -1495,28 +1420,42 @@
     </svg>
     <span class="brand-mark-text">Focus <span>Cycles</span></span>
   </div>
+  <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+    <button type="button" id="navHome" aria-current="page">Home</button>
+    <button type="button" id="navSession" disabled>Session</button>
+    <button type="button" id="historyBtn" title="History (H)">History</button>
+  </nav>
   <div class="top-right">
+  <div class="music-wrap prefs-wrap">
+    <div id="prefsMenu" class="music-menu hidden" role="menu" aria-label="Display options">
+      <button data-pref="quotes" role="menuitem">Quotes</button>
+      <button data-pref="intent" role="menuitem">Today's main task</button>
+      <button data-pref="sound" role="menuitem">Chime</button>
+      <div class="music-volume" style="border-top: 1px solid var(--panel-border); margin-top: 2px; padding-top: 8px;">
+        <label>Daily goal (minutes)</label>
+        <input type="number" id="dailyGoalInput" min="10" max="600" value="120" style="width: 100%; background: var(--panel-input); border: 1px solid var(--input-border); border-radius: 8px; padding: 6px 8px; font-size: 13px; color: var(--text);">
+      </div>
+    </div>
+    <button class="icon-btn" id="prefsBtn" title="Settings" aria-label="Settings" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>Settings</span>
+    </button>
+  </div>
     <div class="chip clock-chip">
       <div class="time" id="clockTime">--:--</div>
       <div class="date" id="clockDate">--</div>
     </div>
-    <div id="weatherSlot"></div>
   </div>
 </div>
 
 <main>
   <!-- Setup -->
-  <section id="setupScreen" class="screen fade-in">
-    <div id="firstRunBanner" class="first-run hidden">
-      <div class="first-run-body">
-        <span><strong>Welcome to Focus Cycles.</strong> Pick your cycles, press Start, follow the prompts. Press <kbd>?</kbd> anytime for keyboard shortcuts.</span>
-        <span class="first-run-install">
-          Save as Mac app — Safari (14+): File → Add to Dock · Chrome: ⋮ → Save and share → Install
-        </span>
-      </div>
-      <button class="first-run-dismiss" id="firstRunDismiss" aria-label="Dismiss">Got it</button>
+  <section id="setupScreen" class="screen fade-in" aria-label="Home">
+    <div id="homeSession" class="home-session hidden">
+      <h1 id="homeSessionTitle">Session in progress</h1>
+      <p id="homeSessionStatus"></p>
+      <button type="button" class="btn-primary" id="homeReturn">Return to session</button>
     </div>
-
     <div id="intentRow" class="intent-row">
       <div id="intentDisplay" class="intent-pill hidden">
         <span class="intent-mark">✦</span>
@@ -1527,7 +1466,7 @@
       </div>
       <div id="intentForm" class="intent-pill intent-pill-form">
         <span class="intent-mark">✦</span>
-        <input type="text" class="intent-input" id="intentInput" placeholder="What's today's main thing?" maxlength="120">
+        <input type="text" class="intent-input" id="intentInput" name="dailyIntent" aria-label="Today's main thing" placeholder="What's today's main thing?" maxlength="120">
         <button class="intent-save" id="intentSaveBtn">Set</button>
         <button class="intent-hide" aria-label="Hide" title="Hide (turn back on in the gear menu)">×</button>
       </div>
@@ -1563,14 +1502,14 @@
 
       <div class="custom-row">
         <span>Custom (1 to 12):</span>
-        <input type="number" id="customInput" min="1" max="12" value="5">
+        <input type="number" id="customInput" name="customCycles" aria-label="Number of focus cycles" min="1" max="12" value="5">
         <button class="btn-ghost" id="customBtn" style="padding: 8px 14px; font-size: 13px;">Set</button>
       </div>
 
       <div class="duration-row">
         <div class="duration-field">
-          <label>Focus duration</label>
-          <select id="focusDuration">
+          <label for="focusDuration">Focus duration</label>
+          <select id="focusDuration" name="focusDuration">
             <option value="10">10 min</option>
             <option value="15">15 min</option>
             <option value="20">20 min</option>
@@ -1583,8 +1522,8 @@
           </select>
         </div>
         <div class="duration-field">
-          <label>Break duration</label>
-          <select id="breakDuration">
+          <label for="breakDuration">Break duration</label>
+          <select id="breakDuration" name="breakDuration">
             <option value="3">3 min</option>
             <option value="5">5 min</option>
             <option value="10" selected>10 min</option>
@@ -1615,15 +1554,16 @@
   <!-- Active -->
   <section id="activeScreen" class="screen hidden">
     <div class="active-screen">
-      <div class="breathe-orb-wrap" aria-hidden="true"><div class="breathe-orb"></div></div>
       <div class="phase-tag focus" id="phaseTag">FOCUS</div>
-      <div class="timer-display" id="timerDisplay">30:00</div>
+      <div class="timer-shell">
+        <div class="timer-display" id="timerDisplay">30:00</div>
+        <div class="timer-progress" id="timerProgress" role="progressbar" aria-label="Interval elapsed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="timer-progress-fill"></span></div>
+      </div>
       <div class="cycle-meta">
         <div class="cycle-indicator" id="cycleIndicator">Cycle 1 of 5</div>
         <div class="cycle-target" id="cycleTarget"></div>
         <div class="cycle-next-action" id="cycleNextAction"></div>
       </div>
-      <div class="breathe-caption" aria-hidden="true"><span class="bi">Breathe in</span><span class="bo">and out</span></div>
       <div class="cycle-dots" id="cycleDots"></div>
       <div class="active-controls">
         <button class="btn-ghost timer-btn" id="pauseBtn" aria-label="Pause">
@@ -1639,8 +1579,8 @@
           <span class="btn-label">Stop</span>
           <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
         </button>
-        <button class="btn-ghost timer-btn" id="miniBtn" aria-label="Mini bar" title="Shrink to a mini bar">
-          <span class="btn-label">Mini</span>
+        <button class="btn-ghost timer-btn" id="miniBtn" aria-label="Compact window" title="Compact window (⌘⇧M)">
+          <span class="btn-label">Compact</span>
           <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
         </button>
       </div>
@@ -1708,14 +1648,40 @@
     </div>
   </section>
 
-  <!-- Shown only in mini-bar mode when no session is running -->
-  <div class="mini-hint" title="Click to expand">Click to expand the window</div>
+
 
 </main>
+<section id="compactPanel" aria-label="Compact focus timer">
+  <div class="compact-summary"><span id="compactCountdown">0:00</span><span id="compactPhase">Focus</span></div>
+  <div class="compact-details"><div id="compactTarget"></div><div id="compactCycle"></div></div>
+  <div class="compact-controls"><button id="compactExpand" title="Show full window">Expand</button><button id="compactAction">Pause</button></div>
+</section>
+
+<dialog id="firstRunBanner" class="welcome-dialog" aria-labelledby="welcomeTitle" aria-describedby="welcomeDescription">
+  <div class="welcome-eyebrow">FOCUS CYCLES</div>
+  <h1 id="welcomeTitle">One target. A little room to focus.</h1>
+  <p id="welcomeDescription">A simple rhythm for the work in front of you.</p>
+  <ol class="welcome-steps">
+    <li><strong>Plan</strong><span>Choose one achievable target.</span></li>
+    <li><strong>Focus</strong><span>Work on it for a block you choose, then take a break.</span></li>
+    <li><strong>Review</strong><span>Check the actual result and choose your next action.</span></li>
+  </ol>
+  <p class="welcome-credit">Independently inspired by Sebastian Marshall’s Work Cycles. No affiliation.</p>
+  <div class="welcome-actions">
+    <button id="firstRunDismiss" class="btn-ghost">Skip for now</button>
+    <button id="welcomeFinish" class="btn-primary" autofocus>Plan my target</button>
+  </div>
+  <p class="welcome-footnote">You choose when to start. Revisit this welcome in Help.</p>
+</dialog>
 
 <!-- Keyboard shortcuts overlay — summoned with ?, hidden by default so the UI stays clean -->
-<div id="shortcutsOverlay" class="shortcuts-overlay hidden" role="dialog" aria-label="Keyboard shortcuts">
+<div id="shortcutsOverlay" class="shortcuts-overlay hidden" role="dialog" aria-label="Help and keyboard shortcuts">
   <div class="shortcuts-panel">
+    <div id="methodHelp" class="method-help">
+      <strong>Plan · Focus · Review</strong><br>
+      Plan your outcome and first action. Focus with your target beside the countdown. Review what worked and what comes next.
+    </div>
+    <button id="welcomeReplay" class="btn-ghost">Replay welcome</button>
     <div class="shortcuts-title">Keyboard shortcuts</div>
     <div class="shortcuts-grid">
       <div><kbd>Space</kbd></div><div>Start session · pause / resume</div>
@@ -1728,34 +1694,23 @@
       <div><kbd>Esc</kbd></div><div>Go back · cancel</div>
       <div><kbd>?</kbd></div><div>Show / hide this panel</div>
     </div>
-    <div class="shortcuts-hint">Press any key to close</div>
+    <div class="shortcuts-hint">Escape to close</div>
   </div>
 </div>
 
 <div class="bottom-bar">
-  <button class="icon-btn icon-only" id="shortcutsBtn" title="Keyboard shortcuts (?)">
+  <button class="icon-btn icon-only" id="shortcutsBtn" title="Help and keyboard shortcuts (?)" aria-label="Help and keyboard shortcuts">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
   </button>
-  <div class="music-wrap">
-    <div id="prefsMenu" class="music-menu hidden" role="menu" aria-label="Display options">
-      <button data-pref="quotes" role="menuitem">Quotes</button>
-      <button data-pref="intent" role="menuitem">Today's main task</button>
-      <button data-pref="sound" role="menuitem">Chime</button>
-      <div class="music-volume" style="border-top: 1px solid var(--panel-border); margin-top: 2px; padding-top: 8px;">
-        <label>Daily goal (minutes)</label>
-        <input type="number" id="dailyGoalInput" min="10" max="600" value="120" style="width: 100%; background: var(--panel-input); border: 1px solid var(--input-border); border-radius: 8px; padding: 6px 8px; font-size: 13px; color: var(--text);">
-      </div>
-    </div>
-    <button class="icon-btn icon-only" id="prefsBtn" title="Display options">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    </button>
-  </div>
+
   <div class="music-wrap">
     <div id="musicMenu" class="music-menu hidden" role="menu" aria-label="Focus sound">
       <button data-mode="off" role="menuitem">Off</button>
       <button data-mode="lofi" role="menuitem">Lofi</button>
       <button data-mode="synth" role="menuitem">Synthwave</button>
       <button data-mode="rain" role="menuitem">Rain</button>
+      <button data-mode="deep" role="menuitem">Deep hum</button>
+      <button data-mode="brown" role="menuitem">Brown noise</button>
       <div class="music-volume">
         <label>Volume <span id="musicVolumeValue">65%</span></label>
         <input type="range" id="musicVolume" min="0" max="100" value="65" aria-label="Focus sound volume">
@@ -1770,10 +1725,7 @@
     <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
     <span id="themeLabel">Light</span>
   </button>
-  <button class="icon-btn" id="historyBtn" title="History (H)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
-    <span>History</span>
-  </button>
+
   <div class="music-wrap">
     <div id="bgMenu" class="music-menu hidden" role="menu" aria-label="Background">
       <button data-bg="next" role="menuitem">Next photo</button>
@@ -1804,12 +1756,12 @@ const FIRST_RUN_KEY = 'focus_seen_intro_v1';
 const defaultState = {
   version: 2,
   sessions: [],
+  hasSavedSession: false,
   intent: { text: '', date: '' },
   settings: {
     focusDuration: 30,
     breakDuration: 10,
     cycles: 5,
-    weather: { enabled: false, lat: null, lon: null },
     theme: null, // null = follow system, 'dark' | 'light' = manual
     bgIndex: 0,
     musicMode: 'off',
@@ -1819,26 +1771,35 @@ const defaultState = {
     showQuotes: true,
     showIntent: true,
     sound: true,   // the soft chime at phase transitions
-    bgFill: null   // a solid color or a gradient, used instead of a photo
+    bgFill: null // Photo default; explicit saved fills remain unchanged.
   }
 };
 
 let state = loadState();
-// Migrate the old solidColor setting into the unified bgFill
-if (state.settings.solidColor && !state.settings.bgFill) state.settings.bgFill = state.settings.solidColor;
+// Capture install status before cosmetic startup saves. Any existing data or
+// unreadable storage takes precedence over automatically introducing the app.
+const isFreshInstall = (() => {
+  try { return ![LS_KEY, 'focus_app_v1', ACTIVE_KEY, FIRST_RUN_KEY].some(key => localStorage.getItem(key)); }
+  catch (e) { return false; }
+})();
 
 function loadState() {
   try {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) {
-      localStorage.removeItem('focus_app_v1');
       return structuredClone(defaultState);
     }
     const parsed = JSON.parse(raw);
     if (parsed.version !== 2) return structuredClone(defaultState);
+    // Preserve legacy solid colors before defaults are merged; explicit null means photo.
+    if (parsed.settings?.solidColor && !Object.prototype.hasOwnProperty.call(parsed.settings, 'bgFill')) {
+      parsed.settings.bgFill = parsed.settings.solidColor;
+    }
     return {
       ...structuredClone(defaultState),
       ...parsed,
+      // Existing archives, including stopped sessions, already count as a first save.
+      hasSavedSession: parsed.hasSavedSession === true || (Array.isArray(parsed.sessions) && parsed.sessions.length > 0),
       // A corrupt sessions value would break every history read and session save.
       // Cap at 500 entries (FIFO) so localStorage stays bounded.
       sessions: Array.isArray(parsed.sessions)
@@ -1852,8 +1813,8 @@ function loadState() {
   }
 }
 function saveState() {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
-  catch (e) { showToast('Could not save settings locally.'); }
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); return true; }
+  catch (e) { showToast('Could not save settings locally.'); return false; }
 }
 
 // Debounced save for cosmetic settings (background clicks, music label, etc.)
@@ -2054,10 +2015,10 @@ async function initBackgrounds() {
   // Priority: your uploaded photos, then a local ghibli-XX file pack,
   // then the built-in Unsplash set.
   const custom = await bgDbAll();
+  // Release the previous custom set on both re-import and return to built-ins.
+  BACKGROUNDS.forEach(u => { if (typeof u === 'string' && u.startsWith('blob:')) URL.revokeObjectURL(u); });
   if (custom.length > 0) {
     custom.sort((a, b) => a.added - b.added);
-    // Release object URLs from a previous init so re-imports don't leak memory
-    BACKGROUNDS.forEach(u => { if (typeof u === 'string' && u.startsWith('blob:')) URL.revokeObjectURL(u); });
     BACKGROUNDS = custom.map(p => URL.createObjectURL(p.blob));
   } else {
     const local = await discoverLocalBackgrounds();
@@ -2072,6 +2033,10 @@ async function initBackgrounds() {
 /* Fill backgrounds — a clean gradient or solid color instead of a photo. */
 const GRADIENTS = [
   { name: 'Deep sea',     css: 'linear-gradient(160deg, #001e3c 0%, #003b6f 100%)' },
+  { name: 'Blue hour',    css: 'linear-gradient(160deg, #0b1635 0%, #1d4ed8 58%, #60a5fa 100%)' },
+  { name: 'Quiet lake',   css: 'linear-gradient(160deg, #0f2537 0%, #164e63 52%, #0f766e 100%)' },
+  { name: 'Morning fog',  css: 'linear-gradient(160deg, #dbeafe 0%, #bfdbfe 46%, #f8fafc 100%)' },
+  { name: 'Soft slate',   css: 'linear-gradient(160deg, #111827 0%, #334155 54%, #64748b 100%)' },
   { name: 'Midnight teal',css: 'linear-gradient(160deg, #0f2027 0%, #203a43 55%, #2c5364 100%)' },
   { name: 'Cosmos',       css: 'linear-gradient(160deg, #0f0c29 0%, #302b63 55%, #24243e 100%)' },
   { name: 'Aubergine',    css: 'linear-gradient(160deg, #1f1c2c 0%, #3b2a4d 100%)' },
@@ -2098,6 +2063,7 @@ const SOLID_COLORS = [
 ];
 
 function setFill(css) {
+  backgroundRequest += 1; // A late photo must not replace a newly chosen fill.
   state.settings.bgFill = css;
   saveStateSoon(); // cosmetic; swatch exploring shouldn't hammer localStorage
   document.body.classList.add('fill-bg');
@@ -2129,22 +2095,26 @@ function renderSwatches() {
     b.classList.toggle('selected', b.dataset.fill === cur));
 }
 
-function setBackground(index) {
-  if (!BACKGROUNDS.length) return;
+let backgroundRequest = 0;
+function setBackground(index, attempt = 0, request = ++backgroundRequest) {
+  if (!BACKGROUNDS.length || request !== backgroundRequest) return;
   if (index < 0) index = BACKGROUNDS.length - 1;
   if (index >= BACKGROUNDS.length) index = 0;
-  activeBgIndex = index;
-  state.settings.bgIndex = index;
-  // Choosing a photo clears any color/gradient fill
-  state.settings.bgFill = null;
-  document.body.classList.remove('fill-bg');
-  saveStateSoon(); // cosmetic; don't serialize history on every B press
+  if (attempt === 0) {
+    activeBgIndex = index;
+    state.settings.bgIndex = index;
+    // Fallback images must not overwrite the user's selected scene.
+    state.settings.bgFill = null;
+    document.body.classList.remove('fill-bg');
+    saveStateSoon();
+  }
 
   const incoming = bg1.classList.contains('active') ? bg2 : bg1;
   const outgoing = bg1.classList.contains('active') ? bg1 : bg2;
 
   const img = new Image();
   img.onload = () => {
+    if (request !== backgroundRequest) return;
     incoming.style.backgroundColor = '';
     incoming.style.backgroundImage = `url("${BACKGROUNDS[index]}")`;
     incoming.classList.add('active');
@@ -2156,7 +2126,10 @@ function setBackground(index) {
     }
   };
   img.onerror = () => {
-    if (BACKGROUNDS.length > 1) setBackground((index + 1) % BACKGROUNDS.length);
+    // Try each scene once, then idle offline. Ignore superseded requests.
+    if (request === backgroundRequest && attempt + 1 < BACKGROUNDS.length) {
+      setBackground((index + 1) % BACKGROUNDS.length, attempt + 1, request);
+    }
   };
   img.src = BACKGROUNDS[index];
 }
@@ -2211,81 +2184,6 @@ setInterval(updateClock, 30_000);
 updateClock();
 
 /* ============================================================
-   WEATHER
-============================================================ */
-const WEATHER_CODE_MAP = {
-  0: { icon: '☀️', label: 'Clear' }, 1: { icon: '🌤', label: 'Mostly clear' },
-  2: { icon: '⛅️', label: 'Partly cloudy' }, 3: { icon: '☁️', label: 'Overcast' },
-  45: { icon: '🌫', label: 'Fog' }, 48: { icon: '🌫', label: 'Fog' },
-  51: { icon: '🌦', label: 'Drizzle' }, 53: { icon: '🌦', label: 'Drizzle' }, 55: { icon: '🌦', label: 'Drizzle' },
-  61: { icon: '🌧', label: 'Rain' }, 63: { icon: '🌧', label: 'Rain' }, 65: { icon: '🌧', label: 'Heavy rain' },
-  71: { icon: '🌨', label: 'Snow' }, 73: { icon: '🌨', label: 'Snow' }, 75: { icon: '🌨', label: 'Heavy snow' },
-  80: { icon: '🌦', label: 'Showers' }, 81: { icon: '🌦', label: 'Showers' }, 82: { icon: '🌧', label: 'Heavy showers' },
-  95: { icon: '⛈', label: 'Thunder' }, 96: { icon: '⛈', label: 'Thunder' }, 99: { icon: '⛈', label: 'Thunder' }
-};
-
-function renderWeatherSlot() {
-  const slot = document.getElementById('weatherSlot');
-  if (!state.settings.weather.enabled) {
-    slot.innerHTML = `<button class="chip weather-chip enable-prompt" id="enableWeather">📍 Enable local weather</button>`;
-    document.getElementById('enableWeather').addEventListener('click', enableWeather);
-    return;
-  }
-  slot.innerHTML = `<div class="chip weather-chip" id="weatherChip"><span class="icon">⏳</span><div><div class="temp">--°</div><div class="cond">Fetching</div></div></div>`;
-  fetchWeather();
-}
-
-function enableWeather() {
-  showToast('Finding your location...');
-  const useCoords = (lat, lon) => {
-    state.settings.weather = { enabled: true, lat, lon };
-    saveState();
-    renderWeatherSlot();
-  };
-  // IP-based fallback for the packaged Mac app, where native geolocation
-  // needs an API key the app doesn't have. Two providers in case one is
-  // rate-limited. City-level accuracy is plenty for a weather chip.
-  const locateByIp = async () => {
-    for (const url of ['https://ipwho.is/', 'https://ipapi.co/json/']) {
-      try {
-        const r = await fetch(url);
-        const d = await r.json();
-        if (d && typeof d.latitude === 'number' && typeof d.longitude === 'number') {
-          useCoords(d.latitude, d.longitude);
-          return;
-        }
-      } catch (e) { /* try the next provider */ }
-    }
-    showToast('Could not determine location. Check your connection.');
-  };
-  // Browsers: native geolocation prompt works and ad-blockers can't interfere.
-  if (!navigator.geolocation) { locateByIp(); return; }
-  navigator.geolocation.getCurrentPosition(
-    (pos) => useCoords(pos.coords.latitude, pos.coords.longitude),
-    () => locateByIp(),
-    { timeout: 6000, maximumAge: 600000 }
-  );
-}
-
-async function fetchWeather() {
-  const { lat, lon } = state.settings.weather;
-  if (lat == null || lon == null) return;
-  try {
-    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current=temperature_2m,weather_code&temperature_unit=fahrenheit`);
-    if (!r.ok) throw new Error(`Weather request failed: ${r.status}`);
-    const data = await r.json();
-    const temp = Math.round(data.current.temperature_2m);
-    const info = WEATHER_CODE_MAP[data.current.weather_code] || { icon: '🌡', label: 'Weather' };
-    const chip = document.getElementById('weatherChip');
-    if (chip) chip.innerHTML = `<span class="icon">${info.icon}</span><div><div class="temp">${temp}°F</div><div class="cond">${info.label}</div></div>`;
-  } catch (e) {
-    const chip = document.getElementById('weatherChip');
-    if (chip) chip.innerHTML = `<span class="icon">—</span><div><div class="temp">—</div><div class="cond">Offline</div></div>`;
-  }
-}
-setInterval(() => { if (state.settings.weather.enabled) fetchWeather(); }, 30 * 60 * 1000);
-
-/* ============================================================
    SETUP
 ============================================================ */
 const cycleGrid = document.getElementById('cycleGrid');
@@ -2304,10 +2202,12 @@ function selectedCycles() {
 function updateProjections() {
   // Nothing to project when the setup screen isn't on screen
   if (document.getElementById('setupScreen').classList.contains('hidden')) return;
+  renderPresets(); // Manual duration/cycle changes invalidate an old preset selection.
   const focus = parseInt(focusSel.value, 10);
   const brk = parseInt(breakSel.value, 10);
   const now = new Date();
   cycleGrid.querySelectorAll('.cycle-btn').forEach(btn => {
+    btn.setAttribute('aria-pressed', String(btn.classList.contains('selected')));
     const n = parseInt(btn.dataset.cycles, 10);
     const mins = n * focus + (n - 1) * brk;
     const end = new Date(now.getTime() + mins * 60_000);
@@ -2403,6 +2303,7 @@ function renderPresets() {
     const p = PRESETS[btn.dataset.preset];
     const selected = p && p.cycles === cur.cycles && p.focusDuration === cur.focusDuration && p.breakDuration === cur.breakDuration;
     btn.classList.toggle('selected', !!selected);
+    btn.setAttribute('aria-pressed', String(!!selected));
   });
 }
 presetRow.addEventListener('click', (e) => {
@@ -2435,6 +2336,7 @@ let currentSession = null;
 let runner = null;
 
 function startFlow() {
+  if (currentSession) { navigateSession(); return; }
   const cycles = selectedCycles();
   const focus = parseInt(focusSel.value, 10);
   const brk = parseInt(breakSel.value, 10);
@@ -2840,6 +2742,7 @@ function startCycleTimer(cycleIdx) {
   currentFlow = 'active';
   setPauseUI(false);
   renderActive();
+  animatePhaseChange();
   startRunner();
   showScreen('activeScreen');
   saveActive(true);
@@ -2858,6 +2761,7 @@ function startBreakTimer(cycleIdx) {
   currentFlow = 'active';
   setPauseUI(false);
   renderActive();
+  animatePhaseChange();
   startRunner();
   showScreen('activeScreen');
   saveActive(true);
@@ -2879,11 +2783,29 @@ function setPauseUI(paused) {
   btn.setAttribute('aria-label', paused ? 'Resume' : 'Pause');
 }
 
-// Show the countdown in the macOS menu bar (Electron only). Empty string clears it.
+// Send structured state; main validates it and updates countdown separately from menus.
 function setMenuBar(text) {
-  if (window.focusBridge && window.focusBridge.setMenuBarTitle) {
-    window.focusBridge.setMenuBarTitle(text || '');
-  }
+  publishWindowStatus(!!text);
+}
+function publishWindowStatus(active = !!timerState) {
+  if (!window.focusBridge || !window.focusBridge.setWindowStatus) return;
+  const running = active && timerState && currentFlow === 'active';
+  const phase = running ? timerState.phase : !currentSession ? 'idle' :
+    currentFlow === 'save-retry' ? 'save-retry' :
+    /^(review-|sprint-end|debrief)/.test(currentFlow || '') ? 'review' : 'planning';
+  const seconds = running ? Math.max(0, Math.ceil((timerState.paused ? timerState.pausedRemainingMs : timerState.endsAt - Date.now()) / 1000)) : 0;
+  window.focusBridge.setWindowStatus({ phase, paused: !!(running && timerState.paused), seconds });
+  const countdown = document.getElementById('compactCountdown');
+  countdown.textContent = running ? `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}` : '';
+  document.getElementById('compactPhase').textContent = running ? (timerState.paused ? 'Paused · ' : '') + (phase === 'focus' ? 'Focus' : 'Break') :
+    ({idle:'Ready', review:'Review', planning:'Next focus', 'save-retry':'Save needed'})[phase];
+  const target = document.getElementById('compactTarget');
+  const cycle = currentSession?.cycles[running ? timerState.cycleIdx : currentSession.cycles.length - 1];
+  target.textContent = cycle?.plan?.accomplish || (phase === 'break' ? 'Take a moment to recharge' : 'Focus Cycles');
+  target.title = target.textContent;
+  document.getElementById('compactCycle').textContent = running ? `Cycle ${timerState.cycleIdx + 1} of ${currentSession.totalCycles}` :
+    ({idle:'Open the full window to plan', review:'Your reflection is ready', planning:'Continue with your next plan', 'save-retry':'Open to retry saving'})[phase];
+  document.getElementById('compactAction').textContent = running ? (timerState.paused ? 'Resume' : 'Pause') : phase === 'review' ? 'Review' : 'Continue';
 }
 
 let lastTimerRender = '';
@@ -2898,10 +2820,26 @@ function updateTimerDisplay(ms) {
   if (key === lastTimerRender) return;
   lastTimerRender = key;
   document.getElementById('timerDisplay').textContent = txt;
+  const progress = timerState && timerState.minutes > 0
+    ? Math.max(0, Math.min(100, ((timerState.minutes * 60_000 - ms) / (timerState.minutes * 60_000)) * 100))
+    : 0;
+  const progressBar = document.getElementById('timerProgress');
+  progressBar.style.setProperty('--progress', progress.toFixed(1) + '%');
+  progressBar.setAttribute('aria-valuenow', progress.toFixed(1));
+  progressBar.classList.toggle('paused', !!timerState.paused);
+  syncNavigation();
   const phaseWord = timerState.phase === 'focus' ? 'Focus' : 'Break';
   document.title = `${txt} · ${phaseWord}`;
   const glyph = timerState.paused ? '⏸ ' : (timerState.phase === 'break' ? '☕ ' : '');
   setMenuBar(glyph + txt);
+}
+
+function animatePhaseChange() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const panel = document.querySelector('#activeScreen .active-screen');
+  panel.classList.remove('phase-pop');
+  void panel.offsetWidth;
+  panel.classList.add('phase-pop');
 }
 
 function renderActive() {
@@ -2909,7 +2847,7 @@ function renderActive() {
   tag.className = 'phase-tag ' + timerState.phase;
   tag.textContent = timerState.phase.toUpperCase();
 
-  // Breathing pacer appears only during breaks
+  // Keep the phase class available for break styling
   document.querySelector('#activeScreen .active-screen')
     .classList.toggle('breaking', timerState.phase === 'break');
 
@@ -2924,7 +2862,7 @@ function renderActive() {
   const tgt = cycle && cycle.plan && cycle.plan.accomplish ? cycle.plan.accomplish : '';
   const next = cycle && cycle.plan && cycle.plan.start ? cycle.plan.start : '';
   const showTask = timerState.phase === 'focus' && tgt;
-  document.getElementById('cycleTarget').textContent = showTask ? `"${tgt}"` : '';
+  document.getElementById('cycleTarget').textContent = showTask ? tgt : '';
   document.getElementById('cycleNextAction').innerHTML = timerState.phase === 'focus' && next ? `<strong>Next:</strong> ${escapeHtml(next)}` : '';
   // Drives the mini-bar fallback: with no task, the cycle count carries the strip.
   document.querySelector('.cycle-meta').classList.toggle('has-task', !!showTask);
@@ -2942,11 +2880,19 @@ function renderActive() {
   updateTimerDisplay(timerState.endsAt - Date.now());
 }
 
-function phaseComplete() {
+function recordedFocusMinutes() {
+  const remaining = timerState.paused
+    ? timerState.pausedRemainingMs : timerState.endsAt - Date.now();
+  const duration = timerState.minutes * 60_000;
+  return Math.min(timerState.minutes, Math.max(0, Math.round((duration - Math.max(0, remaining || 0)) / 60_000)));
+}
+
+function phaseComplete(reason = 'expired') {
+  if (!timerState) return;
   stopRunner();
   const cycleIdx = timerState.cycleIdx;
   const phase = timerState.phase;
-  const pausedMs = timerState.pausedAccumMs || 0;
+  const minutes = recordedFocusMinutes();
   // Clear before showing prompts so crash snapshots taken on a prompt screen
   // restore to the prompt, never to a dead timer that would re-complete.
   timerState = null;
@@ -2955,10 +2901,11 @@ function phaseComplete() {
     const cycle = currentSession.cycles[cycleIdx];
     cycle.endedAt = Date.now();
     // Paused time doesn't count as focus time
-    cycle.minutes = Math.max(0, Math.round((cycle.endedAt - cycle.startedAt - pausedMs) / 60_000));
-    cycle.completed = true;
+    cycle.minutes = minutes;
+    cycle.completed = reason === 'expired';
+    cycle.endReason = reason;
     chime('focus');
-    notify('Focus cycle complete');
+    notify(reason === 'expired' ? 'Focus cycle complete' : 'Focus cycle skipped');
 
     const isLast = cycleIdx >= currentSession.totalCycles - 1;
     if (currentSession.mode === 'sprint') {
@@ -2969,7 +2916,7 @@ function phaseComplete() {
   } else {
     // break ended
     chime('break');
-    notify('Break over — back to focus');
+    notify(reason === 'expired' ? 'Break over — back to focus' : 'Break skipped — back to focus');
     showCyclePlan(cycleIdx + 1);
   }
 }
@@ -2994,6 +2941,7 @@ document.getElementById('pauseBtn').addEventListener('click', () => {
     timerState.pausedRemainingMs = null;
     setPauseUI(false);
     display.classList.remove('paused');
+    startRunner();
   } else {
     timerState.pausedRemainingMs = Math.max(0, timerState.endsAt - Date.now());
     timerState.paused = true;
@@ -3008,104 +2956,112 @@ document.getElementById('pauseBtn').addEventListener('click', () => {
 });
 document.getElementById('skipBtn').addEventListener('click', () => {
   if (!timerState) return;
-  // Skip must work while paused too — unpause, then complete immediately
-  endPauseSegment();
-  timerState.pausedRemainingMs = null;
-  timerState.endsAt = Date.now();
-  tick();
+  const remaining = timerState.paused ? timerState.pausedRemainingMs : timerState.endsAt - Date.now();
+  phaseComplete(remaining <= 0 ? 'expired' : 'skipped');
 });
 document.getElementById('stopBtn').addEventListener('click', () => {
   if (!timerState) return;
   stopRunner();
-  endPauseSegment();
   // Mark current cycle incomplete
   if (timerState.phase === 'focus') {
     const cycle = currentSession.cycles[timerState.cycleIdx];
     cycle.endedAt = Date.now();
-    cycle.minutes = Math.max(0, Math.round((cycle.endedAt - cycle.startedAt - (timerState.pausedAccumMs || 0)) / 60_000));
+    cycle.minutes = recordedFocusMinutes();
+    cycle.endReason = 'stopped';
     cycle.completed = false;
   }
-  endSession(false);
-  showToast('Session stopped.');
+  endSession(false, 'Session stopped.');
 });
 
 startBtn.addEventListener('click', startFlow);
 
-/* Mini bar — snap the window to a small always-on-top strip and back.
-   The CSS mini layout is height-driven, so this works together with any
-   manual resize. Falls back to a no-op in a plain browser (no bridge). */
-function isMiniActive() { return matchMedia('(max-height: 240px), (max-width: 440px)').matches; }
+/* Compact presentation is controlled only by the main process. */
+function isMiniActive() { return document.body.dataset.compact === 'true'; }
 function setCompactWindow(on) {
   if (window.focusBridge && window.focusBridge.setCompact) window.focusBridge.setCompact(on);
 }
-document.getElementById('miniBtn').addEventListener('click', () => setCompactWindow(!isMiniActive()));
-// Clicking the "grow the window" hint expands back out too
-document.querySelector('.mini-hint').addEventListener('click', () => setCompactWindow(false));
-
-// Menu-bar (tray) menu drives the same Pause / Skip / Stop as the on-screen
-// buttons, so you can steer a session without leaving your current app.
-if (window.focusBridge && window.focusBridge.onTrayAction) {
-  window.focusBridge.onTrayAction((action) => {
-    if (!timerState) return;
-    const id = { pause: 'pauseBtn', skip: 'skipBtn', stop: 'stopBtn' }[action];
-    const btn = id && document.getElementById(id);
-    if (btn) btn.click();
+document.getElementById('miniBtn').addEventListener('click', () => setCompactWindow(true));
+document.getElementById('compactExpand').addEventListener('click', () => setCompactWindow(false));
+document.getElementById('compactAction').addEventListener('click', () => {
+  if (timerState && currentFlow === 'active') document.getElementById('pauseBtn').click();
+  else setCompactWindow(false);
+});
+if (window.focusBridge?.onCompactAvailability) {
+  window.focusBridge.onCompactAvailability(available => {
+    const button = document.getElementById('miniBtn');
+    button.disabled = !available;
+    button.title = available ? 'Compact window (⌘⇧M)' : 'Compact window is available during a timer outside full screen';
   });
 }
-
-// Mini-bar dragging + hover-to-solidify. Dragging is done manually with pointer
-// capture (not -webkit-app-region) so it works reliably and keeps tracking even
-// when the cursor leaves the small window.
+if (window.focusBridge?.onCompactState) {
+  window.focusBridge.onCompactState(on => {
+    document.body.dataset.compact = String(on);
+    publishWindowStatus();
+    requestAnimationFrame(() => {
+      const target = on ? document.getElementById('compactExpand') :
+        currentVisibleScreen() === 'activeScreen' ? document.getElementById('miniBtn') :
+        document.querySelector('.screen:not(.hidden) button, .screen:not(.hidden) textarea');
+      target?.focus({ preventScroll: true });
+    });
+  });
+}
+if (window.focusBridge?.onTrayAction) {
+  window.focusBridge.onTrayAction(action => {
+    if (!timerState || currentFlow !== 'active') return;
+    const id = { pause: 'pauseBtn', skip: 'skipBtn', stop: 'stopBtn' }[action];
+    if (id) document.getElementById(id).click();
+  });
+}
 (function () {
-  const bar = document.querySelector('#activeScreen .active-screen');
-  if (!bar) return;
+  const bar = document.getElementById('compactPanel');
   const bridge = window.focusBridge || {};
-  const setOpacity = (v) => { if (bridge.setBarOpacity) bridge.setBarOpacity(v); };
-
-  bar.addEventListener('mouseenter', () => { if (isMiniActive()) setOpacity(1); });
-  bar.addEventListener('mouseleave', () => { if (isMiniActive() && !dragging) setOpacity(0.9); });
-
-  let dragging = false, startX = 0, startY = 0, dx = 0, dy = 0, raf = null;
-  function flush() { raf = null; if (dragging && bridge.dragMove) bridge.dragMove(dx, dy); }
-
-  bar.addEventListener('pointerdown', (e) => {
-    if (e.button !== 0 || !isMiniActive()) return;
-    if (e.target.closest('button')) return;   // buttons keep their click
-    dragging = true;
-    startX = e.screenX; startY = e.screenY; dx = 0; dy = 0;
-    bar.classList.add('dragging');
-    setOpacity(1);
-    try { bar.setPointerCapture(e.pointerId); } catch (err) {}
-    if (bridge.dragStart) bridge.dragStart();
-    e.preventDefault();
-  });
-  bar.addEventListener('pointermove', (e) => {
-    if (!dragging) return;
-    dx = e.screenX - startX; dy = e.screenY - startY;
-    if (!raf) raf = requestAnimationFrame(flush);
-  });
-  function endDrag(e) {
+  let dragging = false, pointerId = null, startX = 0, startY = 0;
+  function endDrag() {
     if (!dragging) return;
     dragging = false;
     bar.classList.remove('dragging');
-    try { bar.releasePointerCapture(e.pointerId); } catch (err) {}
-    if (bridge.dragEnd) bridge.dragEnd();
-    // If the pointer ended off the bar, settle back to the resting translucency
-    if (isMiniActive() && !bar.matches(':hover')) setOpacity(0.9);
+    if (bar.hasPointerCapture(pointerId)) bar.releasePointerCapture(pointerId);
+    bridge.dragEnd?.();
   }
-  bar.addEventListener('pointerup', endDrag);
-  bar.addEventListener('pointercancel', endDrag);
+  bar.addEventListener('pointerdown', e => {
+    if (e.button !== 0 || !isMiniActive() || e.target.closest('button')) return;
+    dragging = true; pointerId = e.pointerId; startX = e.screenX; startY = e.screenY;
+    bar.classList.add('dragging');
+    try { bar.setPointerCapture(pointerId); } catch { endDrag(); return; }
+    bridge.dragStart?.(); e.preventDefault();
+  });
+  bar.addEventListener('pointermove', e => {
+    if (dragging) bridge.dragMove?.(e.screenX - startX, e.screenY - startY);
+  });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(type => bar.addEventListener(type, endDrag));
+  window.addEventListener('blur', endDrag);
 })();
 
 /* ============================================================
    END SESSION
 ============================================================ */
-function endSession(completed) {
+function endSession(completed, fallbackMessage) {
   if (!currentSession) return;
-  currentSession.endedAt = Date.now();
+  let archived = false, firstSave = false;
+  stopRunner();
+  currentSession.endedAt = currentSession.endedAt || Date.now();
   if (currentSession.cycles.length && currentSession.cycles.some(c => c.startedAt)) {
-    state.sessions.push(currentSession);
-    saveState();
+    currentSession.pendingCompletion = completed;
+    timerState = null;
+    currentFlow = 'save-retry';
+    saveActive(true);
+    const previousSessions = state.sessions;
+    const previouslySaved = state.hasSavedSession;
+    firstSave = !previouslySaved && previousSessions.length === 0;
+    state.hasSavedSession = true;
+    state.sessions = [...previousSessions.filter(s => s.id !== currentSession.id), currentSession];
+    if (!saveState()) {
+      state.sessions = previousSessions;
+      state.hasSavedSession = previouslySaved;
+      showSaveRetry();
+      return false;
+    }
+    archived = true;
   }
   currentSession = null;
   timerState = null;
@@ -3118,10 +3074,38 @@ function endSession(completed) {
   renderIntent();
   renderDailyGoal();
   showScreen('setupScreen');
+  if (archived) {
+    showToast(firstSave ? 'First session saved. One less thing to keep in your head.' :
+      completed ? completionMessage() : fallbackMessage || 'Session saved. A good place to pause.');
+  } else if (fallbackMessage) {
+    showToast(fallbackMessage);
+  }
   if (completed) {
-    showToast(completionMessage());
     setTimeout(celebrate, 140); // let the setup screen settle in first
   }
+  return true;
+}
+
+function showSaveRetry() {
+  setCompactWindow(false);
+  document.getElementById('promptContent').innerHTML = `
+    <h2 class="prompt-title">Session could not be saved</h2>
+    <p class="prompt-sub" id="saveRecoveryStatus"></p>
+    <div class="prompt-actions"><button class="btn-primary" id="retrySaveBtn">Retry save</button></div>`;
+  updateSaveRecoveryStatus();
+  document.getElementById('retrySaveBtn').onclick = () => {
+    if (currentSession && currentFlow === 'save-retry') endSession(currentSession.pendingCompletion);
+  };
+  showScreen('promptScreen');
+  showToast(activeRecoveryAvailable ? 'Session not saved. Click Retry save.' :
+    'Newest session is only in memory. Keep this window open and click Retry save.');
+}
+
+function updateSaveRecoveryStatus() {
+  const status = document.getElementById('saveRecoveryStatus');
+  if (status) status.textContent = activeRecoveryAvailable
+    ? 'A recovery copy is saved on this device. Retry saving your session to history.'
+    : 'The newest session is only in memory. Keep this window open and retry saving. Any older recovery copy may be incomplete.';
 }
 
 /* Cancel from any prompt screen — saves whatever's already completed, abandons rest */
@@ -3133,14 +3117,14 @@ function cancelSession() {
     const cycle = currentSession.cycles[timerState.cycleIdx];
     if (cycle && cycle.startedAt && !cycle.endedAt) {
       cycle.endedAt = Date.now();
-      cycle.minutes = Math.round((cycle.endedAt - cycle.startedAt) / 60_000);
+      cycle.minutes = recordedFocusMinutes();
+      cycle.endReason = 'cancelled';
       cycle.completed = false;
     }
   }
   stopRunner();
   const hadProgress = currentSession.cycles.some(c => c.startedAt);
-  endSession(false);
-  showToast(hadProgress ? 'Session cancelled. Completed cycles saved.' : 'Session cancelled.');
+  endSession(false, hadProgress ? 'Session cancelled. Completed cycles saved.' : 'Session cancelled.');
 }
 
 /* ============================================================
@@ -3174,7 +3158,7 @@ function renderHistory() {
     { label: 'Today', value: fmtMin(todayMin), sub: `${todayCycles.length} cycle${todayCycles.length === 1 ? '' : 's'}` },
     { label: 'Last 7 days', value: fmtMin(weekMin), sub: `${weekCycles.length} cycles` },
     { label: 'Streak', value: streak + 'd', sub: streak === 0 ? 'Start today' : 'Keep going' },
-    { label: 'Best window', value: bestHour || '—', sub: bestHour ? 'Most cycles started' : 'Needs 3 cycles' }
+    { label: 'Most common start', value: bestHour || '—', sub: bestHour ? 'Most cycles started' : 'Needs 3 cycles' }
   ];
   document.getElementById('statGrid').innerHTML = stats.map(s =>
     `<div class="stat"><div class="label">${s.label}</div><div class="value">${s.value}</div><div class="sub">${s.sub}</div></div>`
@@ -3204,7 +3188,7 @@ function renderHistory() {
 
   /* Session list */
   if (!sessions.length) {
-    document.getElementById('sessionList').innerHTML = `<div class="empty-state">No sessions yet — your first cycle starts the story.<br>Patterns will start showing up here after a few sessions.</div>`;
+    document.getElementById('sessionList').innerHTML = `<div class="empty-state">No cycles logged yet. Start with one small thing.</div>`;
   } else {
     document.getElementById('sessionList').innerHTML = sessions.slice(0, 50).map(renderSessionRow).join('');
     attachSessionHandlers();
@@ -3251,11 +3235,13 @@ function renderDayTimeline() {
   for (let i = 6; i >= 0; i--) {
     const day = new Date(); day.setHours(0, 0, 0, 0); day.setDate(day.getDate() - i);
     const dayStart = day.getTime();
-    const dayEnd = dayStart + 86_400_000;
+    const nextDay = new Date(day); nextDay.setDate(nextDay.getDate() + 1);
+    const dayEnd = nextDay.getTime(); // Local days can contain 23 or 25 hours.
     const blocks = allFocus
       .filter(c => c.startedAt >= dayStart && c.startedAt < dayEnd)
       .map(c => {
-        const startH = (c.startedAt - dayStart) / 3_600_000;
+        const localStart = new Date(c.startedAt);
+        const startH = localStart.getHours() + localStart.getMinutes() / 60 + localStart.getSeconds() / 3600;
         const durH = Math.max(((c.endedAt || c.startedAt + 60_000) - c.startedAt) / 3_600_000, 0.02);
         const left = Math.max(0, Math.min(100, ((startH - START_H) / SPAN_H) * 100));
         const width = Math.max(0.5, Math.min(100 - left, (durH / SPAN_H) * 100));
@@ -3446,7 +3432,7 @@ function escapeAttr(s) {
 }
 
 /* Export CSV */
-function exportCsv() {
+async function exportCsv() {
   const rows = [['session_id', 'session_started', 'cycle_index', 'cycle_started', 'cycle_ended', 'minutes', 'completed', 'target', 'energy', 'morale', 'plan_accomplish', 'plan_next_action', 'plan_hazards', 'review_note', 'review_distractions', 'review_next_action']];
   state.sessions.forEach(s => {
     s.cycles.forEach(c => {
@@ -3465,10 +3451,21 @@ function exportCsv() {
     });
   });
   const csv = rows.map(r => r.map(v => /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : v).join(',')).join('\n');
+  const filename = `focus-history-${new Date().toISOString().slice(0, 10)}.csv`;
+  if (window.focusBridge && typeof window.focusBridge.saveHistoryCsv === 'function') {
+    try {
+      const result = await window.focusBridge.saveHistoryCsv(csv, filename);
+      if (result && result.ok) showToast('History exported.');
+      else if (!result || !result.canceled) showToast('Could not export history.');
+    } catch (error) {
+      showToast('Could not export history.');
+    }
+    return;
+  }
   const blob = new Blob([csv], { type: 'text/csv' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = `focus-history-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.href = url; a.download = filename;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 0);
 }
@@ -3498,10 +3495,43 @@ function showScreen(id) {
     if (s === id) { el.classList.remove('hidden'); void el.offsetWidth; el.classList.add('fade-in'); }
     else el.classList.add('hidden');
   });
-  document.body.dataset.screen = id; // lets mini-bar mode know what's on screen
+  document.body.dataset.screen = id;
+  syncNavigation();
+  publishWindowStatus();
   // Projections skip updates while setup is hidden — refresh on the way back in
   if (id === 'setupScreen') updateProjections();
 }
+
+function syncNavigation() {
+  const visible = currentVisibleScreen();
+  const active = !!currentSession;
+  const route = visible === 'historyScreen' ? 'historyBtn' : visible === 'setupScreen' ? 'navHome' : 'navSession';
+  for (const id of ['navHome', 'navSession', 'historyBtn']) {
+    const button = document.getElementById(id);
+    if (id === route) button.setAttribute('aria-current', 'page');
+    else button.removeAttribute('aria-current');
+  }
+  document.getElementById('navSession').disabled = !active;
+  document.getElementById('homeSession').classList.toggle('hidden', !active);
+  document.querySelector('#setupScreen .card').classList.toggle('hidden', active);
+  if (!active) return;
+  const running = timerState && currentFlow === 'active';
+  const review = /^(review-|sprint-end|debrief)/.test(currentFlow || '');
+  const retry = currentFlow === 'save-retry';
+  const title = retry ? 'Your session needs saving' : running ? (timerState.paused ? 'Session paused' : 'Session running') : review ? 'Your review is ready' : 'Your plan is waiting';
+  const status = running ? document.getElementById('timerDisplay').textContent + ' remaining · ' + (timerState.phase === 'focus' ? 'Focus' : 'Break') : retry ? 'Keep this window open and retry saving.' : 'Your unfinished inputs are kept. Pick up where you left off.';
+  document.getElementById('homeSessionTitle').textContent = title;
+  document.getElementById('homeSessionStatus').textContent = status;
+  document.getElementById('homeReturn').textContent = retry ? 'Retry saving' : running ? 'Return to timer' : review ? 'Return to review' : 'Return to plan';
+}
+function navigateSession() {
+  if (!currentSession) { showScreen('setupScreen'); return; }
+  // Reveal the existing DOM; do not rebuild or discard unfinished prompt fields.
+  showScreen(currentFlow === 'active' && timerState ? 'activeScreen' : 'promptScreen');
+}
+document.getElementById('navHome').addEventListener('click', () => showScreen('setupScreen'));
+document.getElementById('navSession').addEventListener('click', navigateSession);
+document.getElementById('homeReturn').addEventListener('click', navigateSession);
 
 function currentVisibleScreen() {
   return ALL_SCREENS.find(s => !document.getElementById(s).classList.contains('hidden')) || 'setupScreen';
@@ -3558,6 +3588,9 @@ function togglePrefsMenu(force) {
   const show = force !== undefined ? force : prefsMenu.classList.contains('hidden');
   if (show) renderPrefsMenu();
   prefsMenu.classList.toggle('hidden', !show);
+  document.getElementById('prefsBtn').setAttribute('aria-expanded', String(show));
+  if (show) prefsMenu.querySelector('button')?.focus();
+  else if (prefsMenu.contains(document.activeElement)) document.getElementById('prefsBtn').focus();
 }
 document.getElementById('prefsBtn').addEventListener('click', (e) => {
   e.stopPropagation();
@@ -3590,11 +3623,13 @@ document.addEventListener('click', () => togglePrefsMenu(false));
 
 document.getElementById('themeBtn').addEventListener('click', toggleTheme);
 
-/* Shortcuts overlay — any key or click dismisses */
+/* Help includes a keyboard-accessible welcome replay. */
 const shortcutsOverlay = document.getElementById('shortcutsOverlay');
 function toggleShortcuts(force) {
   const show = force !== undefined ? force : shortcutsOverlay.classList.contains('hidden');
   shortcutsOverlay.classList.toggle('hidden', !show);
+  document.getElementById('welcomeReplay').disabled = !!currentSession || currentVisibleScreen() !== 'setupScreen';
+  if (show) document.getElementById('welcomeReplay').focus();
 }
 document.getElementById('shortcutsBtn').addEventListener('click', () => toggleShortcuts());
 shortcutsOverlay.addEventListener('click', () => toggleShortcuts(false));
@@ -3641,11 +3676,10 @@ function chime(kind) {
 /* ============================================================
    FOCUS SOUND — generated locally with WebAudio.
    No network, no buffering, works offline.
-   Menu labels stay Off / Lofi / Synthwave / Rain for existing habits;
    "Synthwave" maps to the warm Drift pad.
 ============================================================ */
-const MUSIC_MODES = ['off', 'lofi', 'synth', 'rain'];
-const MUSIC_LABELS = { off: 'Music', lofi: 'Lofi', synth: 'Synthwave', rain: 'Rain' };
+const MUSIC_MODES = ['off', 'lofi', 'synth', 'rain', 'deep', 'brown'];
+const MUSIC_LABELS = { off: 'Music', lofi: 'Lofi', synth: 'Synthwave', rain: 'Rain', deep: 'Deep hum', brown: 'Brown noise' };
 // Internal generator names. The UI still says "Synthwave", but it plays Drift.
 const MUSIC_MAP = { lofi: 'lofi', synth: 'drift', rain: 'rain' };
 let musicNodes = null; // active WebAudio graph, null when off
@@ -3707,6 +3741,7 @@ function startMusic(mode) {
     master.connect(ctx.destination);
     const sources = [];
     const timers = [];
+    musicNodes = { master, sources, timers }; // First chord must see the active graph.
     const now = ctx.currentTime;
     const kind = MUSIC_MAP[mode] || mode;
 
@@ -3728,7 +3763,7 @@ function startMusic(mode) {
       master.gain.setTargetAtTime(musicVolumeGain(0.14), now, 0.4);
     }
 
-    if (kind === 'deep') {
+    if (kind === 'brown') {
       const src = ctx.createBufferSource();
       src.buffer = makeNoiseBuffer(ctx, 'brown');
       src.loop = true;
@@ -3738,6 +3773,21 @@ function startMusic(mode) {
       src.start();
       sources.push(src);
       master.gain.setTargetAtTime(musicVolumeGain(0.12), now, 0.6);
+    }
+
+    if (kind === 'deep') {
+      // Quiet sine tones form a steady hum; all sources share the existing fade-out.
+      [65.41, 130.81].forEach((frequency, index) => {
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.value = frequency;
+        const gain = ctx.createGain();
+        gain.gain.value = index === 0 ? 0.7 : 0.3;
+        osc.connect(gain); gain.connect(master);
+        osc.start();
+        sources.push(osc);
+      });
+      master.gain.setTargetAtTime(musicVolumeGain(0.08), now, 0.6);
     }
 
     if (kind === 'drift') {
@@ -3866,8 +3916,7 @@ function startMusic(mode) {
       master.gain.setTargetAtTime(musicVolumeGain(1), now, 0.6);
     }
 
-    musicNodes = { master, sources, timers };
-  } catch (e) {}
+  } catch (e) { stopMusic(); }
 }
 
 function applyMusicVolume() {
@@ -3875,7 +3924,7 @@ function applyMusicVolume() {
   try {
     const kind = MUSIC_MAP[state.settings.musicMode] || state.settings.musicMode;
     // The master gain already carries the base mix level; rescale it.
-    const base = kind === 'rain' ? 0.14 : kind === 'deep' ? 0.12 : kind === 'drift' ? 1 : kind === 'lofi' ? 1 : 0;
+    const base = kind === 'rain' ? 0.14 : kind === 'deep' ? 0.08 : kind === 'brown' ? 0.12 : kind === 'drift' ? 1 : kind === 'lofi' ? 1 : 0;
     musicNodes.master.gain.setTargetAtTime(musicVolumeGain(base), audioCtx.currentTime, 0.1);
   } catch (e) {}
 }
@@ -3953,27 +4002,12 @@ function showToast(msg) {
    WHIMSY — small delights at the moments that earn them
 ============================================================ */
 
-// Warm, characterful lines for finishing a session. Picked at random unless a
-// milestone takes precedence.
-const COMPLETION_LINES = [
-  "That's real work, banked.",
-  "Deep work, done. Go stretch.",
-  "You showed up. That's the whole trick.",
-  "Nicely done. The hard part is behind you.",
-  "Future you says thanks.",
-  "A good dent in it. Rest earned.",
-  "Focus held all the way through.",
-  "That's how the good days are built.",
-  "Momentum, earned the honest way.",
-  "Cycles closed. Mind a little clearer."
-];
-
 // Rotating, slightly characterful examples for the sprint prompt.
 const SPRINT_EXAMPLES = [
   'Draft the hero section for the landing page',
   'Outline the deck, no polishing yet',
   'Reply to the three emails I keep avoiding',
-  'Write the first ugly draft, all the way through',
+  'Draft the opening paragraph. Let it be a draft.',
   'Untangle that one function that scares me',
   'Sketch the plan I keep saying I will make',
   'Read the doc and take real notes',
@@ -3984,19 +4018,9 @@ function sprintExample() {
 }
 
 function completionMessage() {
-  const completedSessions = state.sessions.filter(s => s.cycles.some(c => c.completed));
-  if (completedSessions.length === 1) return 'Your very first session, logged. This is how it compounds.';
   const streak = computeStreak(allCompletedCycles());
-  const milestones = {
-    3: 'Three days running. A habit is taking shape.',
-    7: 'A full week of showing up. Rare air.',
-    14: 'Two weeks straight. This is who you are now.',
-    30: 'Thirty days. A different worker than you were.',
-    50: 'Fifty days. Quietly remarkable.',
-    100: 'One hundred days. Genuinely legendary.'
-  };
-  if (milestones[streak]) return milestones[streak];
-  return COMPLETION_LINES[Math.floor(Math.random() * COMPLETION_LINES.length)];
+  if ([3, 7, 14, 30, 50, 100].includes(streak)) return `${streak}-day streak. Session saved.`;
+  return 'Session saved. A good place to pause.';
 }
 
 // A soft upward drift of sparks — embers, not a confetti cannon. One-shot
@@ -4050,7 +4074,7 @@ function celebrate() {
         ctx.fill();
       }
     }
-    if (alive) { raf = requestAnimationFrame(frame); }
+    if (alive && !matchMedia('(prefers-reduced-motion: reduce)').matches) { raf = requestAnimationFrame(frame); }
     else { cancelAnimationFrame(raf); canvas.remove(); }
   }
   raf = requestAnimationFrame(frame);
@@ -4059,19 +4083,49 @@ function celebrate() {
 /* ============================================================
    FIRST-RUN HINT
 ============================================================ */
-function maybeShowFirstRun() {
-  try { if (localStorage.getItem(FIRST_RUN_KEY)) return; } catch (e) { return; }
-  // Inside Electron the "Save as Mac app" line is nonsense — hide it.
-  if (/Electron/i.test(navigator.userAgent)) {
-    const inst = document.querySelector('.first-run-install');
-    if (inst) inst.style.display = 'none';
-  }
-  document.getElementById('firstRunBanner').classList.remove('hidden');
+const welcomeDialog = document.getElementById('firstRunBanner');
+let welcomeReturnFocus = null;
+function maybeShowFirstRun(replay = false) {
+  if (currentSession || currentFlow === 'save-retry' || currentVisibleScreen() !== 'setupScreen') return;
+  if (!replay && !isFreshInstall) return;
+  try { if (!replay && (localStorage.getItem(FIRST_RUN_KEY) || localStorage.getItem(ACTIVE_KEY))) return; }
+  catch (e) { return; }
+  welcomeReturnFocus = replay ? document.getElementById('shortcutsBtn') : document.activeElement;
+  toggleShortcuts(false);
+  welcomeDialog.showModal();
+  document.getElementById('welcomeFinish').focus();
 }
-document.getElementById('firstRunDismiss').addEventListener('click', () => {
+function dismissWelcome(plan = false) {
   try { localStorage.setItem(FIRST_RUN_KEY, '1'); } catch (e) {}
-  document.getElementById('firstRunBanner').classList.add('hidden');
+  welcomeDialog.close();
+  if (plan) {
+    // Reuse the setup target field without starting a session or a timer.
+    document.getElementById('intentRow').style.display = '';
+    document.getElementById('intentRow').classList.remove('hidden');
+    const input = document.getElementById('intentInput');
+    if (!document.getElementById('intentDisplay').classList.contains('hidden')) input.value = state.intent.text || '';
+    document.getElementById('intentDisplay').classList.add('hidden');
+    document.getElementById('intentForm').classList.remove('hidden');
+    input.focus();
+  } else {
+    const target = welcomeReturnFocus && welcomeReturnFocus !== document.body && welcomeReturnFocus.isConnected
+      ? welcomeReturnFocus : document.getElementById('startBtn');
+    target.focus();
+  }
+}
+welcomeDialog.addEventListener('cancel', e => { e.preventDefault(); dismissWelcome(); });
+welcomeDialog.addEventListener('keydown', e => {
+  e.stopPropagation();
+  if (e.key === 'Tab') {
+    const first = document.getElementById('firstRunDismiss');
+    const last = document.getElementById('welcomeFinish');
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
 });
+document.getElementById('firstRunDismiss').addEventListener('click', () => dismissWelcome());
+document.getElementById('welcomeFinish').addEventListener('click', () => dismissWelcome(true));
+document.getElementById('welcomeReplay').addEventListener('click', e => { e.stopPropagation(); maybeShowFirstRun(true); });
 
 /* Credit pill — dismissible, stays dismissed. The tribute lives on in the repo. */
 const CREDIT_KEY = 'focus_credit_dismissed_v1';
@@ -4137,16 +4191,15 @@ document.getElementById('intentRow').addEventListener('click', (e) => {
 /* ============================================================
    ACTIVE-STATE PERSISTENCE (crash/reload recovery)
 ============================================================ */
-let currentFlow = null; // 'prep' | 'sprint-start' | 'sprint-end' | 'plan-N' | 'review-N' | 'debrief' | 'active'
+let currentFlow = null; // 'prep' | 'sprint-start' | 'sprint-end' | 'plan-N' | 'review-N' | 'debrief' | 'active' | 'save-retry'
 let lastActiveSave = 0;
+let activeRecoveryAvailable = false; // Latest recovery write succeeded, not merely an older copy exists.
 
 function saveActive(force) {
-  if (!currentSession) { clearActive(); return; }
+  if (!currentSession) return false;
   const now = Date.now();
-  // Transitions force-save; the periodic heartbeat only feeds the 6h staleness
-  // check, so once a minute is plenty — no need to hit disk every 4 seconds.
-  if (!force && now - lastActiveSave < 60_000 && timerState && !timerState.paused) return;
-  lastActiveSave = now;
+  // Transitions force-save; heartbeat snapshots bound recoverable progress.
+  if (!force && activeRecoveryAvailable && now - lastActiveSave < 60_000 && timerState && !timerState.paused) return true;
   const snap = {
     session: currentSession,
     timer: timerState ? {
@@ -4156,14 +4209,25 @@ function saveActive(force) {
       endsAt: timerState.endsAt,
       minutes: timerState.minutes,
       paused: timerState.paused,
-      pausedRemainingMs: timerState.pausedRemainingMs
+      pausedRemainingMs: timerState.pausedRemainingMs,
+      pausedAccumMs: timerState.pausedAccumMs,
+      pauseStartedAt: timerState.pauseStartedAt
     } : null,
     flow: currentFlow,
     savedAt: now
   };
-  try { localStorage.setItem(ACTIVE_KEY, JSON.stringify(snap)); } catch (e) {}
+  try {
+    localStorage.setItem(ACTIVE_KEY, JSON.stringify(snap));
+    lastActiveSave = now;
+    activeRecoveryAvailable = true;
+  } catch (e) {
+    activeRecoveryAvailable = false; // Leave the prior stored snapshot intact.
+  }
+  if (currentFlow === 'save-retry') updateSaveRecoveryStatus();
+  return activeRecoveryAvailable;
 }
 function clearActive() {
+  activeRecoveryAvailable = false;
   try { localStorage.removeItem(ACTIVE_KEY); } catch (e) {}
 }
 function tryResume() {
@@ -4172,15 +4236,18 @@ function tryResume() {
     const raw = localStorage.getItem(ACTIVE_KEY);
     if (!raw) return false;
     snap = JSON.parse(raw);
-  } catch (e) { clearActive(); return false; }
+  } catch (e) { return false; } // A read failure must not erase the prior recovery.
 
-  // Discard if older than 6 hours — likely a forgotten session
-  if (!snap.savedAt || Date.now() - snap.savedAt > 6 * 3600 * 1000) {
-    clearActive(); return false;
-  }
-  if (!snap.session) { clearActive(); return false; }
+  // Age makes elapsed time uncertain, not the saved work disposable.
+  if (!snap || !snap.session) { clearActive(); return false; }
+  const stale = !Number.isFinite(snap.savedAt) || snap.savedAt <= 0 ||
+    snap.savedAt > Date.now() || Date.now() - snap.savedAt > 6 * 3600 * 1000;
 
+  if (state.sessions.some(s => s.id === snap.session.id)) { clearActive(); return false; }
   currentSession = snap.session;
+  currentFlow = snap.flow;
+  activeRecoveryAvailable = true;
+  if (snap.flow === 'save-retry') { showSaveRetry(); return true; }
 
   // If no timer, restore the prompt screen they were on
   if (!snap.timer) {
@@ -4193,24 +4260,38 @@ function tryResume() {
       const idx = parseInt(snap.flow.slice(7), 10);
       showCycleReview(idx, idx >= currentSession.totalCycles - 1);
     } else { clearActive(); currentSession = null; return false; }
-    showToast('Resumed where you left off.');
+    if (currentFlow !== 'save-retry') showToast(stale
+      ? 'Restored an older recovery copy. Recent changes may be missing.' : 'Resumed where you left off.');
     return true;
   }
 
   // Timer was active. Restore timer state.
   timerState = { ...snap.timer };
 
+  if (stale) {
+    const duration = timerState.minutes * 60_000;
+    const remaining = timerState.paused ? timerState.pausedRemainingMs :
+      (Number.isFinite(snap.savedAt) && snap.savedAt > 0 && snap.savedAt <= Date.now()
+        ? timerState.endsAt - snap.savedAt : duration);
+    timerState.pausedRemainingMs = Number.isFinite(remaining)
+      ? Math.min(duration, Math.max(0, remaining)) : duration;
+    timerState.paused = true;
+    timerState.pauseStartedAt = Date.now();
+  }
+
   // If was paused: keep paused, recompute endsAt from remaining ms.
-  // The pause segment restarts now — time while the app was closed
-  // doesn't count toward the pause accumulator.
+  // Keep the original pause start so time closed remains excluded.
+  // Older snapshots can recover the pause start from their save time.
   if (timerState.paused) {
     timerState.endsAt = Date.now() + (timerState.pausedRemainingMs || 0);
-    timerState.pauseStartedAt = Date.now();
+    timerState.pauseStartedAt = timerState.pauseStartedAt ?? snap.savedAt;
     setPauseUI(true);
     document.getElementById('timerDisplay').classList.add('paused');
     showScreen('activeScreen');
     renderActive();
-    showToast('Resumed (paused). Click Resume to continue.');
+    showToast(stale
+      ? 'Older or uncertain recovery: paused at last saved progress. Recent changes may be missing; time away was not counted. Click Resume to continue.'
+      : 'Resumed (paused). Click Resume to continue.');
     return true;
   }
 
@@ -4219,8 +4300,8 @@ function tryResume() {
     showScreen('activeScreen');
     renderActive();
     // phaseComplete handles focus → review/sprint-end OR break → next plan
-    setTimeout(phaseComplete, 80);
-    showToast('Cycle finished while you were away.');
+    phaseComplete();
+    if (currentFlow !== 'save-retry') showToast('Cycle finished while you were away.');
     return true;
   }
 
@@ -4239,9 +4320,7 @@ function init() {
   hydrateSetupFromState();
   setRandomQuote();
   updateProjections();
-  renderWeatherSlot();
   renderIntent();
-  maybeShowFirstRun();
   maybeHideCredit();
   applyDisplayPrefs();
   // Music never autoplays across launches (browsers block it and surprise
@@ -4250,7 +4329,7 @@ function init() {
   renderMusicButton();
   initBackgrounds();
   // Try to resume an interrupted session before doing anything else interactive
-  tryResume();
+  if (!tryResume()) maybeShowFirstRun();
 
   // Save active state on tab close — last line of defense
   window.addEventListener('beforeunload', () => {
@@ -4282,15 +4361,21 @@ function init() {
   });
 
   document.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return; // Preserve native menu shortcuts, including Cmd+M.
+    if (document.activeElement?.tagName === 'BUTTON' && (e.key === ' ' || e.key === 'Enter')) return;
+    if (isMiniActive()) {
+      if (e.key === 'Escape') { e.preventDefault(); setCompactWindow(false); }
+      else if (e.key === ' ') { e.preventDefault(); document.getElementById('compactAction').click(); }
+      else if (e.key !== 'Tab') e.preventDefault();
+      return; // Full-window shortcuts must not open clipped panels over compact mode.
+    }
     if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
       // Esc inside a field blurs it (standard macOS behavior); a second Esc then navigates.
       if (e.key === 'Escape') document.activeElement.blur();
       return;
     }
-    // Open overlay = modal. Any key dismisses it and does nothing else.
     if (!shortcutsOverlay.classList.contains('hidden')) {
-      e.preventDefault();
-      toggleShortcuts(false);
+      if (e.key === 'Escape' || e.key === '?') { e.preventDefault(); toggleShortcuts(false); document.getElementById('shortcutsBtn').focus(); }
       return;
     }
     if (e.key === ' ' && !currentSession && currentVisibleScreen() === 'setupScreen') { e.preventDefault(); startFlow(); }

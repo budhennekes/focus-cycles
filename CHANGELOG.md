@@ -4,12 +4,23 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-08-22
+
 ### Added
 - **Work-cycle presets for real conditions.** Start small (1×10 + 5), Admin (2×25 + 5), and Deep work (2×45 + 10) make the first choice useful instead of making every task fit the same timer.
 - **Next-action handoff.** The next physical action is visible during focus, captured at cycle review, and prefilled into the next cycle after a break. The CSV export now includes plan and review next actions.
+- **Mac App Store release pipeline.** The real Electron `mas` target now builds separately, embeds the app icon, supports a provisioning profile, signs the app and installer with environment-provided identities, verifies both signatures, and produces an upload-ready `.pkg`.
+- **Privacy and submission materials.** Added the public privacy policy, App Store copy, review notes, screenshot plan, and a submission checklist.
 
 ### Changed
 - **Faster planning and review.** Full-session prep now asks only for the outcome, completion signal, and protected focus. Cycle planning centers the outcome and first physical action. Reviews close the loop with what moved, what blocked you, and what to do next.
+- **Safer dependencies.** Updated Electron and the maintained `@electron/packager`, removed the deprecated packager, and cleared the dependency audit.
+- **Coarse weather only.** Weather now uses city-level IP lookup only after opt-in and no longer requests precise geolocation permission.
+
+### Fixed
+- **Default-window layout.** The setup screen now keeps Start focusing visible without the bottom controls covering duration fields on laptop-height windows.
+- **Sandboxed history export.** The Mac app now uses a native save dialog and user-selected file access for CSV export.
+- **Package size regression.** Build scripts exclude local backup and prior distribution folders instead of nesting an old Electron bundle inside the app.
 
 ## [1.3.0] — 2026-07-17
 
@@ -90,7 +101,8 @@ All notable changes to Focus Cycles. Format follows [Keep a Changelog](https://k
 - Focus sounds: Lofi and Synthwave (YouTube streams), locally generated Rain for offline.
 - Today's intent pin, rotating landscape backgrounds, local weather, light and dark themes, keyboard shortcuts with a `?` overlay.
 
-[Unreleased]: https://github.com/budhennekes/focus-cycles/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/budhennekes/focus-cycles/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/budhennekes/focus-cycles/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/budhennekes/focus-cycles/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/budhennekes/focus-cycles/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/budhennekes/focus-cycles/compare/v1.0.2...v1.1.0

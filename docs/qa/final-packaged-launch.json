@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "app": "/Users/budhennekes/Documents/Projects/Apps/pomodoro-app/dist/Focus Cycles-darwin-arm64/Focus Cycles.app",
+  "profile": "/tmp/focus-bundle-launch-jEiUEH",
+  "result": {
+    "url": "file:///Users/budhennekes/Documents/Projects/Apps/pomodoro-app/dist/Focus%20Cycles-darwin-arm64/Focus%20Cycles.app/Contents/Resources/app.asar/index.html",
+    "cycles": 3,
+    "selected": "true",
+    "before": 0,
+    "after": 0,
+    "backdrop": "none",
+    "labels": 1
+  },
+  "screenshot": "/tmp/focus-bundle-launch-jEiUEH/packaged-launch.png"
+}
