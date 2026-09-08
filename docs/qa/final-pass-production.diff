@@ -1,0 +1,49 @@
+--- quotes-verified/index.html
++++ final-pass/index.html
+@@ -2010,10 +2010,10 @@
+   // Priority: your uploaded photos, then a local ghibli-XX file pack,
+   // then the built-in Unsplash set.
+   const custom = await bgDbAll();
++  // Release the previous custom set on both re-import and return to built-ins.
++  BACKGROUNDS.forEach(u => { if (typeof u === 'string' && u.startsWith('blob:')) URL.revokeObjectURL(u); });
+   if (custom.length > 0) {
+     custom.sort((a, b) => a.added - b.added);
+-    // Release object URLs from a previous init so re-imports don't leak memory
+-    BACKGROUNDS.forEach(u => { if (typeof u === 'string' && u.startsWith('blob:')) URL.revokeObjectURL(u); });
+     BACKGROUNDS = custom.map(p => URL.createObjectURL(p.blob));
+   } else {
+     const local = await discoverLocalBackgrounds();
+@@ -3290,11 +3290,13 @@
+   for (let i = 6; i >= 0; i--) {
+     const day = new Date(); day.setHours(0, 0, 0, 0); day.setDate(day.getDate() - i);
+     const dayStart = day.getTime();
+-    const dayEnd = dayStart + 86_400_000;
++    const nextDay = new Date(day); nextDay.setDate(nextDay.getDate() + 1);
++    const dayEnd = nextDay.getTime(); // Local days can contain 23 or 25 hours.
+     const blocks = allFocus
+       .filter(c => c.startedAt >= dayStart && c.startedAt < dayEnd)
+       .map(c => {
+-        const startH = (c.startedAt - dayStart) / 3_600_000;
++        const localStart = new Date(c.startedAt);
++        const startH = localStart.getHours() + localStart.getMinutes() / 60 + localStart.getSeconds() / 3600;
+         const durH = Math.max(((c.endedAt || c.startedAt + 60_000) - c.startedAt) / 3_600_000, 0.02);
+         const left = Math.max(0, Math.min(100, ((startH - START_H) / SPAN_H) * 100));
+         const width = Math.max(0.5, Math.min(100 - left, (durH / SPAN_H) * 100));
+@@ -3759,6 +3761,7 @@
+     master.connect(ctx.destination);
+     const sources = [];
+     const timers = [];
++    musicNodes = { master, sources, timers }; // First chord must see the active graph.
+     const now = ctx.currentTime;
+     const kind = MUSIC_MAP[mode] || mode;
+
+@@ -3933,8 +3936,7 @@
+       master.gain.setTargetAtTime(musicVolumeGain(1), now, 0.6);
+     }
+
+-    musicNodes = { master, sources, timers };
+-  } catch (e) {}
++  } catch (e) { stopMusic(); }
+ }
+
+ function applyMusicVolume() {

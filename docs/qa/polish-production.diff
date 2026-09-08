@@ -1,0 +1,511 @@
+--- /tmp/focus-polish-diff-rifkPu/index.html	2026-09-07 22:06:19
++++ index.html	2026-09-07 21:59:15
+@@ -15,7 +15,7 @@
+     --accent-1: #1e3a8a;          /* blue-900 (deepest, for primary CTA) */
+     --accent-2: #1d4ed8;          /* blue-700 (rich, for icon + wordmark) */
+     --accent-3: #3b82f6;          /* blue-500 (highlight + glow) */
+-    --grad-primary: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
++    --grad-primary: linear-gradient(135deg, #1e3a8a 0%, #2f65d6 100%);
+     --grad-primary-soft: linear-gradient(135deg, rgba(30,58,138,0.24) 0%, rgba(59,130,246,0.14) 100%);
+     --accent-glow: rgba(59, 130, 246, 0.42);
+     /* Motion — strong custom curves; the built-in easings are too weak to feel intentional. */
+@@ -25,47 +25,49 @@
+     --ok: #6ee7a7;
+     --warn: #fbbf77;
+     --err: #ff7a8f;
+-    /* Subtle film grain — tiles 200px, near-invisible alone, gives panels a sense of material */
+-    --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+   }
+
+   /* Dark theme */
+   [data-theme="dark"] {
+-    --panel: rgba(18, 20, 28, 0.72);
++    --panel: rgba(18, 22, 30, 0.94);
++    --accent-3: #95b4ff;
++    --panel-shadow: none;
+     --panel-solid: rgba(14, 16, 22, 0.94);
+     --panel-hover: rgba(30, 34, 44, 0.85);
+     --panel-input: rgba(255, 255, 255, 0.09);
+     --panel-border: rgba(255, 255, 255, 0.10);
+     --input-border: rgba(255, 255, 255, 0.18);
+     --text: rgba(255, 255, 255, 0.96);
+-    --text-dim: rgba(255, 255, 255, 0.62);
+-    --text-faint: rgba(255, 255, 255, 0.38);
++    --text-dim: #c1c7d2;
++    --text-faint: #a0aabb;
+     --overlay-grad: linear-gradient(180deg, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0.08) 40%, rgba(0,0,0,0.50) 100%);
+     --radial: radial-gradient(ellipse at center, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.40) 100%);
+     --btn-hover: rgba(30,34,44,0.85);
+     --dot-bg: rgba(255,255,255,0.14);
+     --gradient-fallback: linear-gradient(135deg, #0a1530 0%, #0f1f3d 50%, #07101f 100%);
+     /* Pre-blended surface for small elements — no backdrop-filter cost */
+-    --panel-opaque: rgba(21, 24, 33, 0.90);
++    --panel-opaque: rgba(22, 26, 34, 0.97);
+   }
+
+   /* Light theme */
+   [data-theme="light"] {
+-    --panel: rgba(248, 250, 254, 0.88);
++    --panel: rgba(250, 251, 253, 0.96);
++    --accent-3: #315ed0;
++    --panel-shadow: 0 14px 40px rgba(12, 20, 34, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+     --panel-solid: rgba(252, 252, 255, 0.97);
+     --panel-hover: rgba(255, 255, 255, 0.94);
+     --panel-input: rgba(0, 0, 0, 0.06);
+     --panel-border: rgba(20, 25, 40, 0.12);
+     --input-border: rgba(20, 25, 40, 0.18);
+     --text: rgba(18, 22, 32, 0.94);
+-    --text-dim: rgba(18, 22, 32, 0.62);
+-    --text-faint: rgba(18, 22, 32, 0.42);
++    --text-dim: #505b6a;
++    --text-faint: #505b6a;
+     --overlay-grad: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 40%, rgba(0,0,0,0.18) 100%);
+     --radial: radial-gradient(ellipse at center, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.14) 100%);
+     --btn-hover: rgba(255,255,255,0.92);
+     --dot-bg: rgba(0,0,0,0.12);
+     --gradient-fallback: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 50%, #e0e7ff 100%);
+-    --panel-opaque: rgba(247, 249, 253, 0.93);
++    --panel-opaque: rgba(247, 249, 253, 0.97);
+   }
+
+   * { box-sizing: border-box; margin: 0; padding: 0; }
+@@ -121,14 +123,15 @@
+   .top-bar {
+     position: fixed; top: 0; left: 0; right: 0;
+     display: flex; justify-content: space-between; align-items: flex-start;
+-    padding: 20px 24px;
++    padding: 16px 24px;
++    gap: 12px;
+     z-index: 10;
+     pointer-events: none;
+   }
+   .top-bar > * { pointer-events: auto; }
+   /* Equal-height chips so their tops and bottoms line up. The weather chip
+      lives inside #weatherSlot, so the slot must pass the stretch through. */
+-  .top-right { display: flex; align-items: stretch; gap: 12px; }
++  .top-right { display: flex; align-items: stretch; gap: 8px; min-width: 0; }
+   .top-right .clock-chip { display: flex; flex-direction: column; justify-content: center; }
+   #weatherSlot { display: flex; }
+
+@@ -138,8 +141,8 @@
+     align-items: center;
+     gap: 8px;
+     background: var(--panel);
+-    backdrop-filter: blur(20px) saturate(160%);
+-    -webkit-backdrop-filter: blur(20px) saturate(160%);
++    backdrop-filter: none;
++    -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     border-radius: 12px;
+     padding: 8px 13px;
+@@ -160,59 +163,25 @@
+
+   .chip {
+     background: var(--panel);
+-    backdrop-filter: blur(20px) saturate(160%);
+-    -webkit-backdrop-filter: blur(20px) saturate(160%);
++    backdrop-filter: none;
++    -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     border-radius: 14px;
+-    padding: 12px 16px;
++    padding: 10px 14px;
+     font-size: 13px;
+     line-height: 1.3;
+     box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+     position: relative;
+     overflow: hidden;
+     isolation: isolate;
+-  }
+-
+-  /* Texture layer — grain on the hero panels only. Each grain layer costs an
+-     offscreen surface (mix-blend-mode), so small chrome doesn't get one. */
+-  .chip::after,
+-  .card::after,
+-  .prompt-wrap::after,
+-  .active-screen::after,
+-  .history-header::after {
+-    content: '';
+-    position: absolute;
+-    inset: 0;
+-    background-image: var(--noise);
+-    background-size: 200px 200px;
+-    opacity: 0.35;
+-    pointer-events: none;
+-    border-radius: inherit;
+-    z-index: -1;
+-    mix-blend-mode: overlay;
+   }
+-  [data-theme="light"] .chip::after,
+-  [data-theme="light"] .card::after,
+-  [data-theme="light"] .prompt-wrap::after,
+-  [data-theme="light"] .active-screen::after,
+-  [data-theme="light"] .history-header::after {
+-    opacity: 0.45;
+-    mix-blend-mode: multiply;
+-  }
+
+-  /* Performance diet: backdrop-filter blur only on the hero panels
+-     (.card, .prompt-wrap, .active-screen, .history-header, .chip, .quote-chip).
+-     Small chrome uses a pre-blended opaque surface — visually near-identical
+-     at these sizes, and crossfades/scrolling no longer re-blur a dozen regions. */
++  /* Solid-tinted surfaces preserve scenery without grain or backdrop re-blurring. */
+   .brand, .first-run, .intent-pill, .btn-ghost, .credit,
+-  .stat, .panel-card, .session-list, .icon-btn {
+-    background: var(--panel-opaque);
+-    backdrop-filter: none;
+-    -webkit-backdrop-filter: none;
+-  }
++  .stat, .panel-card, .session-list, .icon-btn { background: var(--panel-opaque); }
+
+   .clock-chip .time { font-size: 18px; font-weight: 600; letter-spacing: -0.2px; font-variant-numeric: tabular-nums; }
+-  .clock-chip .date { font-size: 12px; color: var(--text-dim); margin-top: 2px; font-weight: 500; letter-spacing: 0.05px; }
++  .clock-chip .date { font-size: 11px; color: var(--text-dim); margin-top: 2px; font-weight: 500; letter-spacing: 0.05px; }
+
+   .weather-chip { display: flex; align-items: center; gap: 10px; min-width: 0; }
+   .weather-chip .icon { font-size: 20px; line-height: 1; }
+@@ -229,7 +198,7 @@
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+-    padding: 90px 24px 90px;
++    padding: 96px 24px 88px;
+     overflow-y: auto;
+   }
+
+@@ -279,8 +248,8 @@
+     align-items: center;
+     gap: 12px;
+     background: var(--panel);
+-    backdrop-filter: blur(20px) saturate(160%);
+-    -webkit-backdrop-filter: blur(20px) saturate(160%);
++    backdrop-filter: none;
++    -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     border-radius: 18px;
+     padding: 12px 22px;
+@@ -318,8 +287,8 @@
+     align-items: center;
+     gap: 14px;
+     background: var(--panel);
+-    backdrop-filter: blur(20px) saturate(160%);
+-    -webkit-backdrop-filter: blur(20px) saturate(160%);
++    backdrop-filter: none;
++    -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     border-radius: 14px;
+     padding: 14px 18px;
+@@ -362,8 +331,8 @@
+     align-items: center;
+     gap: 10px;
+     background: var(--panel);
+-    backdrop-filter: blur(20px) saturate(160%);
+-    -webkit-backdrop-filter: blur(20px) saturate(160%);
++    backdrop-filter: none;
++    -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     border-radius: 14px;
+     padding: 10px 16px;
+@@ -428,8 +397,8 @@
+
+   .quote-chip {
+     background: var(--panel);
+-    backdrop-filter: blur(20px) saturate(160%);
+-    -webkit-backdrop-filter: blur(20px) saturate(160%);
++    backdrop-filter: none;
++    -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     border-radius: 14px;
+     padding: 14px 10px;
+@@ -443,17 +412,17 @@
+     gap: 4px;
+   }
+   .quote-chip.hidden { display: none; }
+-  .quote-body { flex: 1; padding: 0 8px; cursor: pointer; }
++  .quote-body { flex: 1; min-width: 0; padding: 0 8px; cursor: pointer; text-wrap: pretty; }
+   .quote-body .q { color: var(--text); }
+   .quote-body .author { display: block; margin-top: 4px; font-size: 12px; color: var(--text-faint); }
+   .quote-nav {
+     flex-shrink: 0;
+-    width: 26px; height: 26px;
++    width: 30px; height: 30px;
+     border-radius: 8px;
+     font-size: 18px; line-height: 1;
+     color: var(--text-faint);
+-    opacity: 0;
+-    transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease, transform 0.12s var(--ease-out);
++    opacity: 1;
++    transition: transform 0.12s var(--ease-out);
+   }
+   .quote-chip:hover .quote-nav,
+   .quote-chip:focus-within .quote-nav { opacity: 1; }
+@@ -461,8 +430,8 @@
+
+   .card {
+     background: var(--panel);
+-    backdrop-filter: blur(20px) saturate(160%);
+-    -webkit-backdrop-filter: blur(20px) saturate(160%);
++    backdrop-filter: none;
++    -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     border-radius: 20px;
+     padding: 32px;
+@@ -492,16 +461,19 @@
+     border: 1px solid var(--panel-border);
+     border-radius: 14px;
+     padding: 16px 8px;
+-    transition: transform 0.18s var(--ease-out), background 0.15s ease, border-color 0.15s ease;
++    position: relative;
++    transition: transform 0.12s var(--ease-out);
+   }
+   .cycle-btn:hover { background: var(--panel-hover); transform: translateY(-1px); }
+   .cycle-btn.selected {
+     background: var(--grad-primary-soft);
+     border-color: rgba(59,130,246,0.55);
+   }
++  .cycle-btn.selected::after { content: '✓'; position: absolute; top: 7px; right: 10px; font-size: 13px; font-weight: 600; color: var(--accent-3); }
++  .cycle-btn.selected .ends, .cycle-btn.selected .label { color: var(--text); }
+   .cycle-btn .n { font-size: 30px; font-weight: 500; letter-spacing: -0.8px; line-height: 1; }
+-  .cycle-btn .label { font-size: 11px; color: var(--text-dim); margin-top: 4px; font-weight: 500; letter-spacing: 0.1px; }
+-  .cycle-btn .ends { font-size: 10px; color: var(--text-faint); margin-top: 6px; font-weight: 400; letter-spacing: 0.1px; }
++  .cycle-btn .label { font-size: 12px; color: var(--text-dim); margin-top: 4px; font-weight: 500; letter-spacing: 0.1px; }
++  .cycle-btn .ends { font-size: 11px; color: var(--text-faint); margin-top: 6px; font-weight: 400; letter-spacing: 0.1px; }
+
+   .custom-row {
+     display: flex; align-items: center; gap: 10px; justify-content: center;
+@@ -575,8 +547,8 @@
+   .goal-pill {
+     display: flex; align-items: center; gap: 10px;
+     background: var(--panel);
+-    backdrop-filter: blur(20px) saturate(160%);
+-    -webkit-backdrop-filter: blur(20px) saturate(160%);
++    backdrop-filter: none;
++    -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     border-radius: 14px;
+     padding: 10px 16px;
+@@ -666,8 +638,8 @@
+     text-align: center;
+     max-width: 480px;
+     background: var(--panel);
+-    backdrop-filter: blur(20px) saturate(160%);
+-    -webkit-backdrop-filter: blur(20px) saturate(160%);
++    backdrop-filter: none;
++    -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     border-radius: 12px;
+     padding: 10px 18px;
+@@ -684,8 +656,8 @@
+     max-width: 640px;
+     margin: 0 auto;
+     background: var(--panel);
+-    backdrop-filter: blur(20px) saturate(160%);
+-    -webkit-backdrop-filter: blur(20px) saturate(160%);
++    backdrop-filter: none;
++    -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     border-radius: 24px;
+     padding: 44px 36px 36px;
+@@ -694,7 +666,7 @@
+     overflow: hidden;
+     isolation: isolate;
+   }
+-  .active-screen.phase-pop { animation: panelPop 0.28s var(--ease-out) both; }
++  .active-screen.phase-pop { animation: panelPop 0.18s var(--ease-out) both; }
+   @keyframes panelPop {
+     0% { transform: translateY(8px) scale(0.985); opacity: 0.82; }
+     100% { transform: none; opacity: 1; }
+@@ -783,7 +755,7 @@
+   .active-controls { display: flex; gap: 12px; justify-content: center; }
+   .btn-ghost {
+     background: var(--panel);
+-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
++    backdrop-filter: none; -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     padding: 12px 22px; border-radius: 12px;
+     font-size: 14px; font-weight: 500;
+@@ -803,8 +775,8 @@
+     max-width: 620px;
+     margin: 0 auto;
+     background: var(--panel);
+-    backdrop-filter: blur(20px) saturate(160%);
+-    -webkit-backdrop-filter: blur(20px) saturate(160%);
++    backdrop-filter: none;
++    -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     border-radius: 20px;
+     padding: 32px;
+@@ -921,8 +893,8 @@
+   /* History header lives in its own panel chip */
+   .history-header {
+     background: var(--panel);
+-    backdrop-filter: blur(20px) saturate(160%);
+-    -webkit-backdrop-filter: blur(20px) saturate(160%);
++    backdrop-filter: none;
++    -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     border-radius: 16px;
+     padding: 18px 22px;
+@@ -973,7 +945,7 @@
+   }
+   .stat {
+     background: var(--panel);
+-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
++    backdrop-filter: none; -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     border-radius: 14px; padding: 16px;
+   }
+@@ -989,7 +961,7 @@
+
+   .panel-card {
+     background: var(--panel);
+-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
++    backdrop-filter: none; -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     border-radius: 14px;
+     padding: 18px 20px;
+@@ -1057,7 +1029,7 @@
+
+   .session-list {
+     background: var(--panel);
+-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
++    backdrop-filter: none; -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     border-radius: 14px;
+     padding: 6px 0;
+@@ -1235,12 +1207,17 @@
+
+   /* Bottom bar */
+   .bottom-bar {
+-    position: fixed; bottom: 20px; right: 24px;
+-    display: flex; gap: 10px; z-index: 10;
++    position: fixed; bottom: 16px; right: 24px;
++    display: flex; align-items: center; gap: 4px; z-index: 10;
++    padding: 5px;
++    background: var(--panel-opaque);
++    border: 1px solid var(--panel-border);
++    border-radius: 16px;
++    box-shadow: var(--panel-shadow);
+   }
+   .icon-btn {
+     background: var(--panel);
+-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
++    backdrop-filter: none; -webkit-backdrop-filter: none;
+     border: 1px solid var(--panel-border);
+     border-radius: 12px;
+     padding: 10px 14px;
+@@ -1255,6 +1232,13 @@
+   .icon-btn:hover { background: var(--btn-hover); transform: translateY(-1px); }
+   .icon-btn svg { width: 14px; height: 14px; opacity: 0.85; }
+
++  /* Clean material surfaces avoid live blur and grain during every repaint. */
++  .card, .prompt-wrap, .active-screen, .history-header { box-shadow: var(--panel-shadow); }
++  .bottom-bar .icon-btn { background: transparent; border-color: transparent; padding: 9px 10px; border-radius: 10px; }
++  .bottom-bar .icon-btn:hover { background: var(--panel-input); }
++  [data-theme="dark"] .brand-mark, [data-theme="dark"] .chip, [data-theme="dark"] .intent-pill, [data-theme="dark"] .goal-pill, [data-theme="dark"] .music-menu { box-shadow: none; }
++  .cycle-btn .n, .cycle-btn .ends, .goal-pill .value { font-variant-numeric: tabular-nums; }
++
+   /* Scrollbar */
+   ::-webkit-scrollbar { width: 8px; height: 8px; }
+   ::-webkit-scrollbar-track { background: transparent; }
+@@ -1276,22 +1260,22 @@
+   /* Keep the main action visible in a normal laptop-height window. Decorative
+      setup content yields first; the timer and history screens keep their space. */
+   @media (max-height: 900px) and (min-width: 441px) {
+-    main { padding-top: 72px; padding-bottom: 76px; }
++    main { padding-top: 96px; padding-bottom: 88px; }
+     #setupScreen { margin: 0; }
+     #setupScreen .quote-chip { margin-bottom: 10px; padding: 10px; }
+     #setupScreen .credit-wrap { display: none; }
+     #setupScreen .first-run { padding: 10px 14px; margin-bottom: 10px; }
+     #setupScreen .intent-row { margin-bottom: 10px; }
+-    #setupScreen .goal-pill { margin-bottom: 10px; }
+-    #setupScreen .card { padding: 24px; }
+-    #setupScreen .preset-row { margin-bottom: 12px; }
+-    #setupScreen .section-label { margin-bottom: 12px; }
+-    #setupScreen .cycle-grid { margin-bottom: 14px; }
+-    #setupScreen .cycle-btn { padding: 12px 8px; }
+-    #setupScreen .custom-row { margin-bottom: 14px; }
+-    #setupScreen .duration-row { margin-bottom: 18px; padding-top: 14px; }
++    #setupScreen .goal-pill { margin-bottom: 8px; }
++    #setupScreen .card { padding: 16px 24px; }
++    #setupScreen .preset-row { margin-bottom: 10px; }
++    #setupScreen .section-label { margin-bottom: 10px; }
++    #setupScreen .cycle-grid { margin-bottom: 12px; }
++    #setupScreen .cycle-btn { padding: 12px 8px; }
++    #setupScreen .custom-row { margin-bottom: 10px; }
++    #setupScreen .duration-row { margin-bottom: 14px; padding-top: 12px; }
+     #setupScreen .btn-primary { padding: 14px; }
+-    #setupScreen .projection { margin-top: 10px; }
++    #setupScreen .projection { margin-top: 8px; }
+   }
+   #compactPanel { display: none; }
+   body[data-compact="true"] { background: #faf9f6; color: #242624; }
+@@ -1344,7 +1328,7 @@
+   }
+   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+-  .fade-in { animation: fadeIn 0.28s var(--ease-out); }
++  .fade-in { animation: fadeIn 0.18s var(--ease-out); }
+   @keyframes fadeIn {
+     from { opacity: 0; transform: translateY(10px) scale(0.99); }
+     to { opacity: 1; transform: translateY(0) scale(1); }
+@@ -1444,7 +1428,7 @@
+       </div>
+       <div id="intentForm" class="intent-pill intent-pill-form">
+         <span class="intent-mark">✦</span>
+-        <input type="text" class="intent-input" id="intentInput" placeholder="What's today's main thing?" maxlength="120">
++        <input type="text" class="intent-input" id="intentInput" name="dailyIntent" aria-label="Today's main thing" placeholder="What's today's main thing?" maxlength="120">
+         <button class="intent-save" id="intentSaveBtn">Set</button>
+         <button class="intent-hide" aria-label="Hide" title="Hide (turn back on in the gear menu)">×</button>
+       </div>
+@@ -1480,14 +1464,14 @@
+
+       <div class="custom-row">
+         <span>Custom (1 to 12):</span>
+-        <input type="number" id="customInput" min="1" max="12" value="5">
++        <input type="number" id="customInput" name="customCycles" aria-label="Number of focus cycles" min="1" max="12" value="5">
+         <button class="btn-ghost" id="customBtn" style="padding: 8px 14px; font-size: 13px;">Set</button>
+       </div>
+
+       <div class="duration-row">
+         <div class="duration-field">
+-          <label>Focus duration</label>
+-          <select id="focusDuration">
++          <label for="focusDuration">Focus duration</label>
++          <select id="focusDuration" name="focusDuration">
+             <option value="10">10 min</option>
+             <option value="15">15 min</option>
+             <option value="20">20 min</option>
+@@ -1500,8 +1484,8 @@
+           </select>
+         </div>
+         <div class="duration-field">
+-          <label>Break duration</label>
+-          <select id="breakDuration">
++          <label for="breakDuration">Break duration</label>
++          <select id="breakDuration" name="breakDuration">
+             <option value="3">3 min</option>
+             <option value="5">5 min</option>
+             <option value="10" selected>10 min</option>
+@@ -2265,10 +2249,12 @@
+ function updateProjections() {
+   // Nothing to project when the setup screen isn't on screen
+   if (document.getElementById('setupScreen').classList.contains('hidden')) return;
++  renderPresets(); // Manual duration/cycle changes invalidate an old preset selection.
+   const focus = parseInt(focusSel.value, 10);
+   const brk = parseInt(breakSel.value, 10);
+   const now = new Date();
+   cycleGrid.querySelectorAll('.cycle-btn').forEach(btn => {
++    btn.setAttribute('aria-pressed', String(btn.classList.contains('selected')));
+     const n = parseInt(btn.dataset.cycles, 10);
+     const mins = n * focus + (n - 1) * brk;
+     const end = new Date(now.getTime() + mins * 60_000);
+@@ -2364,6 +2350,7 @@
+     const p = PRESETS[btn.dataset.preset];
+     const selected = p && p.cycles === cur.cycles && p.focusDuration === cur.focusDuration && p.breakDuration === cur.breakDuration;
+     btn.classList.toggle('selected', !!selected);
++    btn.setAttribute('aria-pressed', String(!!selected));
+   });
+ }
+ presetRow.addEventListener('click', (e) => {
